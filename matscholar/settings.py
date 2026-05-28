@@ -1,4 +1,5 @@
 from .local_settings import local_settings as ls
+
 """
 Django settings for matscholar project.
 
@@ -12,6 +13,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+
+import mimetypes
+# mimetypes.add_type("text/javascript", ".js", True)
+mimetypes.add_type("text/html", ".js", True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -57,7 +62,10 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR/'base_templates',
+            BASE_DIR/'base_templates'
+
+
+
 
         ],
         'APP_DIRS': True,
@@ -119,8 +127,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIR=[
-    BASE_DIR/'static_files',
-]
+STATIC_URL = '/static_files/'
 
+STATICFILES_DIRS = [
+    BASE_DIR / "static_files",
+]

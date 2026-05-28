@@ -1,0 +1,64 @@
+{% extends "general/header.html" %}
+{% load static %}
+
+{% block content %}
+    <div>
+
+        <img class="index_image"src="{% static 'images/index_image.webp' %}" alt="Professores utilizando MatScholar">
+        
+    </div>
+    <div class="text1_div">
+        <div class="column_text1_div centralizar">
+            <p class="title1_p">Quem somos e o que oferecemos?</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam vestibulum vel felis eget vestibulum.
+                Praesent iaculis purus et aliquam elementum. Duis ac diam vitae justo dignissim auctor. In nec sapien
+                vitae sapien consequat imperdiet. Sed pretium sed tortor eu feugiat. Sed euismod sapien in tortor finibus,
+                finibus volutpat tortor tincidunt. Integer commodo ligula non tortor lacinia, sit amet luctus lacus ornare.
+                Phasellus rhoncus elit fringilla, condimentum nisi sit amet, blandit nunc. Cras hendrerit, nisl at viverra 
+                vehicula, est sapien imperdiet tellus, a varius lacus justo sit amet dui. Nullam vitae mauris scelerisque, 
+                commodo lacus sed, hendrerit mauris. Suspendisse sed fringilla tellus. Vivamus aliquet ornare neque. 
+                Donec eget augue aliquet, congue est eget, iaculis orci. Sed dignissim tincidunt orci id dictum. 
+                Nunc turpis augue, bibendum sed mi sed, ornare maximus est.</p>
+        </div>
+        <div class="grid_text1_div">
+
+            <div class="subgrid_text1_div">
+
+                <div class="subgrid_header_div">
+                    
+                    <img class="subgrid_icon_circle_img"src="{% static 'icons/book_icon.svg'%}" alt="">
+                    <p class="subgrid_icon_aux_p">Vantagens para os estudantes</p>
+                   
+                </div>
+                <ul style="width:100%;">
+                    <li class="subgrid_topics_li">Análise de desempenho em trabalhos e provas</li>
+                    <li class="subgrid_topics_li">Maior contato com o Feedback dos docentes</li>
+                    <li class="subgrid_topics_li" style="margin-bottom:0px;">Maior transparência dos processos de correção da instituição</li>
+                    
+                </ul>
+                    
+
+
+            </div>
+
+            <div class="subgrid_text1_div">
+                
+                 <div class="subgrid_header_div">
+                    <img class="subgrid_icon_circle_img"src="{% static 'icons/school_icon.svg'%}" alt="">
+                    <p class="subgrid_icon_aux_p">Vantagens para os professores</p>
+                </div>
+                <ul style="width:100%;">
+                    <li class="subgrid_topics_li">Disponibilização rápida e dinâmica de dados dos alunos</li>
+                    <li class="subgrid_topics_li">Maior comunicação com os alunos </li>
+                    <li class="subgrid_topics_li" style="margin-bottom:0px;">Ganho de produtividade ao lançar notas</li>
+                    
+                </ul>
+
+            </div>
+
+        </div>
+        
+    </div>
+    
+
+{% endblock content %}

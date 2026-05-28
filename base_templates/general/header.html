@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'images/index_image.webp' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/style_master.css'%}">
+     <link rel="stylesheet" href="{% static 'css/specific/style_index.css'%}">
+    <title>Index</title>
+</head>
+<body>
+    <div class="container">
+
+   
+
+            <div class="header_div ">
+                
+                <p class="Chakra logo_p">MatScholar</p>
+                <a class="index_login_button_a centralizar" href="{% url 'matscholar_app:login_page'%}"><p class="Chakra ">Login</p></a>
+                <a class="index_login_button_a centralizar" href=""><p class="Chakra ">Sobre</p></a>
+
+
+            </div>
+
+
+            {%block content%}
+            {% endblock content %}
+
+            
+     </div>
+     <script src="{% static 'js/functions.js' %}"></script>
+</body>
+
+</html>
