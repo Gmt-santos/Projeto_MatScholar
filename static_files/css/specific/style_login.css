@@ -49,4 +49,10 @@ form{
     font-size: 20px;
     border-style: none;
     border-radius: 10px;
+    transition-duration: 1s;
+}
+.forms_submit_input:hover{
+    transition-duration: 1s;
+    transform: scale(1.05);
+    cursor:pointer;
 }
