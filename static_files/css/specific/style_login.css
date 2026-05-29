@@ -1,0 +1,52 @@
+@import url('../style_master.css');
+form{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: var(--border-radius);
+    width:500px;
+    height:400px;
+    margin-top: 100px;
+    padding:20px;
+}
+.forms_title_div{
+    display:flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap:10px;
+}
+.logo_forms_title_img{
+    width:45px;
+    height: 40px;
+}
+.logo_forms_title_p{
+     font-weight: bold;
+    color: black;
+    font-size:18px;
+    font-family: Chakra;
+   margin-bottom:10px;
+
+}
+.forms_aux_input_p{
+    font-family: Chakra;
+    font-size: 15px;
+}
+.forms_input{
+    font-family: Chakra;
+    font-size:13px;
+    border-radius: 10px;
+    border-style:none;
+    padding:5px;
+    height: 30px;
+    background-color: var(--color-gray);
+}
+.forms_submit_input{
+    height:50px;
+    width:100%;
+    margin-top: 50px;
+    font-family: Chakra;
+    font-size: 20px;
+    border-style: none;
+    border-radius: 10px;
+}

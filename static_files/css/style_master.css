@@ -17,9 +17,7 @@
 .solid_header_background{
    background-color: rgb(5,44,101,1)!important;
 }
-.solid_header_buttons{
-    background-color:rgba(15, 75, 168,1);
-}
+
 .centralizar{
     align-items: center;
     justify-content: center;
@@ -61,6 +59,51 @@ body{
 .logo_p{
     font-weight: bold;
     color: white;
-    font-size:20px;
+    font-size:22px;
     opacity: 1;
+    font-family: Chakra;
+    transition-duration: 1s;
+}
+.logo_p:hover{
+    color:var(--color-gray);
+    cursor:pointer;
+    transform:scale(1.2);
+    transition-duration: 1s;
+}
+.logo_bigger_p{
+    font-weight: bold;
+    color: white;
+    font-size:30px;
+    opacity: 1;
+    font-family: Chakra;
+}
+.logo_img{
+    width:100px;
+    height: 100px;
+  
+}
+.footer_organizer_div{
+    display:flex;
+    flex-direction: column;
+    gap:30px;
+    background-color:black;
+    height: 300px;
+    width:100%;
+    margin-top:100px;
+    align-items: center;
+}
+.links_p{
+    font-family: Chakra;
+    font-size:20px;
+    text-decoration: none;
+    color:white;
+    text-decoration:underline;
+     transition-property: color;
+    transition-duration:0.2s;
+    
+}
+.links_p:hover{
+    color:var(--color-gray);
+    transition-property: color;
+    transition-duration:0.2s;
 }
