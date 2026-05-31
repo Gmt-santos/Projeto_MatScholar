@@ -1,5 +1,7 @@
 from .local_settings import local_settings as ls
-
+import psycopg2
+import os
+from dotenv import load_dotenv
 """
 Django settings for matscholar project.
 
@@ -84,11 +86,17 @@ WSGI_APPLICATION = 'matscholar.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
+load_dotenv()
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME':os.getenv("DATABASE"),                      
+        'USER':os.getenv("USER"),
+        'PASSWORD': os.getenv("PASSWORD"),
+        'HOST': os.getenv("HOST"),
+        'PORT': 5432,
     }
 }
 
@@ -132,3 +140,14 @@ STATIC_URL = '/static_files/'
 STATICFILES_DIRS = [
     BASE_DIR / "static_files",
 ]
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
