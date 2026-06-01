@@ -19,6 +19,12 @@
             <label class="forms_aux_input_p"for="show_password">Mostrar senha</label>
             
         </div>
+        {% if messages %}
+            {% for message in messages %}
+                 {% include "specific/messages.html" %}
+            {% endfor %}
+        {% endif %}
         <input class="forms_submit_input"type="submit" value="Entrar">
     </form>
+    
 {% endblock content %}

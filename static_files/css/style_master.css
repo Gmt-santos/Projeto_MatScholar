@@ -107,3 +107,17 @@ body{
     transition-property: color;
     transition-duration:0.2s;
 }
+
+.messages_div{
+    width: 80%;
+    height:fit-content;
+    padding:10px;
+    border-radius: var(--border-radius);
+    background-color:var(--color-gray);
+   
+}
+.messages_p{
+    font-family: Chakra;
+    font-size:15px;
+
+}

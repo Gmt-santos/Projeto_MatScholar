@@ -4,20 +4,40 @@
 Funções em Python
 Serão descritas antes de sua definição
 '''
-
+'''
+Retornar as variaveis do .env
+'''
+def return_dotenv():
+    from dotenv import load_dotenv
+    import os
+    load_dotenv()
+    return os.environ.get("HOST"),os.environ.get("USER"),os.environ.get("PASSWORD"),os.environ.get("DATABASE"),os.environ.get("PORT")
+'''
+Retornar uma conexão e um cursor do banco (USE SOMENTE EM OPERAÇÕES NÃO TRIVIAIS)
+'''
+def connection_cursor():
+    import psycopg2
+    try:
+        HOST,USER,PASSWORD,DATABASE,PORT=return_dotenv()
+        conn=psycopg2.connect(database=DATABASE,user=USER,password=PASSWORD,host=HOST,port=PORT)
+        cursor=conn.cursor()
+        return conn,cursor
+    except psycopg2.errors 
 
 '''
 Busca o objeto de usuario academico no banco de dados e devolve ele
 '''
 def search_academic_users_by_email(email:str):
     from django.core.exceptions import ObjectDoesNotExist,EmptyResultSet,MultipleObjectsReturned
-    from matscholar_app.models import academic_users
+    from matscholar_app.models import academic_users_permissions,academic_users
     try:
-        academic_user=academic_users.objects.get(email=email)
-        print(academic_user)
+        conn,cursor=connection_cursor()
+        cursor.execute("select academic_users.id,academic_users.name,academic_users.role,academic_users.email,academic_users.password,academic_users.fk_institution,"
+        "permissions.nickname from academic_users join academic_users_permissions on academic_users.id=academic_users_permissions.id_user join"
+        " permissions on academic_users_permissions.id_nickname=permissions.id")
         if(academic_user):
-            return academic_user[0]
-        
+            return academic_user
+        ##    TODO  ##
     except ObjectDoesNotExist:
         return False
     except EmptyResultSet:
@@ -55,5 +75,4 @@ def email_validation(email:str):
     is_valid=regex_email_compiled.search(email)
     return is_valid
               
-  
 
