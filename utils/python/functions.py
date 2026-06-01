@@ -17,43 +17,138 @@ Retornar uma conexão e um cursor do banco (USE SOMENTE EM OPERAÇÕES NÃO TRIV
 '''
 def connection_cursor():
     import psycopg2
-    try:
-        HOST,USER,PASSWORD,DATABASE,PORT=return_dotenv()
-        conn=psycopg2.connect(database=DATABASE,user=USER,password=PASSWORD,host=HOST,port=PORT)
-        cursor=conn.cursor()
-        return conn,cursor
-    except psycopg2.errors 
+
+    HOST,USER,PASSWORD,DATABASE,PORT=return_dotenv()
+    conn=psycopg2.connect(database=DATABASE,user=USER,password=PASSWORD,host=HOST,port=PORT)
+    cursor=conn.cursor()
+    return conn,cursor
+
 
 '''
 Busca o objeto de usuario academico no banco de dados e devolve ele
 '''
 def search_academic_users_by_email(email:str):
     from django.core.exceptions import ObjectDoesNotExist,EmptyResultSet,MultipleObjectsReturned
-    from matscholar_app.models import academic_users_permissions,academic_users
+    from psycopg2.errors import OperationalError
+    conn,cursor=None,None
     try:
         conn,cursor=connection_cursor()
-        cursor.execute("select academic_users.id,academic_users.name,academic_users.role,academic_users.email,academic_users.password,academic_users.fk_institution,"
-        "permissions.nickname from academic_users join academic_users_permissions on academic_users.id=academic_users_permissions.id_user join"
-        " permissions on academic_users_permissions.id_nickname=permissions.id")
-        if(academic_user):
-            return academic_user
-        ##    TODO  ##
-    except ObjectDoesNotExist:
+        if conn and cursor:
+            cursor.execute("select academic_users.id,academic_users.name,academic_users.role,academic_users.email,academic_users.password,academic_users.fk_institution,"
+            "permissions.nickname from academic_users join academic_users_permissions on academic_users.id=academic_users_permissions.id_user join"
+            " permissions on academic_users_permissions.id_nickname=permissions.id where academic_users.email like %s",[email,])
+            academic_user=cursor.fetchall()
+           
+            if(academic_user):
+                lista_permissoes=[]
+                dictonary_user={
+                    'id':None,
+                    'name':None,
+                    'role':None,
+                    'email':None,
+                    'password':None,
+                    'fk_institution':None,
+                    'permissions_nicknames':lista_permissoes,
+                }
+                for items in academic_user:
+                    lista_permissoes.append(items[6])
+                    dictonary_user={
+                    'id':items[0],
+                    'name':items[1],
+                    'role':items[2],
+                    'email':items[3],
+                    'password':items[4],
+                    'fk_institution':items[5],
+                    'permissions_nicknames':lista_permissoes,
+                }
+                
+                return dictonary_user
+            else:
+                return False
+        else:
+            raise EmptyResultSet
+    except ObjectDoesNotExist as e:
+       
         return False
-    except EmptyResultSet:
+    except EmptyResultSet as e:
+      
         return False
-    except MultipleObjectsReturned:
+    except MultipleObjectsReturned as e:
+        
         return False
+    except OperationalError as e:
+        
+        return False
+    finally:
+        if conn is not None:
+            cursor.close()
+            conn.close()
+
+'''
+Busca o objeto de usuario academico no banco de dados e devolve ele
+'''
+def search_students_by_email(email:str):
+    from django.core.exceptions import ObjectDoesNotExist,EmptyResultSet,MultipleObjectsReturned
+    from psycopg2.errors import OperationalError
+    conn,cursor=None,None
+    try:
+        conn,cursor=connection_cursor()
+        if conn and cursor:
+            cursor.execute("select * from students where 'RA' like 'bibibibobobo'")
+            student=cursor.fetchall()
+           
+            if(student):
+                dictonary_student={
+                  'RA':None,
+                  'name':None,
+                  'year_of_entry':None,
+                  'fk_course':None,
+                  'password':None,
+                }
+                for items in student:
+                    
+                    dictonary_student={
+                    'RA':items[0],
+                    'name':items[1],
+                    'year_of_entry':items[2],
+                    'fk_course':items[3],
+                    'password':items[4],
+                     }
+                return dictonary_student
+            else:
+                return False
+        else:
+            raise EmptyResultSet
+    except ObjectDoesNotExist as e:
+       
+        return False
+    except EmptyResultSet as e:
+      
+        return False
+    except MultipleObjectsReturned as e:
+        
+        return False
+    except OperationalError as e:
+        
+        return False
+    finally:
+        if conn is not None:
+            cursor.close()
+            conn.close()
+
+
+
 '''
 Verifica se a senha enviada por POST é igual a senha do banco
 '''
-def verify_hashed(password_POST:str,academic_user):
+def verify_hashed(password_POST:str,academic_user:dict):
     from argon2 import PasswordHasher,exceptions
     try:
         ph=PasswordHasher()
-        ph.verify(academic_user.password,password_POST)
+        ph.verify(academic_user["password"],password_POST)
         return True
     except exceptions.VerifyMismatchError:
+      
         return False
 '''
 Caso o usuario erre o email,faz um hashing generico pra evitar timing attacks
@@ -75,4 +170,26 @@ def email_validation(email:str):
     is_valid=regex_email_compiled.search(email)
     return is_valid
               
+'''
+Coloca os dados puxados no banco para a sessão para evitar sobrecarregar o banco com querys desnecessárias
+'''
+def academic_users_set_session_attributes(request,dictionary:dict):
+    request.session["id"]=dictionary["id"]
+    request.session["name"]=dictionary["name"]
+    request.session["role"]=dictionary["role"]
+    request.session["email"]=dictionary["email"]
+    request.session["institution"]=dictionary["fk_institution"]
+    request.session["permissions"]=dictionary["permissions_nicknames"]
+
+def students_set_session_attributes(request,dictionary:dict):
+    # request.session["id"]=dictionary["id"]
+    # request.session["name"]=dictionary["name"]
+    # request.session["role"]=dictionary["role"]
+    # request.session["email"]=dictionary["email"]
+    # request.session["institution"]=dictionary["fk_institution"]
+    # request.session["permissions"]=dictionary["permissions_nicknames"]
+    return True
+# TODO #
+
+
 

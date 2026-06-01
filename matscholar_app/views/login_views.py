@@ -6,26 +6,58 @@ def login_page(request):
     
     return render(request,'login.html')
 
-def login_operation(request):
+def login_operation_academic_user(request):
     if(request.method == "POST"):
-        a=PasswordHasher()
+
         password_POST=request.POST.get("password")
         email_POST=request.POST.get("email")
         if(python_functions.email_validation(email_POST)):
 
             academic_user=python_functions.search_academic_users_by_email(email=email_POST)
-
+            
             if academic_user:
                 
               
                 if python_functions.verify_hashed(password_POST=password_POST,academic_user=academic_user):
-                    
-                 return render(request,"login.html")
+                     python_functions.academic_users_set_session_attributes(request=request,dictionary=academic_user)
+                     return render(request,"login.html")
                 else:
                     messages.error(request,"Esse e-mail não está cadastrado ou a senha é inválida")
                     return render(request,"login.html")
                 
             else:
+               
+                python_functions.hashing_false()
+                messages.error(request,"Esse e-mail não está cadastrado ou a senha é inválida")
+                return render(request,'login.html')
+        else:
+            messages.error(request,"Esse e-mail não é válido ")
+            return render(request,'login.html')
+    else:
+        return redirect("matscholar_app:login_page")
+    
+
+def login_operation_student(request):
+    if(request.method == "POST"):
+
+        password_POST=request.POST.get("password")
+        email_POST=request.POST.get("email")
+        if(python_functions.email_validation(email_POST)):
+
+            academic_user=python_functions.search_students_by_email(email=email_POST)
+            
+            if academic_user:
+                
+                
+                if python_functions.verify_hashed(password_POST=password_POST,academic_user=academic_user):
+                        python_functions.students_set_session_attributes(request=request,dictionary=academic_user)
+                        return render(request,"login.html")
+                else:
+                    messages.error(request,"Esse e-mail não está cadastrado ou a senha é inválida")
+                    return render(request,"login.html")
+                
+            else:
+                
                 python_functions.hashing_false()
                 messages.error(request,"Esse e-mail não está cadastrado ou a senha é inválida")
                 return render(request,'login.html')

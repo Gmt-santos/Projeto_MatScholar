@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
     <link rel="stylesheet" href="{% static 'css/specific/style_login.css'%}">
-    <form action="{% url 'matscholar_app:login_operation'%}" method="POST">
+    <form action="" method="POST">
         {% csrf_token %}
         <div class="forms_title_div">
             <img class="logo_forms_title_img" src="{% static 'images/logo.png' %}" alt="">
@@ -24,7 +24,9 @@
                  {% include "specific/messages.html" %}
             {% endfor %}
         {% endif %}
-        <input class="forms_submit_input"type="submit" value="Entrar">
+        
+        <input class="forms_submit_input"type="submit" value="Entrar como professor" formaction={% url 'matscholar_app:login_operation_academic_user'%}>
+        <input class="forms_submit_input"type="submit" value="Entrar como aluno" formaction={% url 'matscholar_app:login_operation_student'%}>
     </form>
     
 {% endblock content %}

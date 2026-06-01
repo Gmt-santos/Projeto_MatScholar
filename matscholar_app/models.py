@@ -22,6 +22,7 @@ class courses(models.Model):
     name=models.CharField(max_length=255)
     e_mec=models.CharField(max_length=255)
     max_length=models.IntegerField()
+    fk_institution=models.ForeignKey(institution,on_delete=models.CASCADE,db_column="fk_institution",null=True)
     class Meta:
         db_table='courses'
 
@@ -40,6 +41,7 @@ class students(models.Model):
     name=models.CharField(max_length=255)
     year_of_entry=models.IntegerField()
     fk_course=models.ForeignKey(courses,on_delete=models.CASCADE,db_column="fk_course")
+    password=models.CharField(max_length=255)
     class Meta:
         db_table='students'
 
