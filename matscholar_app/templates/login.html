@@ -1,5 +1,6 @@
 {% extends "general/header_footer.html"%}
 {% load static %}
+
 {% block content %}
     <link rel="stylesheet" href="{% static 'css/specific/style_login.css'%}">
     <form action="" method="POST">
@@ -26,7 +27,7 @@
         {% endif %}
         
         <input class="forms_submit_input"type="submit" value="Entrar como professor" formaction={% url 'matscholar_app:login_operation_academic_user'%}>
-        <input class="forms_submit_input"type="submit" value="Entrar como aluno" formaction={% url 'matscholar_app:login_operation_student'%}>
+        <input class="forms_submit_input"type="submit" value="Nao funciona" formaction={% url 'matscholar_app:login_operation_student'%}>
     </form>
     
 {% endblock content %}

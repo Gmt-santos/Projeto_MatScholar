@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'images/logo.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/style_master.css'%}">
+     <link rel="stylesheet" href="{% static 'css/specific/style_index.css'%}">
+    <title>Dashboard</title>
+</head>
+<body>
+    <div class="container">
+
+   
+
+            <div class="header_div ">
+                
+                <a style="text-decoration: none;"href="{% url 'matscholar_app:index'%}"><p class="logo_p">MatScholar</p></a>
+                <a class="index_login_button_a centralizar" href="{% url 'matscholar_app:logout'%}"><p class="Chakra ">Logout</p></a>
+
+            </div>
+
+            <!-- Show content -->
+            {%block content%}
+            {% endblock content %}
+
+            
+     </div>
+
+     <footer style="width: 100%;">
+
+        <div class="footer_organizer_div ">
+
+            <div style="display:flex;flex-direction: row; margin-top: 20px;gap:10px;">
+
+                <img class="logo_img"src="{% static 'images/logo.png'%}" alt="Logo">
+                <p class="logo_bigger_p">MatScholar</p>
+
+            </div>
+
+             <a class= " links_p" target= "_blank"  href="https://github.com/Gmt-santos/Projeto_MatScholar">Projeto educacional realizado por Gmt-santos</a>
+             <a class= " links_p" target= "_blank"  href="https://github.com/Gmt-santos">Github</a>
+             <a class= " links_p" target= "_blank"  href="https://www.linkedin.com/in/guilherme-matias-tronco-3164043a9">Linkedin</a>
+             
+
+        </div>
+
+    </footer>
+
+    <script src="{% static 'js/functions.js' %}"></script>
+
+</body>
+
+</html>

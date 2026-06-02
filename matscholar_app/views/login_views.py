@@ -20,7 +20,7 @@ def login_operation_academic_user(request):
               
                 if python_functions.verify_hashed(password_POST=password_POST,academic_user=academic_user):
                      python_functions.academic_users_set_session_attributes(request=request,dictionary=academic_user)
-                     return render(request,"login.html")
+                     return redirect('matscholar_app:dashboard_page')
                 else:
                     messages.error(request,"Esse e-mail não está cadastrado ou a senha é inválida")
                     return render(request,"login.html")
@@ -66,3 +66,8 @@ def login_operation_student(request):
             return render(request,'login.html')
     else:
         return redirect("matscholar_app:login_page")
+    
+def logout(request):
+    from django.contrib.auth import logout
+    logout(request)
+    return redirect("matscholar_app:login_page")

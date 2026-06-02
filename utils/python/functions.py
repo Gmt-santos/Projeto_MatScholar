@@ -88,13 +88,14 @@ def search_academic_users_by_email(email:str):
 Busca o objeto de usuario academico no banco de dados e devolve ele
 '''
 def search_students_by_email(email:str):
+    # TODO 
     from django.core.exceptions import ObjectDoesNotExist,EmptyResultSet,MultipleObjectsReturned
     from psycopg2.errors import OperationalError
     conn,cursor=None,None
     try:
         conn,cursor=connection_cursor()
         if conn and cursor:
-            cursor.execute("select * from students where 'RA' like 'bibibibobobo'")
+            cursor.execute("select ")
             student=cursor.fetchall()
            
             if(student):
@@ -191,5 +192,25 @@ def students_set_session_attributes(request,dictionary:dict):
     return True
 # TODO #
 
-
-
+'''
+Puxa as salas que professor X dá aula e pode acessar e ver no dashboard
+'''
+def professor_get_classes(request):
+    from matscholar_app.models import classes
+    from django.core.cache import cache
+    professor_id=request.session.get("id")
+    if(professor_id):
+        try:
+            if(cache.get(f"professor_id:{professor_id}")):
+                classes_query=cache.get(f"professor_id:{professor_id}")
+                return classes_query
+            else:
+                classes_query=classes.objects.filter(fk_professor=professor_id,open=1).values("id","name","start_date","end_date")
+                if classes_query:
+                    cache.set(f"professor_id:{professor_id}",classes_query,timeout=1200)
+                    return classes_query
+                else:
+                    return False
+        except Exception as e:
+            return False
+    return False

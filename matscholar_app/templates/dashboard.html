@@ -1,0 +1,35 @@
+{% extends 'general/header_footer_dashboard.html'%}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/specific/style_dashboard.css'%}">
+{% if "Prof" in  request.session.permissions or "SUPER" in request.session.permissions%}
+   
+    {% if list_classes %}
+<div class="professor_organizer_div">
+    <p class="professor_classes_grid_p">Olá {{request.session.role}} {{request.session.name}}!</p>
+    <p class="professor_classes_grid_p">Suas aulas</p>
+    <div class="professor_classes_grid_div">
+         
+        {% for class in list_classes  %}
+        <form action="" method="POST">
+            <div class="professor_class_div">
+                <div class="professor_class_identify_name">
+                    <input type="hidden" name="id" id="id-{{class.id}}" value="id-{{class.id}}">
+                    <p  class="professor_class_title_p">{{class.name}}</p>
+                </div>
+               
+                    <p class="professor_class_p">Data de início: {{class.start_date}}</p>
+                    <p  class="professor_class_p">Data de fim: {{class.end_date}}</p>
+               
+                <a class="professor_class_access_button_a centralizar">Acessar</a>
+            </div>
+        </form>
+        {% endfor %}
+
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+{% if 'Princ' in  request.session.permissions_nicknames or 'SUPER' in request.session.permissions%}
+{% endif %}
+{% endblock content %}
