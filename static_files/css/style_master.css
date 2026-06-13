@@ -113,6 +113,9 @@ body{
     height:fit-content;
     padding:10px;
     border-radius: var(--border-radius);
+    border-color:rgb(150, 0, 0);
+    border-style: solid;
+    border-width: 1px;
     background-color:var(--color-gray);
    
 }

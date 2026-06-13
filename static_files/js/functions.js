@@ -34,3 +34,14 @@ function toggle_visibility(){
     }
 
 }
+// Funções para alterar a visibilidade dos formulários no dashboard
+// 1-> Para queries pelo nome da aula
+// 2-> Para queries pelo nome do professor --> Apenas para 'Princ' users
+function toggle_query_classname_visibility(){
+    const forms_class_name=window.document.getElementById("form_class_name");
+    forms_class_name.classList.toggle("fechado");
+}
+function toggle_query_professorname_visibility(){
+    const forms_class_name=window.document.getElementById("form_professor_name");
+    forms_class_name.classList.toggle("fechado");
+}

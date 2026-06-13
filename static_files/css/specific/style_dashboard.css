@@ -1,4 +1,55 @@
 @import url('../style_master.css');
+.forms_input{
+    font-family: Chakra;
+    font-size:13px;
+    border-radius: 10px;
+    border-style:none;
+    padding:5px;
+    height: 30px;
+    background-color:white;
+    width: 400px;
+  
+}
+.forms_aux_input_p{
+    font-family: Chakra;
+    font-size: 18px;
+}
+.forms_submit_input{
+    height:30px;
+    width:420px;
+    padding:5px;
+    margin-top: 20px;
+    font-family: Chakra;
+    font-size: 15px;
+    border-style: none;
+    border-radius: 10px;
+    transition-duration: 1s;
+}
+.forms_submit_input:hover{
+    transition-duration: 1s;
+    transform: scale(1.05);
+    cursor:pointer;
+}
+.forms_queries_form{
+    display:flex;
+    flex-direction: column;
+    height:fit-content;
+    overflow: hidden;
+}
+.fechado{
+    height: 0px;
+}
+.p_toggle_forms_p{
+    background-color: white;
+    font-family: Chakra;
+    font-size: 15px;
+    width:420px;
+    padding:5px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    text-align: center;
+}
+/* PARTE DO PROFESSOR */
 .professor_organizer_div{
     display: flex;
     flex-direction: column;
@@ -62,4 +113,21 @@
      transition-property: background-color;
      background-color:rgba(15, 75, 168,1);
     transition-duration:0.5s;
+}
+/* PARTE DO 'PRINCIPAL' */
+.principal_class_div{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color:white;
+    border-radius: var(--border-radius);
+    width:400px;
+    height:300px;
+    margin:20px;
+    padding:20px;
+    box-shadow:2px 2px 2px 1px black;
+}
+.principal_queries_organizer_div{
+    display: flex;
+    flex-direction: column;
 }

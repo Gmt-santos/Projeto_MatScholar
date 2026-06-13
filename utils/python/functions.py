@@ -5,7 +5,7 @@ Funções em Python
 Serão descritas antes de sua definição
 '''
 '''
-Retornar as variaveis do .env
+Retornar as variaveis do .env----> Apenas utilizada na função "connection_cursor"
 '''
 def return_dotenv():
     from dotenv import load_dotenv
@@ -17,12 +17,15 @@ Retornar uma conexão e um cursor do banco (USE SOMENTE EM OPERAÇÕES NÃO TRIV
 '''
 def connection_cursor():
     import psycopg2
+    try:
 
-    HOST,USER,PASSWORD,DATABASE,PORT=return_dotenv()
-    conn=psycopg2.connect(database=DATABASE,user=USER,password=PASSWORD,host=HOST,port=PORT)
-    cursor=conn.cursor()
-    return conn,cursor
-
+        HOST,USER,PASSWORD,DATABASE,PORT=return_dotenv()
+        conn=psycopg2.connect(database=DATABASE,user=USER,password=PASSWORD,host=HOST,port=PORT)
+        cursor=conn.cursor()
+        return conn,cursor
+    except psycopg2.OperationalError:
+        return False
+    #TODO--> erros
 
 '''
 Busca o objeto de usuario academico no banco de dados e devolve ele
@@ -201,16 +204,100 @@ def professor_get_classes(request):
     professor_id=request.session.get("id")
     if(professor_id):
         try:
-            if(cache.get(f"professor_id:{professor_id}")):
-                classes_query=cache.get(f"professor_id:{professor_id}")
+            if(cache.get(f"professor_id_classes:{professor_id}")):
+                classes_query=cache.get(f"professor_id_classes:{professor_id}")
                 return classes_query
             else:
                 classes_query=classes.objects.filter(fk_professor=professor_id,open=1).values("id","name","start_date","end_date")
                 if classes_query:
-                    cache.set(f"professor_id:{professor_id}",classes_query,timeout=1200)
+                    cache.set(f"professor_id_classes:{professor_id}",classes_query,timeout=1200)
                     return classes_query
                 else:
                     return False
         except Exception as e:
+            from django.contrib import messages
+            messages.error(request,"Houve um erro na consulta de suas aulas!")
+            messages.error(request,f"Erro:{e}")
             return False
     return False
+
+'''
+Busca informações das aulas da instituição do diretor/coordenador da sessão
+Disponibiliza no Dashboard
+'''
+def principal_get_classes(request):
+    from django.core.cache import cache
+    from psycopg2 import OperationalError
+    from redis import exceptions as r_exceptions
+    from django.contrib import messages
+    conn,cursor=None,None
+    try:
+
+        conn,cursor=connection_cursor()
+        institution_id=request.session.get("institution")
+        principal_id=request.session.get("id")
+        if institution_id and principal_id:
+            if(cache.get(f"principal_id_classes:{institution_id},{principal_id}")):
+                classes_query=cache.get(f"principal_id_classes:{institution_id},{principal_id}")
+                return classes_query
+                
+            else:
+                cursor.execute(f"select classes.id,classes.name,classes.start_date,classes.end_date,academic_users.name,academic_users.email" \
+                " from classes join academic_users on classes.fk_professor=academic_users.id where academic_users.fk_institution=%s and classes.open=1",
+                [institution_id,])
+                classes_query=cursor.fetchall()
+                if classes_query:
+                    lista=[]
+                    for item in classes_query:
+                        lista.append(
+                            {
+                                "id":item[0],
+                                "name":item[1],
+                                "start_date":item[2],
+                                "end_date":item[3],
+                                "professor_name":item[4],
+                                "professor_email":item[5],
+                            }
+                        )
+                    cache.set(f"principal_id_classes:{institution_id},{principal_id}",lista,timeout=1200)
+                    return lista
+        else:
+            messages.error(request,"A autenticação falhou!")
+            return False
+    except OperationalError as e:
+       
+        messages.error(request,"Houve um erro na consulta de suas aulas!")
+        messages.error(request,f"Erro:{e}")
+        return False
+    except r_exceptions.ConnectionError as e:
+   
+        messages.error(request,"Houve um erro na conexão com o banco de dados!")
+        messages.error(request,f"Erro:{e}")
+        return False
+    except r_exceptions.TimeoutError as e:
+    
+        messages.error(request,"Tempo de consulta expirado!")
+        messages.error(request,f"Erro:{e}")
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+def search_classes_by_classname(request,classname:str):
+    from psycopg2 import OperationalError
+    academic_user_id=request.session.get("id")
+    conn,cursor=None,None
+    if(academic_user_id):
+        permissions=request.session.get("permissions")
+        if("Prof" in permissions):
+            try:
+                conn,cursor=connection_cursor()
+                cursor.execute("")
+            except:
+            finally:
+                if cursor is not None:
+                    cursor.close()
+                if conn is not None:
+                    conn.close()
