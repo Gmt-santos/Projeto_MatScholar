@@ -9,5 +9,7 @@ urlpatterns = [
     path('login/login_operation_student/',view=views.login_operation_student,name='login_operation_student'),
     path('dashboard/',view=views.dashboard_page,name='dashboard_page'),
     path('dashboard/query_classname/',view=views.query_classname,name='query_classname'),
+    path('dashboard/query_professorname/',view=views.query_professorname,name='query_professorname'),
+    path('dashboard/principal/std_creation_courses',view=views.std_creation_courses,name="std_creation_courses"),
     path('logout/',view=views.logout,name="logout"),
 ]

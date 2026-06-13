@@ -35,8 +35,9 @@
     flex-direction: column;
     height:fit-content;
     overflow: hidden;
+    transition-duration: height 1s;
 }
-.fechado{
+.forms_queries_form.fechado{
     height: 0px;
 }
 .p_toggle_forms_p{

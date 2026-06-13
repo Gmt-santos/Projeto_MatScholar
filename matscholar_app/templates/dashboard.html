@@ -4,26 +4,22 @@
 <link rel="stylesheet" href="{% static 'css/specific/style_dashboard.css'%}">
 
 {% if "Prof" in  request.session.permissions or "SUPER" in request.session.permissions%}
+
 <div class="professor_organizer_div">  
+
     <p class="professor_classes_grid_p">Olá {{request.session.role}} {{request.session.name}}!</p>
 
     <div class="principal_queries_organizer_div">
 
         <p class="p_toggle_forms_p" id="toggle_class_name" onclick="toggle_query_classname_visibility()">Pesquisar por nome</p>
-         <form action="#"method="POST" class="forms_queries_form fechado" id="form_class_name">
+
+         <form action="{% url 'matscholar_app:query_classname'%}"method="POST" class="forms_queries_form fechado" id="form_class_name">
             {% csrf_token %}
             <p class="forms_aux_input_p">Pesquise o nome da aula que deseja</p>
-            <input class="forms_input"type="text" placeholder="Pesquisar" id="name_query" id="name_query">
+            <input class="forms_input"type="text" placeholder="Pesquisar" id="name_query" name="name_query">
             <input class="forms_submit_input"type="submit" value="Pesquisar">
         </form>
-<!-- 
-        <p class="p_toggle_forms_p" id="toggle_professor_name" onclick="toggle_query_professorname_visibility()">Pesquisar por professor</p>
-        <form action="#"method="POST" class="forms_queries_form fechado" id="form_professor_name">
-            {% csrf_token %}
-            <p class="forms_aux_input_p">Pesquise o nome do professor que deseja</p>
-            <input class="forms_input"type="text" placeholder="Pesquisar" id="name_query" id="name_query">
-            <input class="forms_submit_input"type="submit" value="Pesquisar">
-        </form> -->
+
 
     </div>
     {% if messages %}
@@ -31,7 +27,11 @@
                  {% include "specific/messages.html" %}
             {% endfor %}
     {% endif %}
+    {% if query_active %}
+          <p class="professor_classes_grid_p">Resultados de '{{query_classname}}'</p>
+    {% else %}
     <p class="professor_classes_grid_p">Suas aulas</p>
+    {% endif %}
     <div class="professor_classes_grid_div">
         {% if list_classes %}   
             {% for class in list_classes  %}
@@ -71,20 +71,20 @@
     <div class="professor_organizer_div">  
     <p class="professor_classes_grid_p">Olá {{request.session.role}} {{request.session.name}}!</p>
     <div class="principal_queries_organizer_div">
-
+        <a href="{% url 'matscholar_app:std_creation_courses' %}">AAAAAAAAAAAAAAAAAAAA</a>
         <p class="p_toggle_forms_p" id="toggle_class_name" onclick="toggle_query_classname_visibility()">Pesquisar por nome</p>
-         <form action="#"method="POST" class="forms_queries_form fechado" id="form_class_name">
+        <form action="{% url 'matscholar_app:query_classname'%}"method="POST" class="forms_queries_form fechado" id="form_class_name">
             {% csrf_token %}
             <p class="forms_aux_input_p">Pesquise o nome da aula que deseja</p>
-            <input class="forms_input"type="text" placeholder="Pesquisar" id="name_query" id="name_query">
+            <input class="forms_input"type="text" placeholder="Pesquisar" id="name_query" name="name_query">
             <input class="forms_submit_input"type="submit" value="Pesquisar">
         </form>
 
         <p class="p_toggle_forms_p" id="toggle_professor_name" onclick="toggle_query_professorname_visibility()">Pesquisar por professor</p>
-        <form action="#"method="POST" class="forms_queries_form fechado" id="form_professor_name">
+        <form action="{% url 'matscholar_app:query_professorname'%}"method="POST" class="forms_queries_form fechado" id="form_professor_name">
             {% csrf_token %}
             <p class="forms_aux_input_p">Pesquise o nome do professor que deseja</p>
-            <input class="forms_input"type="text" placeholder="Pesquisar" id="name_query" id="name_query">
+            <input class="forms_input"type="text" placeholder="Pesquisar" name="name_query" id="name_query">
             <input class="forms_submit_input"type="submit" value="Pesquisar">
         </form>
 
@@ -95,8 +95,12 @@
                  {% include "specific/messages.html" %}
             {% endfor %}
     {% endif %}
+    {% if query_active %}
+        <p class="professor_classes_grid_p">Resultados de '{{query_classname}}'</p>
+    {% else %}
+        <p class="professor_classes_grid_p">Aulas em andamento de sua instituição</p>
+    {% endif %}
     
-    <p class="professor_classes_grid_p">Aulas em andamento de sua instituição</p>
     <div class="professor_classes_grid_div">
         {% if list_classes %}   
             {% for class in list_classes  %}

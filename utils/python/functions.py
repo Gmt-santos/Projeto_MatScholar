@@ -17,6 +17,7 @@ Retornar uma conexão e um cursor do banco (USE SOMENTE EM OPERAÇÕES NÃO TRIV
 '''
 def connection_cursor():
     import psycopg2
+    from django.contrib import messages
     try:
 
         HOST,USER,PASSWORD,DATABASE,PORT=return_dotenv()
@@ -27,6 +28,22 @@ def connection_cursor():
         return False
     #TODO--> erros
 
+'''
+Retorna uma String que possa ser utilizada em uma query SQL
+'''
+def string_to_querylike(string:str):
+    return "%"+string+"%"
+'''
+Valida a entrada de nomes de salas e pessoas
+RETORNA UMA LISTA ----> SEMPRE UTILIZAR var[0]
+'''
+def validate_query_entries(entry:str):
+    import re as regex
+    regex_entry:list=regex.findall(r"^[a-zA-ZÀ-ú\s\'\-]+$",entry)
+    return regex_entry
+        
+    
+    
 '''
 Busca o objeto de usuario academico no banco de dados e devolve ele
 '''
@@ -223,7 +240,7 @@ def professor_get_classes(request):
 
 '''
 Busca informações das aulas da instituição do diretor/coordenador da sessão
-Disponibiliza no Dashboard
+Disponibiliza no Dashboard e é usada logo após o login
 '''
 def principal_get_classes(request):
     from django.core.cache import cache
@@ -237,8 +254,8 @@ def principal_get_classes(request):
         institution_id=request.session.get("institution")
         principal_id=request.session.get("id")
         if institution_id and principal_id:
-            if(cache.get(f"principal_id_classes:{institution_id},{principal_id}")):
-                classes_query=cache.get(f"principal_id_classes:{institution_id},{principal_id}")
+            if(cache.get(f"institution_id_classes:{institution_id}")):
+                classes_query=cache.get(f"institution_id_classes:{institution_id}")
                 return classes_query
                 
             else:
@@ -259,7 +276,7 @@ def principal_get_classes(request):
                                 "professor_email":item[5],
                             }
                         )
-                    cache.set(f"principal_id_classes:{institution_id},{principal_id}",lista,timeout=1200)
+                    cache.set(f"institution_id_classes:{institution_id}",lista,timeout=1200)
                     return lista
         else:
             messages.error(request,"A autenticação falhou!")
@@ -284,9 +301,14 @@ def principal_get_classes(request):
             cursor.close()
         if conn is not None:
             conn.close()
-
-def search_classes_by_classname(request,classname:str):
+'''
+Procura aulas com o mesmo professor da sessão e de nome parecido com o digitado no campo de pesquisa
+Usado no dashboard
+'''
+def academic_users_search_classes_by_classname(request,classname:str):
     from psycopg2 import OperationalError
+    from django.contrib import messages
+
     academic_user_id=request.session.get("id")
     conn,cursor=None,None
     if(academic_user_id):
@@ -294,10 +316,142 @@ def search_classes_by_classname(request,classname:str):
         if("Prof" in permissions):
             try:
                 conn,cursor=connection_cursor()
-                cursor.execute("")
-            except:
+                classname=string_to_querylike(string=classname)
+                cursor.execute("select classes.id,classes.name,classes.start_date,classes.end_date from classes join academic_users on " \
+                "classes.fk_professor=academic_users.id where academic_users.id=%s and classes.name like %s and classes.open=1"
+                ,[academic_user_id,classname])
+                classes_query=cursor.fetchall()
+                if(classes_query):
+                    lista=[]
+                    for item in classes_query:
+                        lista.append(
+                            {
+                                "id":item[0],
+                                "name":item[1],
+                                "start_date":item[2],
+                                "end_date":item[3],
+                            }
+                        )
+                    return lista
+                return False
+            except OperationalError:
+               messages.error(request,"Houve um erro na conexão com o banco de dados!")
+               return False
             finally:
                 if cursor is not None:
                     cursor.close()
                 if conn is not None:
                     conn.close()
+
+        elif("Princ" in permissions):
+            try:
+                conn,cursor=connection_cursor()
+                classname=string_to_querylike(string=classname)
+                cursor.execute("select classes.id,classes.name,classes.start_date,classes.end_date,academic_users.name,academic_users.email" \
+                " from classes join academic_users on classes.fk_professor=academic_users.id where academic_users.fk_institution=%s" \
+                " and classes.open=1 and classes.name like %s",[request.session.get("institution"),classname])
+                classes_query=cursor.fetchall()
+                if(classes_query):
+                    lista=[]
+                    for item in classes_query:
+                        lista.append(
+                            {
+                                "id":item[0],
+                                "name":item[1],
+                                "start_date":item[2],
+                                "end_date":item[3],
+                                "professor_name":item[4],
+                                "professor_email":item[5],
+                            }
+                        )
+                    return lista
+                else:
+                    return False
+            except OperationalError:
+               messages.error(request,"Houve um erro na conexão com o banco de dados!")
+               return False
+            finally:
+                if cursor is not None:
+                    cursor.close()
+                if conn is not None:
+                    conn.close()
+    else:
+        messages.error(request,"A autenticação falhou!")
+        return False
+'''
+Busca aulas pelo nome do professor e pela instituição do diretor
+'''
+def academic_users_search_classes_by_professorname(request,professorname:str):
+    from psycopg2 import OperationalError
+    from django.contrib import messages
+    conn,cursor=None,None
+    try:
+        conn,cursor=connection_cursor()
+        professorname=string_to_querylike(professorname)
+        cursor.execute("select classes.id,classes.name,classes.start_date,classes.end_date,academic_users.name,academic_users.email from" \
+        " classes join academic_users on classes.fk_professor=academic_users.id where academic_users.fk_institution =%s and" \
+        " classes.open=1 and academic_users.name like %s ",[request.session["institution"],professorname])
+        classes_query=cursor.fetchall()
+        if(classes_query):
+                    lista=[]
+                    for item in classes_query:
+                        lista.append(
+                            {
+                                "id":item[0],
+                                "name":item[1],
+                                "start_date":item[2],
+                                "end_date":item[3],
+                                "professor_name":item[4],
+                                "professor_email":item[5],
+                            }
+                        )
+                    return lista
+        else:
+            return False
+
+    except OperationalError:
+        messages.error(request,"Houve um erro na conexão com o banco de dados!")
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+
+
+'''
+Quando o responsável com auth="Princ" quiser criar um aluno,essa função irá buscar os cursos disponíveis na instituição
+'''
+
+def principal_std_creation_courses(request):
+    from matscholar_app.models import courses
+    from django.core.cache import cache
+    from redis import exceptions as r_exceptions
+    from django.contrib import messages
+    institution_id=request.session.get("institution")
+    if(request.session.get("id") and institution_id):
+        try:
+            courses_query=None
+            if(cache.get(key=f'institution_courses={institution_id}')):
+                courses_query=cache.get(key=f'institution_courses={institution_id}')
+
+            else:
+                courses_query=courses.objects.filter(fk_institution=institution_id).values("id",'name')
+                cache.set(key=f'institution_courses={institution_id}',value=courses_query)
+            if not courses_query:
+                messages.error(request,"Nenhum curso encontrado, entre em contato com a equipe de suporte!")
+            return courses_query
+        except r_exceptions.ConnectionError as e:
+   
+            messages.error(request,"Houve um erro na conexão com o banco de dados!")
+            messages.error(request,f"Erro:{e}")
+            return False
+        
+        except r_exceptions.TimeoutError as e:
+    
+            messages.error(request,"Tempo de consulta expirado!")
+            messages.error(request,f"Erro:{e}")
+            return False
+    else:
+        return False
