@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from utils import python as python_functions
+from django.core.exceptions import PermissionDenied
 def dashboard_page(request):
     
     if(request.session.get("id")):
@@ -23,13 +24,39 @@ def dashboard_page(request):
         return redirect('matscholar_app:login_page')
 
 def query_classname(request):
-    if(request.method == "POST"):
+    try:
+        if(request.method == "POST"):
 
-        if (request.session.get("id")):
-            name_query=python_functions.validate_query_entries(request.POST.get("name_query"))
-            if(name_query):
-                list_classes=python_functions.academic_users_search_classes_by_classname(request=request,classname=name_query[0])
-                if(list_classes):
+            if (request.session.get("id")):
+                name_query=python_functions.validate_query_entries(request.POST.get("name_query"))
+                if(name_query):
+                    list_classes=python_functions.academic_users_search_classes_by_classname(request=request,classname=name_query[0])
+                    if(list_classes):
+                        context={
+                            'list_classes':list_classes,
+                            'query_active':True,
+                            'query_classname':name_query[0]
+                        }
+                        return render(request,'dashboard.html',context=context)
+                    else:
+                        return redirect("matscholar_app:dashboard_page")
+                else:
+                    messages.error(request,"Nome inválido!")
+                    return redirect("matscholar_app:dashboard_page")
+        else:
+            return redirect("matscholar_app:dashboard_page")
+    except PermissionDenied:
+        messages.error(request,"Erro de submissão de formulário!")
+        return redirect("matscholar_app:dashboard_page")
+
+
+def query_professorname(request):
+    try:
+        if(request.method ==  "POST"):
+            if(request.session.get("id")):
+                name_query=python_functions.validate_query_entries(request.POST.get("name_query"))
+                if(name_query):
+                    list_classes=python_functions.academic_users_search_classes_by_professorname(request=request,professorname=name_query[0])
                     context={
                         'list_classes':list_classes,
                         'query_active':True,
@@ -37,29 +64,13 @@ def query_classname(request):
                     }
                     return render(request,'dashboard.html',context=context)
                 else:
+                    messages.error(request,"Nome inválido!")
                     return redirect("matscholar_app:dashboard_page")
             else:
-                messages.error(request,"Nome inválido!")
-                return redirect("matscholar_app:dashboard_page")
-    else:
-        return redirect("matscholar_app:dashboard_page")
-
-def query_professorname(request):
-    if(request.method ==  "POST"):
-        if(request.session.get("id")):
-            name_query=python_functions.validate_query_entries(request.POST.get("name_query"))
-            if(name_query):
-                list_classes=python_functions.academic_users_search_classes_by_professorname(request=request,professorname=name_query[0])
-                context={
-                    'list_classes':list_classes,
-                    'query_active':True,
-                    'query_classname':name_query[0]
-                }
-                return render(request,'dashboard.html',context=context)
-            else:
-                messages.error(request,"Nome inválido!")
                 return redirect("matscholar_app:dashboard_page")
         else:
             return redirect("matscholar_app:dashboard_page")
-    else:
+    except PermissionDenied:
+        messages.error(request,"Erro de submissão de formulário!")
         return redirect("matscholar_app:dashboard_page")
+

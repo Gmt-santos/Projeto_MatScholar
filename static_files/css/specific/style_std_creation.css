@@ -1,0 +1,90 @@
+@import url('../style_master.css');
+.courses_select{
+    font-family: Chakra;
+    font-size:16px;
+    border-radius: 10px;
+    border-style:none;
+    padding:10px;
+    height: 50px;
+    background-color: var(--color-gray);
+    cursor:pointer;
+    width: 300px;
+}
+.courses_select_div{
+    margin-top: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color:white;
+    border-radius: var(--border-radius);
+    width:400px;
+    height:200px;
+    padding:20px;
+    box-shadow:2px 2px 2px 1px black;
+}
+.courses_p{
+    font-family: Chakra;
+    font-size:20px;
+}
+.forms_submit_input{
+    height:30px;
+    width:420px;
+    padding:5px;
+    margin-top: 20px;
+    font-family: Chakra;
+    font-size: 15px;
+    border-style: none;
+    border-radius: 10px;
+    transition-duration: 1s;
+    cursor:pointer;
+    background-color: var(--color-gray);
+}
+.forms_submit_input:hover{
+    background-color: rgb(247, 247, 247);
+    transition-duration: 1s;
+}
+
+/*   Formulário de criação de aluno        */
+.form_form{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: var(--border-radius);
+    width:500px;
+    height:fit-content;
+    margin-top: 100px;
+    padding:20px;
+}
+.forms_title_div{
+    display:flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap:10px;
+}
+.logo_forms_title_img{
+    width:45px;
+    height: 40px;
+}
+.logo_forms_title_p{
+     font-weight: bold;
+    color: black;
+    font-size:18px;
+    font-family: Chakra;
+   margin-bottom:10px;
+
+}
+.forms_aux_input_p{
+    font-family: Chakra;
+    font-size: 15px;
+}
+.forms_input{
+    font-family: Chakra;
+    font-size:13px;
+    border-radius: 10px;
+    border-style:none;
+    padding:5px;
+    height: 30px;
+    background-color: var(--color-gray);
+}

@@ -1,0 +1,29 @@
+{% extends 'general/header_footer_dashboard.html'%}
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/specific/style_std_creation.css' %}">
+    <form method="POST" action="#" class="form_form">
+     {% csrf_token %}
+        <div class="forms_title_div">
+            <img class="logo_forms_title_img" src="{% static 'images/logo.png' %}" alt="">
+            <p class="logo_forms_title_p">MatScholar</p>
+        </div>
+        <p class="logo_forms_title_p" style="font-size:30px">Criar aluno</p>
+        <p class="forms_aux_input_p">E-mail</p>
+        <input class="forms_input" type="email" name="email" id="email" placeholder="E-mail" required>
+        <p class="forms_aux_input_p">Senha</p>
+        <input class="forms_input"type="text" name="password" id="password" placeholder="Senha" autocomplete="new-password" required>
+        <div style="margin-top:20px">
+
+            <input type="checkbox" name="show_password" id="show_password" onclick="toggle_visibility()" >
+            <label class="forms_aux_input_p"for="show_password">Mostrar senha</label>
+            
+        </div>
+    </form>
+
+
+
+
+
+
+{% endblock content %}
