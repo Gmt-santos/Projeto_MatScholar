@@ -63,6 +63,7 @@ class classes(models.Model):
     open=models.IntegerField()
     fk_professor=models.ForeignKey(academic_users,on_delete=models.CASCADE,db_column="fk_professor")
     initial=models.IntegerField(default=1)
+    abstract=models.IntegerField(default=0)
     class Meta:
         db_table='classes'
 

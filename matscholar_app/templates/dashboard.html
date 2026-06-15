@@ -67,11 +67,48 @@
 
 
 
-
+    
     <div class="professor_organizer_div">  
+        
     <p class="professor_classes_grid_p">Olá {{request.session.role}} {{request.session.name}}!</p>
+    <div class="principal_operations_buttons_div">
+        
+        <a href="{% url 'matscholar_app:std_creation_courses' %}">
+            <div class="operations_simulate_buttons_div button_color_darkblue_div">
+                <img class="operations_button_icon_img"src="{% static 'icons/student_icon.png'%}" alt="">
+                <p class="operations_buttons_p">Criar estudante</p>
+            </div>
+            
+        </a>
+       <a href="{% url 'matscholar_app:std_creation_courses' %}">
+            <div class="operations_simulate_buttons_div button_color_darkgreen_div">
+               <img class="operations_button_icon_img"src="{% static 'icons/new_book_icon.png'%}" alt="">
+                <p class="operations_buttons_p">Criar sala</p>
+            </div>
+            
+        </a>
+        <a href="{% url 'matscholar_app:std_creation_courses' %}">
+            <div class="operations_simulate_buttons_div button_color_lightblue_div">
+                <img class="operations_button_icon_img"src="{% static 'icons/new_folder_icon.png'%}" alt="">
+                <p class="operations_buttons_p">Criar curso</p>
+            </div>
+            
+        </a>
+
+    </div>
+   
+    {% if messages %}
+            {% for message in messages %}
+                 {% include "specific/messages.html" %}
+            {% endfor %}
+    {% endif %}
+    {% if query_active %}
+        <p class="professor_classes_grid_p">Resultados de '{{query_classname}}'</p>
+    {% else %}
+        <p class="professor_classes_grid_p">Aulas em andamento em sua instituição</p>
+    {% endif %}
     <div class="principal_queries_organizer_div">
-        <a href="{% url 'matscholar_app:std_creation_courses' %}">AAAAAAAAAAAAAAAAAAAA</a>
+        
         <p class="p_toggle_forms_p" id="toggle_class_name" onclick="toggle_query_classname_visibility()">Pesquisar por nome</p>
         <form action="{% url 'matscholar_app:query_classname'%}"method="POST" class="forms_queries_form fechado" id="form_class_name">
             {% csrf_token %}
@@ -89,18 +126,6 @@
         </form>
 
     </div>
-   
-    {% if messages %}
-            {% for message in messages %}
-                 {% include "specific/messages.html" %}
-            {% endfor %}
-    {% endif %}
-    {% if query_active %}
-        <p class="professor_classes_grid_p">Resultados de '{{query_classname}}'</p>
-    {% else %}
-        <p class="professor_classes_grid_p">Aulas em andamento de sua instituição</p>
-    {% endif %}
-    
     <div class="professor_classes_grid_div">
         {% if list_classes %}   
             {% for class in list_classes  %}

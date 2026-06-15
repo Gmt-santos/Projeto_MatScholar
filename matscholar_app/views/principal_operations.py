@@ -62,22 +62,21 @@ def std_creation_operation(request):
             name:list=python_functions.validate_query_entries(entry=request.POST.get("name"))
             is_valid_ra:bool=python_functions.validate_RA(request=request,ra=request.POST.get("RA"))
             is_valid_course:bool=python_functions.validate_course(request=request,id=request.POST.get("course_id"))
-            if(password,name,is_valid_ra,is_valid_course):
+            print(request.POST.get("course_id"))
+            if(password and name and is_valid_ra and is_valid_course):
 
                 password=password[0]
                 name=name[0]
                 valid_ra=request.POST.get("RA")
                 valid_course=request.POST.get("course_id")
                 if(python_functions.principal_std_creation_operation(request,password,name,valid_ra,valid_course)):
-                    pass
+                    messages.success(request,"Aluno cadastrado com sucesso!")
+                    messages.success(request,f"Aluno(a):{name}--RA:{valid_ra}--Senha(seja cuidadoso ao comunicar esse dado):{password}")
+                    return redirect("matscholar_app:dashboard_page")
             else:
                 messages.error(request,"Alguma informação enviada não é válida!")
                 return redirect("matscholar_app:dashboard_page")
-        #TODO ---> ATENÇÃO
-
-
-
-
+        
     except TypeError:
         messages.error(request,"Erro de submissão de formulário!")
         return redirect("matscholar_app:dashboard_page")

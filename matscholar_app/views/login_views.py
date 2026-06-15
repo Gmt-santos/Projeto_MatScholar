@@ -8,6 +8,7 @@ def login_page(request):
 
 def login_operation_academic_user(request):
     from django.core.exceptions import PermissionDenied
+    from psycopg2 import OperationalError
     try:
         if(request.method == "POST"):
             
@@ -42,6 +43,9 @@ def login_operation_academic_user(request):
         return redirect("matscholar_app:login_page")
     except TypeError:
         messages.error(request,"Erro na submissão do formulário!")
+        return redirect("matscholar_app:login_page")
+    except OperationalError:
+        messages.error(request,"Houve um erro na conexão com o banco de dados!")
         return redirect("matscholar_app:login_page")
 
 def login_operation_student(request):

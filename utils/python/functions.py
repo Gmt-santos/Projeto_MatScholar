@@ -82,6 +82,18 @@ def hashing_false():
     except exceptions.VerifyMismatchError:
         return False
 '''
+Função que gera um hashing de senha --> Utilizado na criaçao de estudantes
+
+'''
+def generate_hash(string:str):
+    from argon2 import PasswordHasher,exceptions
+    try:
+         ph=PasswordHasher()
+         return ph.hash(string)   
+    except exceptions.HashingError:
+        return False
+      
+'''
 Verifica se o email é válido com base no padrão rfc 5322
 '''
 def email_validation(email:str):

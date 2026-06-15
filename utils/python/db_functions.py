@@ -1,5 +1,6 @@
 from . import functions as f
-from psycopg2 import OperationalError
+from psycopg2 import OperationalError,errors
+
 
 from redis import exceptions as r_exceptions
 from django.contrib import messages
@@ -22,7 +23,7 @@ def generate_RA(request):
     year=str(f.get_year()%2000)
     ra=year
     while flag == 1:
-        for i in range(0,8):
+        for i in range(0,9):
             ra+=random.choice(list_chars_numbers)
         if(ra in set_existent_ra):
             flag=1
@@ -35,15 +36,22 @@ Validar o RA enviado na criação de estudantes------> Redundante
 '''
 def validate_RA(request,ra:str):
     from matscholar_app.models import students
+    import re as regex
 
     try:
-        existent_ra=students.objects.filter(fk_institution=request.session.get("institution")).values_list("RA",flat=True)
-        set_existent_ra=set(existent_ra)
-
-        if ra in set_existent_ra:
-            return False
+        year=str(f.get_year()%2000)
+        regex_ra=regex.findall(r"^[0-9]+$",ra)
+        if regex_ra:
+            existent_ra=students.objects.filter(fk_institution=request.session.get("institution")).values_list("RA",flat=True)
+            set_existent_ra=set(existent_ra)
+            
+            if regex_ra[0] in set_existent_ra:
+                return False
+            else:
+               
+                return True
         else:
-            return True
+            return False
         
     except ObjectDoesNotExist as e:
        
@@ -61,10 +69,14 @@ Valida o curso do estudante a ser criado --> redundante
 def validate_course(request,id:str):
     from matscholar_app.models import courses
     try:
-        courses_id=courses.objects.filter(fk_institution=request.session.get("institution")).values_list("id",flat=True)
-        set_courses_id=set(courses_id)
-        if id in set_courses_id:
-            return True
+        is_valid=f.validate_ids_entries(id)
+        if is_valid:
+            courses_id=courses.objects.filter(fk_institution=request.session.get("institution")).values_list("id",flat=True)
+            set_courses_id=set(courses_id)
+            if int(id) in set_courses_id:
+                return True
+            else:
+                return False
         else:
             return False
     except ObjectDoesNotExist as e:
@@ -76,7 +88,9 @@ def validate_course(request,id:str):
     except MultipleObjectsReturned as e:
         
         return False
-    
+    except ValueError:
+        
+        return False
     
 
 
@@ -203,6 +217,7 @@ def professor_get_classes(request):
         try:
             if(cache.get(f"professor_id_classes:{professor_id}")):
                 classes_query=cache.get(f"professor_id_classes:{professor_id}")
+              
                 return classes_query
             else:
                 classes_query=classes.objects.filter(fk_professor=professor_id,open=1).values("id","name","start_date","end_date")
@@ -427,16 +442,92 @@ def principal_std_creation_courses(request):
             return False
     else:
         return False
-
+    
+'''
+Cria o estudante,com suas aulas iniciais e aulas "faltantes"
+Código relativamente complexo, será explicado passo a passo
+'''
 def principal_std_creation_operation(request,password:str,name:str,valid_ra:str,valid_course:str):
-    conn,cursor=None,None
+    conn,cursor=None,None #Inicializa as variaveis de conexao
     try:
-     ...
+        conn,cursor=f.connection_cursor() #conecta com o servidor
+        hashed_password=f.generate_hash(password) #Faz o Hashing da senha já validada na def std_creation_operation
+        if(hashed_password):
+
+            cursor.execute('insert into students("RA",name,year_of_entry,fk_course,password,fk_institution)values(%s,%s,%s,%s,%s,%s)',
+                        [valid_ra,name,f.get_year(),valid_course,hashed_password,request.session.get("institution")])
+            conn.commit() #Cria o estudante com o RA,nome,curso e senha validados,além de ser vinculado à instituição do criador
+
+            cursor.execute('select classes.id from classes join classes_courses on classes.id=classes_courses.id_class join ' \
+            'courses on classes_courses.id_course=courses.id where classes.open=1 and courses.fk_institution=%s and courses.id=%s and'
+            ' classes.initial=1 and abstract=0',
+            [request.session.get("institution"),valid_course])
+            classes_initial=cursor.fetchall()
+            # Busca os Ids das aulas que estão abertas,são iniciais(initial=1),não são abstratas(abstract=0),que tenham o id do curso
+            # selecionado(courses.id) e que sejam da instituição do criador(courses.fk_institution)
+
+
+
+            insert_into_classes_actual_str="insert into students_classes_actual(id,id_class,id_student)values"
+            #Inicializa uma string para o insert
+            for tupla in classes_initial:
+                if tupla == classes_initial[-1]:
+                    insert_into_classes_actual_str+=f"('{tupla[0]}-{valid_ra}',{tupla[0]},{valid_ra});"
+                else: 
+                    insert_into_classes_actual_str+=f"('{tupla[0]}-{valid_ra}',{tupla[0]},{valid_ra}),"
+            # Percorre a lista de tuplas retornada pela busca anterior de Ids das aulas e adiciona esses Ids na string
+            # do insert
+
+            cursor.execute(insert_into_classes_actual_str)
+            conn.commit()
+            #Insere na tabela 'students_classes_actual" os relacionamentos dos estudantes com as suas aulas atuais e ativas
+
+            cursor.execute('select classes.id from classes join classes_courses on classes.id=classes_courses.id_class join ' \
+            'courses on classes_courses.id_course=courses.id where classes.open=0 and courses.fk_institution=%s and courses.id=%s'
+            'and abstract=1',
+            [request.session.get("institution"),valid_course])
+            # Busca os Ids das aulas que são da instituição do criador(courses_fk_institution),são do curso selecionado(courses.id)
+            # e que são abstratas. O que é ser abstrata?
+            '''
+            Ser abstrata é servir de base para a criação de outras salas,ou seja,ser genérica. Desse modo, pode-se analisar se o 
+            estudante concluiu as X aulas necessárias para a conclusão do curso. Assim,quando o estudante ser aprovado em Y aula,
+            a Y aula sumirá do student_classes_actual e sua equivalente abstrata também sumirá da student_classes_missing.
+            
+            '''
+            
+            classes_abstract=cursor.fetchall()
+            insert_into_classes_missing_str="insert into students_classes_missing(id,id_class,id_student)values"
+            for tupla in classes_abstract:
+                if tupla == classes_abstract[-1]:
+                    insert_into_classes_missing_str+=f"('{tupla[0]}-{valid_ra}',{tupla[0]},{valid_ra});"
+                else: 
+                    insert_into_classes_missing_str+=f"('{tupla[0]}-{valid_ra}',{tupla[0]},{valid_ra}),"
+            
+            cursor.execute(insert_into_classes_missing_str)
+            conn.commit() #Fez a mesma operação já descrita acima
+            return True # retorna verdadeiro caso o dê tudo certo
+                
     except TypeError: 
         messages.error(request,"Erro na submissão do formulário!")
         return False  
     except OperationalError:
         messages.error(request,"Houve um erro com a conexão do banco de dados!")
         return False
-    
+    except errors.UniqueViolation:
+        messages.error(request,"Erro na submissão do formulário!")
+        return False  
+    except errors.UndefinedParameter:
+        messages.error(request,"Erro na submissão do formulário!")
+        return False  
+    except Exception:
+        messages.error(request,"Erro desconhecido!")
+        messages.error(request,f"Erro{Exception}")
+        
+        return False
+    finally:
+        if conn is not None:
+            conn.close()
+        if cursor is not None:
+            cursor.close()
+
       
