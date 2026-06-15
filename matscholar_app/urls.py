@@ -12,5 +12,6 @@ urlpatterns = [
     path('dashboard/query_professorname/',view=views.query_professorname,name='query_professorname'),
     path('dashboard/principal/std_creation_courses/',view=views.std_creation_courses,name="std_creation_courses"),
     path('dashboard/principal/std_creation_forms/',view=views.std_creation_forms,name="std_creation_forms"),
+    path('dashboard/principal/std_creation_operation/',view=views.std_creation_operation,name="std_creation_operation"),
     path('logout/',view=views.logout,name="logout"),
 ]

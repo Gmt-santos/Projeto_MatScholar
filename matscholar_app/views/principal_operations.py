@@ -21,9 +21,13 @@ def std_creation_forms(request):
             if(course_id):
                 course_id=course_id[0]
                 if(courses.objects.filter(id=course_id,fk_institution=request.session.get("institution")).exists()):
+                    recommended_password=python_functions.generate_safe_password()
+                    valid_RA=python_functions.generate_RA(request=request)
                     context={
                         "course_id":course_id,
-                        
+                        "recommended_password":recommended_password,
+                        "actual_year":python_functions.get_year(),
+                        'valid_RA':valid_RA,
                     }
                     return render(request,'std_creation_forms.html',context=context)
                 else:
@@ -47,3 +51,34 @@ def std_creation_forms(request):
     except PermissionDenied:
         messages.error(request,"Erro de submissão de formulário!")
         return redirect("matscholar_app:dashboard_page")
+    except TypeError:
+        messages.error(request,"Erro de submissão de formulário!")
+        return redirect("matscholar_app:dashboard_page")
+    
+def std_creation_operation(request):
+    try:
+        if(request.method=="POST" and request.session.get("id")):
+            password:list=python_functions.validate_passwords_entries(request.POST.get("password"))
+            name:list=python_functions.validate_query_entries(entry=request.POST.get("name"))
+            is_valid_ra:bool=python_functions.validate_RA(request=request,ra=request.POST.get("RA"))
+            is_valid_course:bool=python_functions.validate_course(request=request,id=request.POST.get("course_id"))
+            if(password,name,is_valid_ra,is_valid_course):
+
+                password=password[0]
+                name=name[0]
+                valid_ra=request.POST.get("RA")
+                valid_course=request.POST.get("course_id")
+                if(python_functions.principal_std_creation_operation(request,password,name,valid_ra,valid_course)):
+                    pass
+            else:
+                messages.error(request,"Alguma informação enviada não é válida!")
+                return redirect("matscholar_app:dashboard_page")
+        #TODO ---> ATENÇÃO
+
+
+
+
+    except TypeError:
+        messages.error(request,"Erro de submissão de formulário!")
+        return redirect("matscholar_app:dashboard_page")
+    return redirect('matscholar_app:dashboard_page')

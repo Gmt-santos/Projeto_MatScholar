@@ -1,14 +1,90 @@
 from . import functions as f
+from psycopg2 import OperationalError
+
+from redis import exceptions as r_exceptions
+from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist,EmptyResultSet,MultipleObjectsReturned
+from django.core.cache import cache
 '''
 Funções em Python
 Serão descritas antes de sua definição
 '''
 '''
+Gera RAs e verifica se eles existem no banco de dados,caso não,retorna o RA
+'''
+def generate_RA(request):
+    from matscholar_app.models import students
+    import random
+    flag=1
+    list_chars_numbers=['1','2','3','4','5','6','7','8','9','0']
+    existent_ra=students.objects.filter(fk_institution=request.session.get("institution")).values_list("RA",flat=True)
+    set_existent_ra=set(existent_ra)
+    year=str(f.get_year()%2000)
+    ra=year
+    while flag == 1:
+        for i in range(0,8):
+            ra+=random.choice(list_chars_numbers)
+        if(ra in set_existent_ra):
+            flag=1
+            ra=year
+        else:
+            flag=0
+    return ra
+'''
+Validar o RA enviado na criação de estudantes------> Redundante
+'''
+def validate_RA(request,ra:str):
+    from matscholar_app.models import students
+
+    try:
+        existent_ra=students.objects.filter(fk_institution=request.session.get("institution")).values_list("RA",flat=True)
+        set_existent_ra=set(existent_ra)
+
+        if ra in set_existent_ra:
+            return False
+        else:
+            return True
+        
+    except ObjectDoesNotExist as e:
+       
+        return False
+    except EmptyResultSet as e:
+      
+        return False
+    except MultipleObjectsReturned as e:
+        
+        return False
+  
+'''
+Valida o curso do estudante a ser criado --> redundante
+'''
+def validate_course(request,id:str):
+    from matscholar_app.models import courses
+    try:
+        courses_id=courses.objects.filter(fk_institution=request.session.get("institution")).values_list("id",flat=True)
+        set_courses_id=set(courses_id)
+        if id in set_courses_id:
+            return True
+        else:
+            return False
+    except ObjectDoesNotExist as e:
+       
+        return False
+    except EmptyResultSet as e:
+      
+        return False
+    except MultipleObjectsReturned as e:
+        
+        return False
+    
+    
+
+
+
+'''
 Busca o objeto de usuario academico no banco de dados e devolve ele
 '''
 def search_academic_users_by_email(email:str):
-    from django.core.exceptions import ObjectDoesNotExist,EmptyResultSet,MultipleObjectsReturned
-    from psycopg2.errors import OperationalError
     conn,cursor=None,None
     try:
         conn,cursor=f.connection_cursor()
@@ -68,8 +144,7 @@ Busca o objeto de usuario academico no banco de dados e devolve ele
 '''
 def search_students_by_email(email:str):
     # TODO 
-    from django.core.exceptions import ObjectDoesNotExist,EmptyResultSet,MultipleObjectsReturned
-    from psycopg2.errors import OperationalError
+   
     conn,cursor=None,None
     try:
         conn,cursor=f.connection_cursor()
@@ -122,7 +197,7 @@ Puxa as salas que professor X dá aula e pode acessar e ver no dashboard
 '''
 def professor_get_classes(request):
     from matscholar_app.models import classes
-    from django.core.cache import cache
+    
     professor_id=request.session.get("id")
     if(professor_id):
         try:
@@ -148,10 +223,7 @@ Busca informações das aulas da instituição do diretor/coordenador da sessão
 Disponibiliza no Dashboard e é usada logo após o login
 '''
 def principal_get_classes(request):
-    from django.core.cache import cache
-    from psycopg2 import OperationalError
-    from redis import exceptions as r_exceptions
-    from django.contrib import messages
+   
     conn,cursor=None,None
     try:
 
@@ -211,9 +283,6 @@ Procura aulas com o mesmo professor da sessão e de nome parecido com o digitado
 Usado no dashboard
 '''
 def academic_users_search_classes_by_classname(request,classname:str):
-    from psycopg2 import OperationalError
-    from django.contrib import messages
-
     academic_user_id=request.session.get("id")
     conn,cursor=None,None
     if(academic_user_id):
@@ -287,8 +356,7 @@ def academic_users_search_classes_by_classname(request,classname:str):
 Busca aulas pelo nome do professor e pela instituição do diretor
 '''
 def academic_users_search_classes_by_professorname(request,professorname:str):
-    from psycopg2 import OperationalError
-    from django.contrib import messages
+
     conn,cursor=None,None
     try:
         conn,cursor=f.connection_cursor()
@@ -332,9 +400,7 @@ Quando o responsável com auth="Princ" quiser criar um aluno,essa função irá 
 def principal_std_creation_courses(request):
     
     from matscholar_app.models import courses
-    from django.core.cache import cache
-    from redis import exceptions as r_exceptions
-    from django.contrib import messages
+   
     institution_id=request.session.get("institution")
     if(request.session.get("id") and institution_id):
         try:
@@ -361,3 +427,16 @@ def principal_std_creation_courses(request):
             return False
     else:
         return False
+
+def principal_std_creation_operation(request,password:str,name:str,valid_ra:str,valid_course:str):
+    conn,cursor=None,None
+    try:
+     ...
+    except TypeError: 
+        messages.error(request,"Erro na submissão do formulário!")
+        return False  
+    except OperationalError:
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    
+      

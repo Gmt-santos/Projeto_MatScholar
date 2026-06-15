@@ -42,6 +42,7 @@ class students(models.Model):
     year_of_entry=models.IntegerField()
     fk_course=models.ForeignKey(courses,on_delete=models.CASCADE,db_column="fk_course")
     password=models.CharField(max_length=255)
+    fk_institution=models.ForeignKey(institution,on_delete=models.CASCADE,db_column="fk_institution",null=True)
     class Meta:
         db_table='students'
 
@@ -61,6 +62,7 @@ class classes(models.Model):
     end_date=models.DateField()
     open=models.IntegerField()
     fk_professor=models.ForeignKey(academic_users,on_delete=models.CASCADE,db_column="fk_professor")
+    initial=models.IntegerField(default=1)
     class Meta:
         db_table='classes'
 

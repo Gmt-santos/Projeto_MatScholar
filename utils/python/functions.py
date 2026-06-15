@@ -55,7 +55,7 @@ RETORNA UMA LISTA ----> SEMPRE UTILIZAR var[0]
 '''
 def validate_passwords_entries(entry:str):
     import re as regex
-    regex_entry:list=regex.findall(r'^[0-9a-zA-Z!@#$*()_]+$')
+    regex_entry:list=regex.findall(r'^[0-9a-zA-Z!@#$*()_]+$',entry)
     return regex_entry
 
 '''
@@ -111,7 +111,7 @@ def students_set_session_attributes(request,dictionary:dict):
     return True
 # TODO #
 '''
-
+Gera uma senha segura
 '''
 def generate_safe_password():
     import secrets
@@ -136,7 +136,12 @@ def generate_safe_password():
             case 3:
                 secret_password+=(secrets.choice(list_chars_special))
     return secret_password
-                
 
-       
+'''
+Retorna o ano no qual o usuário está
+'''
+def get_year():
+    import datetime 
+    date_obj=datetime.date.today()
+    return date_obj.year   
 

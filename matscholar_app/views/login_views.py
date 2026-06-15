@@ -40,7 +40,9 @@ def login_operation_academic_user(request):
     except PermissionDenied:
         messages.error(request,"Erro na submissão do formulário!")
         return redirect("matscholar_app:login_page")
-    
+    except TypeError:
+        messages.error(request,"Erro na submissão do formulário!")
+        return redirect("matscholar_app:login_page")
 
 def login_operation_student(request):
     # TODO
