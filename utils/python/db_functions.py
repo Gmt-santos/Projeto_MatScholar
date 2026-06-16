@@ -40,7 +40,7 @@ def validate_RA(request,ra:str):
 
     try:
         year=str(f.get_year()%2000)
-        regex_ra=regex.findall(r"^[0-9]+$",ra)
+        regex_ra=regex.findall(r"^[0-9]{11}$",ra)
         if regex_ra:
             existent_ra=students.objects.filter(fk_institution=request.session.get("institution")).values_list("RA",flat=True)
             set_existent_ra=set(existent_ra)

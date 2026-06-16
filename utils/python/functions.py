@@ -38,11 +38,30 @@ RETORNA UMA LISTA ----> SEMPRE UTILIZAR var[0]
 '''
 def validate_query_entries(entry:str):
     import re as regex
-    regex_entry:list=regex.findall(r"^[a-zA-ZÀ-ú\s\'\-]+$",entry)
+    regex_entry:list=regex.findall(r"^[a-zA-ZÀ-ú\'\-\s]+$",entry)
+    return regex_entry
+
+'''
+Valida a entrada de números positivos
+Utilizar somente após ter validado se entry é um número
+'''
+def validate_strictpositive_numbers_entries(entry:str):
+    if(int(entry) <=0):
+        return False
+    else:
+        return True
+'''
+Valida a entrada de siglas/acrônimos
+RETORNA UMA LISTA ----> SEMPRE UTILIZAR var[0]
+'''
+
+def validate_acronym_entries(entry:str):
+    import re as regex
+    regex_entry=regex.findall(r"^[a-zA-ZÀ-ú.]+",entry)
     return regex_entry
         
 '''
-Valida a entrada de ids em selects
+Valida a entrada de ids em selects e outras entradas que só permitem números
 RETORNA UMA LISTA ----> SEMPRE UTILIZAR var[0]
 '''
 def validate_ids_entries(entry:str):
@@ -55,7 +74,7 @@ RETORNA UMA LISTA ----> SEMPRE UTILIZAR var[0]
 '''
 def validate_passwords_entries(entry:str):
     import re as regex
-    regex_entry:list=regex.findall(r'^[0-9a-zA-Z!@#$*()_]+$',entry)
+    regex_entry:list=regex.findall(r'^[0-9a-zA-Z!@#$*()_]{10,}$',entry)
     return regex_entry
 
 '''

@@ -20,6 +20,7 @@ class permissions(models.Model):
 class courses(models.Model):
     id=models.AutoField(primary_key=True)
     name=models.CharField(max_length=255)
+    acronym=models.CharField(max_length=255,null=True)
     e_mec=models.CharField(max_length=255)
     max_length=models.IntegerField()
     fk_institution=models.ForeignKey(institution,on_delete=models.CASCADE,db_column="fk_institution",null=True)
@@ -61,7 +62,7 @@ class classes(models.Model):
     start_date=models.DateField()
     end_date=models.DateField()
     open=models.IntegerField()
-    fk_professor=models.ForeignKey(academic_users,on_delete=models.CASCADE,db_column="fk_professor")
+    fk_professor=models.ForeignKey(academic_users,on_delete=models.CASCADE,db_column="fk_professor",null=True)
     initial=models.IntegerField(default=1)
     abstract=models.IntegerField(default=0)
     class Meta:

@@ -13,5 +13,7 @@ urlpatterns = [
     path('dashboard/principal/std_creation_courses/',view=views.std_creation_courses,name="std_creation_courses"),
     path('dashboard/principal/std_creation_forms/',view=views.std_creation_forms,name="std_creation_forms"),
     path('dashboard/principal/std_creation_operation/',view=views.std_creation_operation,name="std_creation_operation"),
+    path('dashboard/principal/crs_creation_info/',view=views.crs_creation_info,name="crs_creation_info"),
+    path('dashboard/principal/crs_creation_classes/',view=views.crs_creation_classes,name="crs_creation_classes"),
     path('logout/',view=views.logout,name="logout"),
 ]

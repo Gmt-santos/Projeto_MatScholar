@@ -1,0 +1,47 @@
+{% extends 'general/header_footer_dashboard.html'%}
+{% load static %}
+{% block content %} 
+<link rel="stylesheet" href="{% static 'css/specific/style_crs_creation.css' %}">
+    <form method="POST" action="{% url 'matscholar_app:crs_creation_classes'%}" class="form_form">
+     {% csrf_token %}
+    
+        <div class="forms_title_div">
+            <img class="logo_forms_title_img" src="{% static 'images/logo.png' %}" alt="">
+            <p class="logo_forms_title_p">MatScholar</p>
+        </div>
+        <p class="logo_forms_title_p" style="font-size:30px">Criar curso</p>
+        <p class="forms_aux_input_p"></p>
+        <p class="forms_aux_input_p">Nome</p>
+        <input class="forms_input" type="text" name="name" id="name" placeholder= "Nome"  required >
+        <div>
+            <p class="forms_aux_input_p">Sigla/Acrônimo</p>
+            <p class="forms_aux_minor_input_p">Exemplo: Bacharelado em Ciência da Computação = BCC</p>
+        </div>
+        
+        <input class="forms_input" type="text" name="acronym" id="acronym" placeholder="Sigla/Acrônimo"  required >
+
+        <div>
+            <p class="forms_aux_input_p">Código E-mec</p>
+            <p class="forms_aux_minor_input_p">Atenção: Apenas números</p>
+        </div>
+        
+        <input class="forms_input" type="text" name="e_mec" id="e_mec" placeholder="E-mec"  required >
+
+   
+        <p class="forms_aux_input_p">Duração máxima em anos</p>
+        
+        
+        <input class="forms_input" type="text" name="max_length" id="max_length" placeholder="Duração Máxima"  required >
+
+         <p class="forms_aux_input_p">Quantidade de aulas</p>
+        
+        
+        <input class="forms_input" type="text" name="quant_classes" id="quant_classes" placeholder="Quantidade" required >
+
+        <div style="margin-top:20px;display:flex;justify-content:center;align-items:center;flex-direction:column">
+            
+           <input type="submit" class="forms_submit_input" value="Avançar"> 
+        </div>
+    </form>
+
+{% endblock content%}
