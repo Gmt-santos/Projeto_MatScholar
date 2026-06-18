@@ -58,9 +58,9 @@ class academic_users_permissions(models.Model):
 class classes(models.Model):
     id=models.AutoField(primary_key=True)
     name=models.CharField(max_length=255)
-    max_students=models.IntegerField()
-    start_date=models.DateField()
-    end_date=models.DateField()
+    max_students=models.IntegerField(null=True)
+    start_date=models.DateField(null=True)
+    end_date=models.DateField(null=True)
     open=models.IntegerField()
     fk_professor=models.ForeignKey(academic_users,on_delete=models.CASCADE,db_column="fk_professor",null=True)
     initial=models.IntegerField(default=1)

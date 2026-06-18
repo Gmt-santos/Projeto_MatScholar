@@ -62,7 +62,6 @@ def std_creation_operation(request):
             name:list=python_functions.validate_query_entries(entry=request.POST.get("name"))
             is_valid_ra:bool=python_functions.validate_RA(request=request,ra=request.POST.get("RA"))
             is_valid_course:bool=python_functions.validate_course(request=request,id=request.POST.get("course_id"))
-            print(request.POST.get("course_id"))
             if(password and name and is_valid_ra and is_valid_course):
 
                 password=password[0]
@@ -93,38 +92,63 @@ def crs_creation_info(request):
         return redirect("matscholar_app:dashboard_page")
     
 def crs_creation_classes(request):
-    # try:
+    try:
         if(request.method ==  "POST"):
-            name:list=python_functions.validate_query_entries(entry=request.POST.get("name"))
-            acronym:list=python_functions.validate_acronym_entries(entry=request.POST.get("acronym"))
-            e_mec:list=python_functions.validate_ids_entries(entry=request.POST.get("e_mec"))
-            max_length:list=python_functions.validate_ids_entries(entry=request.POST.get("max_length"))
-            quant_classes:list=python_functions.validate_ids_entries(entry=request.POST.get("quant_classes"))
+            if(request.session.get("id")):
+                name:list=python_functions.validate_query_entries(entry=request.POST.get("name"))
+                acronym:list=python_functions.validate_acronym_entries(entry=request.POST.get("acronym"))
+                e_mec:list=python_functions.validate_ids_entries(entry=request.POST.get("e_mec"))
+                max_length:list=python_functions.validate_ids_entries(entry=request.POST.get("max_length"))
+                quant_classes:list=python_functions.validate_ids_entries(entry=request.POST.get("quant_classes"))
+                if(name and acronym and e_mec and python_functions.validate_strictpositive_numbers_entries(max_length[0]) 
+                and python_functions.validate_strictpositive_numbers_entries(quant_classes[0])):
+                    name=name[0]
+                    acronym=acronym[0]
+                    e_mec=e_mec[0]
+                    max_length=max_length[0]
+                    quant_classes=int(quant_classes[0])
+                    context={
+                        "course_name":name,
+                        "course_acronym":acronym,
+                        "course_e_mec":e_mec,
+                        "course_max_length":max_length,
+                        "course_quant_classes":quant_classes,
+                        "in_range":range(0,int(quant_classes))
+                    }
+                    return render(request,"crs_creation_classes.html",context=context)
+                else:
+                    messages.error(request,"Dado inapropriado enviado!")
+                    return redirect("matscholar_app:dashboard_page")
+            else:
+                return redirect("matscholar_app:dashboard_page")
+        else:
+            messages.error(request,"Erro na submissão de formulário!")
+            return redirect("matscholar_app:dashboard_page")
+    except ValueError:
+        messages.error(request,"Dado inapropriado enviado!")
+        return redirect("matscholar_app:dashboard_page")
+    except TypeError:
+        messages.error(request,"Erro na submissão de formulário!")
+        return redirect("matscholar_app:dashboard_page")
+    
+def crs_creation_classes_operation(request):
+    # try:
+        if(request.method == "POST" and request.session.get("id")):
+            name:list=python_functions.validate_query_entries(entry=request.POST.get("course_name"))
+            acronym:list=python_functions.validate_acronym_entries(entry=request.POST.get("course_acronym"))
+            e_mec:list=python_functions.validate_ids_entries(entry=request.POST.get("course_e_mec"))
+            max_length:list=python_functions.validate_ids_entries(entry=request.POST.get("course_max_length"))
+            quant_classes:list=python_functions.validate_ids_entries(entry=request.POST.get("course_quant_classes"))
+  
             if(name and acronym and e_mec and python_functions.validate_strictpositive_numbers_entries(max_length[0]) 
-               and python_functions.validate_strictpositive_numbers_entries(quant_classes[0])):
+            and python_functions.validate_strictpositive_numbers_entries(quant_classes[0])):
                 name=name[0]
                 acronym=acronym[0]
                 e_mec=e_mec[0]
                 max_length=max_length[0]
-                quant_classes=quant_classes[0]
-                context={
-                    "course_name":name,
-                    "course_acronym":acronym,
-                    "course_e_mec":e_mec,
-                    "course_max_length":max_length,
-                    "course_quant_classes":quant_classes,
-                    "in_range":range(0,int(quant_classes))
-                }
-                return render(request,"crs_creation_classes.html",context=context)
-            else:
-                 messages.error(request,"Dado inapropriado enviado!")
-                 return redirect("matscholar_app:dashboard_page")
-        else:
-            messages.error(request,"Erro na submissão de formulário!")
-            return redirect("matscholar_app:dashboard_page")
-    # except ValueError:
-    #     messages.error(request,"Dado inapropriado enviado!")
-    #     return redirect("matscholar_app:dashboard_page")
-    # except TypeError:
-    #     messages.error(request,"Erro na submissão de formulário!")
-    #     return redirect("matscholar_app:dashboard_page")
+                quant_classes=int(quant_classes[0])
+                python_functions.principal_crs_creation_classes(request,name,acronym,e_mec,max_length)
+                return redirect("matscholar_app:dashboard_page")
+
+    # except:
+    #     pass

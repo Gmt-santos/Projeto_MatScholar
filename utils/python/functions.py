@@ -38,7 +38,7 @@ RETORNA UMA LISTA ----> SEMPRE UTILIZAR var[0]
 '''
 def validate_query_entries(entry:str):
     import re as regex
-    regex_entry:list=regex.findall(r"^[a-zA-ZÀ-ú\'\-\s]+$",entry)
+    regex_entry:list=regex.findall(r"^[a-zA-ZÀ-ú0-9\'\-\s]+$",entry)
     return regex_entry
 
 '''

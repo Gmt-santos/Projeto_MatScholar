@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/specific/style_crs_creation.css' %}">
-    <form method="POST" action="{% url 'matscholar_app:crs_creation_classes'%}" class="forms_being_processed_form">
+<form method="POST" action="{% url 'matscholar_app:crs_creation_classes_operation'%}" class="forms_being_processed_form">
      {% csrf_token %}
     <div class="forms_being_processed_div">
         <div class="forms_title_div">
@@ -30,16 +30,29 @@
             <input class="forms_input_being_processed_input" type="text" name="course_quant_classes" id="course_quant_classes" value="{{course_quant_classes}}" readonly required >
         </div>
    
-       
+        <p class="logo_forms_title_p">Digite o nome das aulas/matérias do curso</p>
         {% for index in in_range %}
-            <p id="id_{{forloop.counter}}">{{forloop.counter}}</p>
-        
+        <div class="forms_abs_class_creation_div">
+
+            <p class="counter_iterations_classes_p">{{forloop.counter}}</p>
+            <input class="forms_abs_class_creation_input"type="text" name="class_id" id="">
+            <div>
+                <label class="forms_aux_input_p"for="select">Inicial</label>
+                <select name="class_initial" id="select">
+                    <option value="1">Sim</option>
+                    <option value="0">Não</option>
+                </select>
+           
+            </div>
+          
+        </div>
+
         {% endfor %}
         <div style="margin-top:20px;display:flex;justify-content:center;align-items:center;flex-direction:column">
             
            <input type="submit" class="forms_submit_input" value="Avançar"> 
         </div>
     </div>
-    </form>
+</form>
 
 {% endblock content%}

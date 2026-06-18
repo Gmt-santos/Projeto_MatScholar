@@ -15,5 +15,6 @@ urlpatterns = [
     path('dashboard/principal/std_creation_operation/',view=views.std_creation_operation,name="std_creation_operation"),
     path('dashboard/principal/crs_creation_info/',view=views.crs_creation_info,name="crs_creation_info"),
     path('dashboard/principal/crs_creation_classes/',view=views.crs_creation_classes,name="crs_creation_classes"),
+    path('dashboard/principal/crs_creation_classes_operation/',view=views.crs_creation_classes_operation,name="crs_creation_classes_operation"),
     path('logout/',view=views.logout,name="logout"),
 ]

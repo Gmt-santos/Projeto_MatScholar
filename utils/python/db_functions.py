@@ -530,4 +530,42 @@ def principal_std_creation_operation(request,password:str,name:str,valid_ra:str,
         if cursor is not None:
             cursor.close()
 
+
+def principal_crs_creation_classes(request,name,acronym,e_mec,max_length):
+    from psycopg2 import errors,errorcodes
+
+    from django.contrib import messages
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            cursor.execute("insert into courses(name,acronym,e_mec,max_length,fk_institution)values(%s,%s,%s,%s,%s) returning id",
+                           [name,acronym,e_mec,max_length,request.session.get("institution")])
+            course_id=cursor.fetchone()
+            list_inputs_name=request.POST.getlist("class_id")
+            list_inputs_initial=request.POST.getlist("class_initial")
+            string_insert_abstract_classes="insert into classes(nome,open,initial,abstract)values"
+            for i in range(0,len(list_inputs_name)):
+                if not f.validate_query_entries(list_inputs_name[i]):
+                    messages.error(request,"Dado inválido enviado no formulário!")
+                    return False
+                else:
+                    # TODO
+                    # list_values.append((nome,open,initial,abstract))
+                    if list_inputs_initial[i] == "1":
+                             string_insert_abstract_classes+=("(%s,%s,%s,%s),"(list_inputs_name[i],0,1,1))
+                    elif list_inputs_initial[i] == "0" :
+                             list_values.append((list_inputs_name[i],0,0,1))
+               
+                    else:
+                        messages.error(request,"Dado inválido enviado no formulário!")
+                        return False
+            
+                return True
+    except errors.UniqueViolation:
+        pass
+    except errors.UndefinedColumn:
+        pass
+
+    
       
