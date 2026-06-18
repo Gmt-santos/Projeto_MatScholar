@@ -1,5 +1,5 @@
 from . import functions as f
-from psycopg2 import OperationalError,errors
+from psycopg2 import OperationalError,errors,DatabaseError
 
 
 from redis import exceptions as r_exceptions
@@ -300,73 +300,98 @@ Usado no dashboard
 def academic_users_search_classes_by_classname(request,classname:str):
     academic_user_id=request.session.get("id")
     conn,cursor=None,None
-    if(academic_user_id):
-        permissions=request.session.get("permissions")
-        if("Prof" in permissions):
-            try:
-                conn,cursor=f.connection_cursor()
-                classname=f.string_to_querylike(string=classname)
-                cursor.execute("select classes.id,classes.name,classes.start_date,classes.end_date from classes join academic_users on " \
-                "classes.fk_professor=academic_users.id where academic_users.id=%s and classes.name like %s and classes.open=1"
-                ,[academic_user_id,classname])
-                classes_query=cursor.fetchall()
-                if(classes_query):
-                    lista=[]
-                    for item in classes_query:
-                        lista.append(
-                            {
-                                "id":item[0],
-                                "name":item[1],
-                                "start_date":item[2],
-                                "end_date":item[3],
-                            }
-                        )
-                    return lista
-                return False
-            except OperationalError:
-               messages.error(request,"Houve um erro na conexão com o banco de dados!")
-               return False
-            finally:
-                if cursor is not None:
-                    cursor.close()
-                if conn is not None:
-                    conn.close()
-
-        elif("Princ" in permissions):
-            try:
-                conn,cursor=f.connection_cursor()
-                classname=f.string_to_querylike(string=classname)
-                cursor.execute("select classes.id,classes.name,classes.start_date,classes.end_date,academic_users.name,academic_users.email" \
-                " from classes join academic_users on classes.fk_professor=academic_users.id where academic_users.fk_institution=%s" \
-                " and classes.open=1 and classes.name like %s",[request.session.get("institution"),classname])
-                classes_query=cursor.fetchall()
-                if(classes_query):
-                    lista=[]
-                    for item in classes_query:
-                        lista.append(
-                            {
-                                "id":item[0],
-                                "name":item[1],
-                                "start_date":item[2],
-                                "end_date":item[3],
-                                "professor_name":item[4],
-                                "professor_email":item[5],
-                            }
-                        )
-                    return lista
-                else:
+    try:
+        if(academic_user_id):
+            permissions=request.session.get("permissions")
+            if("Prof" in permissions):
+        
+                    conn,cursor=f.connection_cursor()
+                    classname=f.string_to_querylike(string=classname)
+                    cursor.execute("select classes.id,classes.name,classes.start_date,classes.end_date from classes join academic_users on " \
+                    "classes.fk_professor=academic_users.id where academic_users.id=%s and classes.name like %s and classes.open=1"
+                    ,[academic_user_id,classname])
+                    classes_query=cursor.fetchall()
+                    if(classes_query):
+                        lista=[]
+                        for item in classes_query:
+                            lista.append(
+                                {
+                                    "id":item[0],
+                                    "name":item[1],
+                                    "start_date":item[2],
+                                    "end_date":item[3],
+                                }
+                            )
+                        return lista
                     return False
-            except OperationalError:
-               messages.error(request,"Houve um erro na conexão com o banco de dados!")
-               return False
-            finally:
-                if cursor is not None:
-                    cursor.close()
-                if conn is not None:
-                    conn.close()
-    else:
-        messages.error(request,"A autenticação falhou!")
+                
+
+            elif("Princ" in permissions):
+                    conn,cursor=f.connection_cursor()
+                    classname=f.string_to_querylike(string=classname)
+                    cursor.execute("select classes.id,classes.name,classes.start_date,classes.end_date,academic_users.name,academic_users.email" \
+                    " from classes join academic_users on classes.fk_professor=academic_users.id where academic_users.fk_institution=%s" \
+                    " and classes.open=1 and classes.name like %s",[request.session.get("institution"),classname])
+                    classes_query=cursor.fetchall()
+                    if(classes_query):
+                        lista=[]
+                        for item in classes_query:
+                            lista.append(
+                                {
+                                    "id":item[0],
+                                    "name":item[1],
+                                    "start_date":item[2],
+                                    "end_date":item[3],
+                                    "professor_name":item[4],
+                                    "professor_email":item[5],
+                                }
+                            )
+                        return lista
+                    else:
+                        return False
+        else:
+            messages.error(request,"A autenticação falhou!")
+            return False
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+    DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation):
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
         return False
+    
+    except errors.UndefinedColumn:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    
+    except IndexError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    
+    except OperationalError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    
+
+    finally:
+        if cursor is not None:
+            cursor.close() 
+        if conn is not None:
+            conn.close()
+       
 '''
 Busca aulas pelo nome do professor e pela instituição do diretor
 '''
@@ -397,12 +422,41 @@ def academic_users_search_classes_by_professorname(request,professorname:str):
         else:
             return False
 
-    except OperationalError:
-        messages.error(request,"Houve um erro na conexão com o banco de dados!")
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation):
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
         return False
+    except errors.UndefinedColumn:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except :
+        conn.rollback()
+        messages.error(request,"Algum dado inválido foi enviado!")
     finally:
         if cursor is not None:
-            cursor.close()
+            cursor.close() 
         if conn is not None:
             conn.close()
 
@@ -444,6 +498,38 @@ def principal_std_creation_courses(request):
         return False
     
 '''
+Faz a exata mesma coisa da função acima, foi criada mais com a intenção de deixar o código mais flexível a mudanças futuras
+'''
+def principal_cls_creation_courses(request):
+    from matscholar_app.models import courses
+    institution_id=request.session.get("institution")
+    if(request.session.get("id") and institution_id):
+        try:
+            courses_query=None
+            if(cache.get(key=f'institution_courses={institution_id}')):
+                courses_query=cache.get(key=f'institution_courses={institution_id}')
+
+            else:
+                courses_query=courses.objects.filter(fk_institution=institution_id).values("id",'name')
+                cache.set(key=f'institution_courses={institution_id}',value=courses_query,timeout=1200)
+            if not courses_query:
+                messages.error(request,"Nenhum curso encontrado, entre em contato com a equipe de suporte!")
+            return courses_query
+        except r_exceptions.ConnectionError as e:
+   
+            messages.error(request,"Houve um erro na conexão com o banco de dados!")
+            messages.error(request,f"Erro:{e}")
+            return False
+        
+        except r_exceptions.TimeoutError as e:
+    
+            messages.error(request,"Tempo de consulta expirado!")
+            messages.error(request,f"Erro:{e}")
+            return False
+    else:
+        return False
+
+'''
 Cria o estudante,com suas aulas iniciais e aulas "faltantes"
 Código relativamente complexo, será explicado passo a passo
 '''
@@ -456,13 +542,14 @@ def principal_std_creation_operation(request,password:str,name:str,valid_ra:str,
 
             cursor.execute('insert into students("RA",name,year_of_entry,fk_course,password,fk_institution)values(%s,%s,%s,%s,%s,%s)',
                         [valid_ra,name,f.get_year(),valid_course,hashed_password,request.session.get("institution")])
-            conn.commit() #Cria o estudante com o RA,nome,curso e senha validados,além de ser vinculado à instituição do criador
+            #Cria o estudante com o RA,nome,curso e senha validados,além de ser vinculado à instituição do criador
 
             cursor.execute('select classes.id from classes join classes_courses on classes.id=classes_courses.id_class join ' \
             'courses on classes_courses.id_course=courses.id where classes.open=1 and courses.fk_institution=%s and courses.id=%s and'
             ' classes.initial=1 and abstract=0',
             [request.session.get("institution"),valid_course])
             classes_initial=cursor.fetchall()
+            
             # Busca os Ids das aulas que estão abertas,são iniciais(initial=1),não são abstratas(abstract=0),que tenham o id do curso
             # selecionado(courses.id) e que sejam da instituição do criador(courses.fk_institution)
 
@@ -477,9 +564,11 @@ def principal_std_creation_operation(request,password:str,name:str,valid_ra:str,
                     insert_into_classes_actual_str+=f"('{tupla[0]}-{valid_ra}',{tupla[0]},{valid_ra}),"
             # Percorre a lista de tuplas retornada pela busca anterior de Ids das aulas e adiciona esses Ids na string
             # do insert
-
+            '''
+            Se o usuário tentar criar um estudante sem nenhuma aula com open = 1 e abstract = 0, levanta erro aqui!
+            '''
             cursor.execute(insert_into_classes_actual_str)
-            conn.commit()
+          
             #Insere na tabela 'students_classes_actual" os relacionamentos dos estudantes com as suas aulas atuais e ativas
 
             cursor.execute('select classes.id from classes join classes_courses on classes.id=classes_courses.id_class join ' \
@@ -503,69 +592,220 @@ def principal_std_creation_operation(request,password:str,name:str,valid_ra:str,
                 else: 
                     insert_into_classes_missing_str+=f"('{tupla[0]}-{valid_ra}',{tupla[0]},{valid_ra}),"
             
-            cursor.execute(insert_into_classes_missing_str)
-            conn.commit() #Fez a mesma operação já descrita acima
+            cursor.execute(insert_into_classes_missing_str) #Fez a mesma operação já descrita acima
+            conn.commit() # Faz o commit de todos os inserts --> Caso algo dê errado,dá rollback e anula os inserts
             return True # retorna verdadeiro caso o dê tudo certo
                 
-    except TypeError: 
-        messages.error(request,"Erro na submissão do formulário!")
-        return False  
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except errors.UndefinedColumn:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
     except OperationalError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
         messages.error(request,"Houve um erro com a conexão do banco de dados!")
         return False
-    except errors.UniqueViolation:
-        messages.error(request,"Erro na submissão do formulário!")
-        return False  
-    except errors.UndefinedParameter:
-        messages.error(request,"Erro na submissão do formulário!")
-        return False  
-    except Exception:
+    except Exception :
+        try:
+            if conn:
+             conn.rollback()
+        except Exception:
+             pass
         messages.error(request,"Erro desconhecido!")
-        messages.error(request,f"Erro{Exception}")
-        
-        return False
     finally:
+        if cursor is not None:
+            cursor.close() 
         if conn is not None:
             conn.close()
-        if cursor is not None:
-            cursor.close()
 
-
+'''
+Cria as salas abstratas e as vinculam ao curso
+Código relativamente complexo,será explicado ação por ação
+'''
 def principal_crs_creation_classes(request,name,acronym,e_mec,max_length):
     from psycopg2 import errors,errorcodes
-
+    from psycopg2.extras import execute_values
     from django.contrib import messages
     conn,cursor=None,None
     try:
-        conn,cursor=f.connection_cursor()
+        conn,cursor=f.connection_cursor() #Inicializa a conexão
         if conn and cursor:
+            # Insere (sem fzr commit) o curso anteriormente digitado pelo usuário (todas as variáveis foram previamente validadas)
             cursor.execute("insert into courses(name,acronym,e_mec,max_length,fk_institution)values(%s,%s,%s,%s,%s) returning id",
                            [name,acronym,e_mec,max_length,request.session.get("institution")])
-            course_id=cursor.fetchone()
-            list_inputs_name=request.POST.getlist("class_id")
-            list_inputs_initial=request.POST.getlist("class_initial")
-            string_insert_abstract_classes="insert into classes(nome,open,initial,abstract)values"
+            
+            course_id:list=cursor.fetchone()[0] # Guarda o Id do novo curso (returning id)
+            list_inputs_name:list=request.POST.getlist("class_id") # Pega os nomes digitados pelo usuário
+            list_inputs_initial:list=request.POST.getlist("class_initial") # Pega as informações dos selects(inicial)
+            list_values=[] #inicializa a lista de valores para o insert no banco
+            
             for i in range(0,len(list_inputs_name)):
-                if not f.validate_query_entries(list_inputs_name[i]):
+                if not f.validate_query_entries(list_inputs_name[i]): #Caso o usuário digite algo inválido,ele retorna falso 
+                    # e cancela a operação
                     messages.error(request,"Dado inválido enviado no formulário!")
+                    conn.rollback()
                     return False
                 else:
-                    # TODO
+                    
                     # list_values.append((nome,open,initial,abstract))
                     if list_inputs_initial[i] == "1":
-                             string_insert_abstract_classes+=("(%s,%s,%s,%s),"(list_inputs_name[i],0,1,1))
+                             list_values.append((list_inputs_name[i],0,1,1))
                     elif list_inputs_initial[i] == "0" :
                              list_values.append((list_inputs_name[i],0,0,1))
                
                     else:
+                        #Caso o usuário digite algo inválido,ele retorna falso 
+                        # e cancela a operação
                         messages.error(request,"Dado inválido enviado no formulário!")
+                        conn.rollback()
                         return False
-            
-                return True
-    except errors.UniqueViolation:
-        pass
+            # Retorna uma lista de tuplas
+            classes_id:list=execute_values(cursor,"insert into classes(name,open,initial,abstract)values %s returning id",list_values,fetch=True)
+            classes_id_size=len(classes_id) #Pega o tamanho dessa lista de tuplas
+            #Inicializa uma string para o insert
+            string_insert_into_classes_courses="insert into classes_courses(id,id_class,id_course)values"
+            # Percorre toda a lista de tuplas,acrescentando os dados de classes_id na string acima
+            for i in range(0,classes_id_size):
+                if i == classes_id_size-1:
+                    string_insert_into_classes_courses+=(f"({classes_id[i][0]}-{course_id},{classes_id[i][0]},{course_id});")
+                else:
+                    string_insert_into_classes_courses+=(f"('{classes_id[i][0]}-{course_id}',{classes_id[i][0]},{course_id}),")
+            cursor.execute(string_insert_into_classes_courses)
+            conn.commit() # Commita e faz a inserção definitiva
+            messages.success(request,"Curso criado com sucesso! Crie as salas para prosseguir!")
+            return True # Retorna True se tudo der certo
+        
+        # Caso dê errado, tratamos os erros tentando fazer o rollback das operações feitas anteriormente para evitar erros
+        # e inconsistências no banco de dados
+        
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
     except errors.UndefinedColumn:
-        pass
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception :
+        if conn:
+            try:
+              conn.rollback()
+            except Exception:
+                pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close() 
+        if conn is not None:
+            conn.close()
+       
+'''
+Busca as informações de salas abstratas no banco de dados ou no cache, a fim de usá-las na criação de salas "concretas"
+'''
+def principal_cls_creation_get_abs_classes(request,valid_course_id):
+    from psycopg2.extras import RealDictCursor
+    conn,cursor=None,None
+    try:
+        if(cache.get(f"abs_classes:{valid_course_id}-{request.session.get("institution")}")):
+                classes_query=cache.get(f"abs_classes:{valid_course_id}-{request.session.get("institution")}")
+                return classes_query
+        else:
+            conn,cursor=f.connection_cursor()
+            if conn and cursor:
+                cursor.execute("select classes.id,classes.name from classes join classes_courses on classes.id=classes_courses.id_class" \
+                " join courses on classes_courses.id_course=courses.id where classes.abstract=1 and courses.id=%s and" \
+                " courses.fk_institution = %s",[valid_course_id,request.session.get("institution"),])
+                classes_query=cursor.fetchall()
+                if(classes_query):
+                    cache.set(key=f"abs_classes:{valid_course_id}-{request.session.get("institution")}",value=classes_query,timeout=1200)
+                    return classes_query
+                else:
+                    messages.error(request,"Nenhum curso com ess código foi encontrado em sua instituição!")
+                    return False
+               
 
-    
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except errors.UndefinedColumn:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception :
+        if conn:
+            try:
+              conn.rollback()
+            except Exception:
+                pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close() 
+        if conn is not None:
+            conn.close()
       

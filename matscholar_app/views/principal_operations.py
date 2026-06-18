@@ -2,12 +2,15 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from utils import python as python_functions
 def std_creation_courses(request):
-    courses_query=python_functions.principal_std_creation_courses(request)
-    if(courses_query):
-        context={
-            "courses_query":courses_query,
-        }
-        return render(request,"std_creation_courses.html",context)
+    if(request.session.get("id")): 
+        courses_query=python_functions.principal_std_creation_courses(request)
+        if(courses_query):
+            context={
+                "courses_query":courses_query,
+            }
+            return render(request,"std_creation_courses.html",context)
+        else:
+            return redirect("matscholar_app:dashboard_page")
     else:
         return redirect("matscholar_app:dashboard_page")
 def std_creation_forms(request):
@@ -132,7 +135,7 @@ def crs_creation_classes(request):
         return redirect("matscholar_app:dashboard_page")
     
 def crs_creation_classes_operation(request):
-    # try:
+    try:
         if(request.method == "POST" and request.session.get("id")):
             name:list=python_functions.validate_query_entries(entry=request.POST.get("course_name"))
             acronym:list=python_functions.validate_acronym_entries(entry=request.POST.get("course_acronym"))
@@ -149,6 +152,47 @@ def crs_creation_classes_operation(request):
                 quant_classes=int(quant_classes[0])
                 python_functions.principal_crs_creation_classes(request,name,acronym,e_mec,max_length)
                 return redirect("matscholar_app:dashboard_page")
-
-    # except:
-    #     pass
+            else:
+                messages.error(request,"Algum dado inválido foi enviado !")
+                return redirect("matscholar_app:dashboard_page")
+        else:
+            messages.error(request,"Algum dado inválido foi enviado !")
+            return redirect("matscholar_app:dashboard_page")
+    except (ValueError,TypeError,IndexError):
+        messages.error(request,"Algum dado inválido foi enviado !")
+        return redirect("matscholar_app:dashboard_page")
+    except Exception :
+        messages.error(request,"Erro desconhecido!")
+        return redirect("matscholar_app:dashboard_page")
+    
+        
+def cls_creation_courses(request):
+    if(request.session.get("id")): 
+        courses_query=python_functions.principal_cls_creation_courses(request)
+        if(courses_query):
+            context={
+                "courses_query":courses_query,
+            }
+            return render(request,"cls_creation_courses.html",context)
+        else:
+            return redirect("matscholar_app:dashboard_page")
+    else:
+        return redirect("matscholar_app:dashboard_page")
+    
+def cls_creation_abs_classes(request):
+    if(request.method == "POST" and request.session.get("id")):
+        course_id=request.POST.get("course")
+        valid_course_id=python_functions.validate_ids_entries(entry=course_id)
+        if (valid_course_id):
+            valid_course_id=valid_course_id[0]
+            classes_query=python_functions.principal_cls_creation_get_abs_classes(request,valid_course_id)
+            context={
+                "classes_query":classes_query,
+            }
+            return render(request,"cls_creation_abs_classes.html",context=context)
+        else:
+            messages.error(request,"Algum dado inválido foi enviado !")
+            return redirect("matscholar_app:dashboard_page")
+        
+    else:
+        return redirect("matscholar_app:dashboard_page")

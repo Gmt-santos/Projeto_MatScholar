@@ -16,5 +16,7 @@ urlpatterns = [
     path('dashboard/principal/crs_creation_info/',view=views.crs_creation_info,name="crs_creation_info"),
     path('dashboard/principal/crs_creation_classes/',view=views.crs_creation_classes,name="crs_creation_classes"),
     path('dashboard/principal/crs_creation_classes_operation/',view=views.crs_creation_classes_operation,name="crs_creation_classes_operation"),
+    path('dashboard/principal/cls_creation_courses/',view=views.cls_creation_courses,name="cls_creation_courses"),
+    path('dashboard/principal/cls_creation_abs_classes/',view=views.cls_creation_abs_classes,name="cls_creation_abs_classes"),
     path('logout/',view=views.logout,name="logout"),
 ]
