@@ -30,13 +30,13 @@ def connection_cursor():
 '''
 Retorna uma String que possa ser utilizada em uma query SQL
 '''
-def string_to_querylike(string:str):
+def string_to_querylike(string:str)->str:
     return "%"+string+"%"
 '''
 Valida a entrada de nomes de salas e pessoas
 RETORNA UMA LISTA ----> SEMPRE UTILIZAR var[0]
 '''
-def validate_query_entries(entry:str):
+def validate_query_entries(entry:str)->list[str]:
     import re as regex
     regex_entry:list=regex.findall(r"^[a-zA-ZÀ-ú0-9\'\-\s.]+$",entry)
     return regex_entry
@@ -45,7 +45,7 @@ def validate_query_entries(entry:str):
 Valida a entrada de números positivos
 Utilizar somente após ter validado se entry é um número
 '''
-def validate_strictpositive_numbers_entries(entry:str):
+def validate_strictpositive_numbers_entries(entry:str)->bool:
     if(int(entry) <=0):
         return False
     else:
@@ -55,7 +55,7 @@ Valida a entrada de siglas/acrônimos
 RETORNA UMA LISTA ----> SEMPRE UTILIZAR var[0]
 '''
 
-def validate_acronym_entries(entry:str):
+def validate_acronym_entries(entry:str)->list[str]:
     import re as regex
     regex_entry=regex.findall(r"^[a-zA-ZÀ-ú.]+",entry)
     return regex_entry
@@ -64,7 +64,7 @@ def validate_acronym_entries(entry:str):
 Valida a entrada de ids em selects e outras entradas que só permitem números
 RETORNA UMA LISTA ----> SEMPRE UTILIZAR var[0]
 '''
-def validate_ids_entries(entry:str):
+def validate_ids_entries(entry:str)->list[str]:
     import re as regex
     regex_entry:list=regex.findall(r"^[0-9]+$",entry)
     return regex_entry
@@ -72,7 +72,7 @@ def validate_ids_entries(entry:str):
 Valida a entrada de senhas no login
 RETORNA UMA LISTA ----> SEMPRE UTILIZAR var[0]
 '''
-def validate_passwords_entries(entry:str):
+def validate_passwords_entries(entry:str)->list[str]:
     import re as regex
     regex_entry:list=regex.findall(r'^[0-9a-zA-Z!@#$*()_]{10,}$',entry)
     return regex_entry
@@ -124,7 +124,7 @@ def email_validation(email:str):
 '''
 Coloca os dados puxados no banco para a sessão para evitar sobrecarregar o banco com querys desnecessárias
 '''
-def academic_users_set_session_attributes(request,dictionary:dict):
+def academic_users_set_session_attributes(request,dictionary:dict)->None:
     request.session["id"]=dictionary["id"]
     request.session["name"]=dictionary["name"]
     request.session["role"]=dictionary["role"]
@@ -144,7 +144,7 @@ def students_set_session_attributes(request,dictionary:dict):
 '''
 Gera uma senha segura
 '''
-def generate_safe_password():
+def generate_safe_password()->str:
     import secrets
     list_chars_lower=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
     list_chars_upper=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
@@ -176,3 +176,11 @@ def get_year():
     date_obj=datetime.date.today()
     return date_obj.year   
 
+def generate_academic_users_query_listofdict(academic_users_query)->list[dict]:
+    lista_dicts:list[dict]=[]
+    for tupla in academic_users_query:
+        lista_dicts.append({
+            "id":tupla[0],
+            "name":tupla[1],
+        })
+    return lista_dicts

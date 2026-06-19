@@ -1,7 +1,7 @@
 from . import functions as f
 from psycopg2 import OperationalError,errors,DatabaseError
 
-
+from django.db import models
 from redis import exceptions as r_exceptions
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist,EmptyResultSet,MultipleObjectsReturned
@@ -13,7 +13,7 @@ Serão descritas antes de sua definição
 '''
 Gera RAs e verifica se eles existem no banco de dados,caso não,retorna o RA
 '''
-def generate_RA(request):
+def generate_RA(request)-> str:
     from matscholar_app.models import students
     import random
     flag=1
@@ -34,7 +34,7 @@ def generate_RA(request):
 '''
 Validar o RA enviado na criação de estudantes------> Redundante
 '''
-def validate_RA(request,ra:str):
+def validate_RA(request,ra:str)-> bool:
     from matscholar_app.models import students
     import re as regex
 
@@ -66,7 +66,7 @@ def validate_RA(request,ra:str):
 '''
 Valida o curso do estudante a ser criado --> redundante
 '''
-def validate_course(request,id:str):
+def validate_course(request,id:str) ->bool:
     from matscholar_app.models import courses
     try:
         is_valid=f.validate_ids_entries(id)
@@ -91,14 +91,65 @@ def validate_course(request,id:str):
     except ValueError:
         
         return False
-    
+'''
+Valida a sala abstrata do curso, a qual está sendo utilizada de base para a criação de uma sala não
+abstrata , e retorna seus dados principais
+'''
+def get_and_validate_class(request,valid_id)->list[tuple]:
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        cursor.execute("select classes.name,classes.initial from classes join classes_courses on classes.id=classes_courses.id_class join courses on " \
+        "classes_courses.id_course=courses.id where courses.fk_institution=%s and classes.abstract=1 and classes.id=%s and courses.id=%s",
+        [request.session.get("institution"),valid_id,request.session.get("actual_course")])
+        valid_class=cursor.fetchall()
+        request.session["actual_class"]=valid_class[0][0]
+        request.session["actual_class_initial"]=valid_class[0][1]
+        return valid_class
+        
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError,errors.UndefinedColumn):
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception :
+        if conn:
+            try:
+              conn.rollback()
+            except Exception:
+                pass
+        messages.error(request,"Erro desconhecido!")
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close() 
+        if conn is not None:
+            conn.close()
+
 
 
 
 '''
 Busca o objeto de usuario academico no banco de dados e devolve ele
 '''
-def search_academic_users_by_email(email:str):
+def search_academic_users_by_email(email:str)->dict:
     conn,cursor=None,None
     try:
         conn,cursor=f.connection_cursor()
@@ -209,7 +260,7 @@ def search_students_by_email(email:str):
 '''
 Puxa as salas que professor X dá aula e pode acessar e ver no dashboard
 '''
-def professor_get_classes(request):
+def professor_get_classes(request)->dict | bool:
     from matscholar_app.models import classes
     
     professor_id=request.session.get("id")
@@ -237,7 +288,7 @@ def professor_get_classes(request):
 Busca informações das aulas da instituição do diretor/coordenador da sessão
 Disponibiliza no Dashboard e é usada logo após o login
 '''
-def principal_get_classes(request):
+def principal_get_classes(request)->dict|bool:
    
     conn,cursor=None,None
     try:
@@ -268,8 +319,12 @@ def principal_get_classes(request):
                                 "professor_email":item[5],
                             }
                         )
+
                     cache.set(f"institution_id_classes:{institution_id}",lista,timeout=1200)
                     return lista
+                else:
+                    return False
+                
         else:
             messages.error(request,"A autenticação falhou!")
             return False
@@ -297,7 +352,7 @@ def principal_get_classes(request):
 Procura aulas com o mesmo professor da sessão e de nome parecido com o digitado no campo de pesquisa
 Usado no dashboard
 '''
-def academic_users_search_classes_by_classname(request,classname:str):
+def academic_users_search_classes_by_classname(request,classname:str)->list[dict]|bool:
     academic_user_id=request.session.get("id")
     conn,cursor=None,None
     try:
@@ -395,7 +450,7 @@ def academic_users_search_classes_by_classname(request,classname:str):
 '''
 Busca aulas pelo nome do professor e pela instituição do diretor
 '''
-def academic_users_search_classes_by_professorname(request,professorname:str):
+def academic_users_search_classes_by_professorname(request,professorname:str)->list[dict]|bool:
 
     conn,cursor=None,None
     try:
@@ -466,7 +521,7 @@ def academic_users_search_classes_by_professorname(request,professorname:str):
 Quando o responsável com auth="Princ" quiser criar um aluno,essa função irá buscar os cursos disponíveis na instituição
 '''
 
-def principal_std_creation_courses(request):
+def principal_std_creation_courses(request)->models.QuerySet:
     
     from matscholar_app.models import courses
    
@@ -500,7 +555,7 @@ def principal_std_creation_courses(request):
 '''
 Faz a exata mesma coisa da função acima, foi criada mais com a intenção de deixar o código mais flexível a mudanças futuras
 '''
-def principal_cls_creation_courses(request):
+def principal_cls_creation_courses(request)->models.QuerySet:
     from matscholar_app.models import courses
     institution_id=request.session.get("institution")
     if(request.session.get("id") and institution_id):
@@ -526,6 +581,10 @@ def principal_cls_creation_courses(request):
             messages.error(request,"Tempo de consulta expirado!")
             messages.error(request,f"Erro:{e}")
             return False
+        except Exception as e:
+            messages.error(request,"Erro desconhecido!")
+            messages.error(request,f"Erro:{e}")
+            return False
     else:
         return False
 
@@ -533,7 +592,7 @@ def principal_cls_creation_courses(request):
 Cria o estudante,com suas aulas iniciais e aulas "faltantes"
 Código relativamente complexo, será explicado passo a passo
 '''
-def principal_std_creation_operation(request,password:str,name:str,valid_ra:str,valid_course:str):
+def principal_std_creation_operation(request,password:str,name:str,valid_ra:str,valid_course:str)->bool:
     conn,cursor=None,None #Inicializa as variaveis de conexao
     try:
         conn,cursor=f.connection_cursor() #conecta com o servidor
@@ -642,7 +701,7 @@ def principal_std_creation_operation(request,password:str,name:str,valid_ra:str,
 Cria as salas abstratas e as vinculam ao curso
 Código relativamente complexo,será explicado ação por ação
 '''
-def principal_crs_creation_classes(request,name,acronym,e_mec,max_length):
+def principal_crs_creation_classes(request,name,acronym,e_mec,max_length)->bool:
     from psycopg2 import errors,errorcodes
     from psycopg2.extras import execute_values
     from django.contrib import messages
@@ -744,8 +803,7 @@ def principal_crs_creation_classes(request,name,acronym,e_mec,max_length):
 '''
 Busca as informações de salas abstratas no banco de dados ou no cache, a fim de usá-las na criação de salas "concretas"
 '''
-def principal_cls_creation_get_abs_classes(request,valid_course_id):
-    from psycopg2.extras import RealDictCursor
+def principal_cls_creation_get_abs_classes(request,valid_course_id)->list[tuple]:
     conn,cursor=None,None
     try:
         if(cache.get(f"abs_classes:{valid_course_id}-{request.session.get("institution")}")):
@@ -760,10 +818,13 @@ def principal_cls_creation_get_abs_classes(request,valid_course_id):
                 classes_query=cursor.fetchall()
                 if(classes_query):
                     cache.set(key=f"abs_classes:{valid_course_id}-{request.session.get("institution")}",value=classes_query,timeout=1200)
+                    request.session["actual_course"]=valid_course_id
                     return classes_query
                 else:
-                    messages.error(request,"Nenhum curso com ess código foi encontrado em sua instituição!")
+                    messages.error(request,"Nenhum curso com esse código foi encontrado em sua instituição!")
                     return False
+            else:
+                messages.error(request,"Houve um erro com a conexão do banco de dados!")
                
 
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
@@ -808,4 +869,68 @@ def principal_cls_creation_get_abs_classes(request,valid_course_id):
             cursor.close() 
         if conn is not None:
             conn.close()
+
+def search_professors_by_institution(request)->list[tuple]|bool:
+    conn,cursor=None,None
+    try:
+        if(cache.get(f"academic_users:{request.session.get("institution")}")):
+            academic_users_query=cache.get(f"academic_users:{request.session.get("institution")}")
+            return academic_users_query
+        else:
+            conn,cursor=f.connection_cursor()
+            
+            if( conn and cursor):
+                cursor.execute("select academic_users.id,academic_users.name from academic_users join academic_users_permissions on" \
+                " academic_users.id=academic_users_permissions.id_user where academic_users_permissions.id_nickname=3 and" \
+                " academic_users.fk_institution = %s",[request.session.get("institution")])
+                academic_users_query=cursor.fetchall()
+                if(academic_users_query):
+                    cache.set(f"academic_users:{request.session.get("institution")}",academic_users_query,timeout=1200)
+                return academic_users_query
+            else:
+                messages.error(request,"Houve um erro com a conexão do banco de dados!")
+                return False
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except errors.UndefinedColumn:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception :
+        if conn:
+            try:
+              conn.rollback()
+            except Exception:
+                pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close() 
+        if conn is not None:
+            conn.close()
+    
       

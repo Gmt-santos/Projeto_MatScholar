@@ -1,0 +1,46 @@
+{% extends 'general/header_footer_dashboard.html'%}
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/specific/style_cls_creation.css' %}">
+    <form method="POST" action="{% url 'matscholar_app:std_creation_operation'%}" class="form_form">
+     {% csrf_token %}
+     <input type="hidden" name="course_id" id="course_id" value="{{course_id}}">
+        <div class="forms_title_div">
+            <img class="logo_forms_title_img" src="{% static 'images/logo.png' %}" alt="">
+            <p class="logo_forms_title_p">MatScholar</p>
+        </div>
+        <p class="logo_forms_title_p" style="font-size:30px">Criar sala</p>
+        <p class="forms_aux_input_p"></p>
+        <p class="forms_aux_input_p">Nome</p>
+        <input class="forms_input" type="text" name="name" id="name" placeholder="Nome" value="{{valid_class.name}}" readonly required >
+
+        
+
+        <p class="forms_aux_input_p">Data de início</p>
+        <input class="forms_input" type="date" name="initial_date" id="initial_date" required >
+        <p class="forms_aux_input_p">Data de fim</p>
+        <input class="forms_input" type="date" name="end_date" id="end_date" required >
+        <p class="forms_aux_minor_input_p">Atente-se a ordem das datas</p>
+
+        <p class="forms_aux_input_p">Máximo de alunos</p>
+        <input class="forms_input" type="text" name="max_length" id="max_length" placeholder="Máximo de alunos"required >
+
+        <p class="forms_aux_input_p">Professor responsável</p>
+        <select class="academic_users_select"name="academic_user" id="academic_user">
+            {% for academic_user in academic_users %}
+                <option value="{{academic_user.id}}">{{academic_user.name}}</option>
+            {% endfor %}
+        </select>
+    
+        <div style="margin-top:20px;display:flex;justify-content:center;align-items:center;flex-direction:column">
+            
+           <input type="submit" class="forms_submit_input" value="Cadastrar"> 
+        </div>
+    </form>
+
+
+
+
+
+
+{% endblock content %}

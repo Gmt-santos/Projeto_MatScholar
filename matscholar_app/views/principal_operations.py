@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from utils import python as python_functions
 def std_creation_courses(request):
-    if(request.session.get("id")): 
+    if(request.session.get("id") and "Princ" in request.session.get("permissions")): 
         courses_query=python_functions.principal_std_creation_courses(request)
         if(courses_query):
             context={
@@ -19,7 +19,7 @@ def std_creation_forms(request):
     from django.core.exceptions import PermissionDenied
 
     try:
-        if(request.method=="POST" and request.session.get("id")):
+        if(request.method=="POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
             course_id=python_functions.validate_ids_entries(request.POST.get("course"))
             if(course_id):
                 course_id=course_id[0]
@@ -60,7 +60,7 @@ def std_creation_forms(request):
     
 def std_creation_operation(request):
     try:
-        if(request.method=="POST" and request.session.get("id")):
+        if(request.method=="POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
             password:list=python_functions.validate_passwords_entries(request.POST.get("password"))
             name:list=python_functions.validate_query_entries(entry=request.POST.get("name"))
             is_valid_ra:bool=python_functions.validate_RA(request=request,ra=request.POST.get("RA"))
@@ -97,7 +97,7 @@ def crs_creation_info(request):
 def crs_creation_classes(request):
     try:
         if(request.method ==  "POST"):
-            if(request.session.get("id")):
+            if(request.session.get("id") and "Princ" in request.session.get("permissions")):
                 name:list=python_functions.validate_query_entries(entry=request.POST.get("name"))
                 acronym:list=python_functions.validate_acronym_entries(entry=request.POST.get("acronym"))
                 e_mec:list=python_functions.validate_ids_entries(entry=request.POST.get("e_mec"))
@@ -136,7 +136,7 @@ def crs_creation_classes(request):
     
 def crs_creation_classes_operation(request):
     try:
-        if(request.method == "POST" and request.session.get("id")):
+        if(request.method == "POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
             name:list=python_functions.validate_query_entries(entry=request.POST.get("course_name"))
             acronym:list=python_functions.validate_acronym_entries(entry=request.POST.get("course_acronym"))
             e_mec:list=python_functions.validate_ids_entries(entry=request.POST.get("course_e_mec"))
@@ -167,7 +167,7 @@ def crs_creation_classes_operation(request):
     
         
 def cls_creation_courses(request):
-    if(request.session.get("id")): 
+    if(request.session.get("id") and "Princ" in request.session.get("permissions")): 
         courses_query=python_functions.principal_cls_creation_courses(request)
         if(courses_query):
             context={
@@ -180,19 +180,57 @@ def cls_creation_courses(request):
         return redirect("matscholar_app:dashboard_page")
     
 def cls_creation_abs_classes(request):
-    if(request.method == "POST" and request.session.get("id")):
+    if(request.method == "POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
         course_id=request.POST.get("course")
         valid_course_id=python_functions.validate_ids_entries(entry=course_id)
         if (valid_course_id):
             valid_course_id=valid_course_id[0]
             classes_query=python_functions.principal_cls_creation_get_abs_classes(request,valid_course_id)
-            context={
-                "classes_query":classes_query,
-            }
-            return render(request,"cls_creation_abs_classes.html",context=context)
+            if classes_query:
+                context={
+                    "classes_query":classes_query,
+                }
+                return render(request,"cls_creation_abs_classes.html",context=context)
+            else:
+                return redirect("matscholar_app:dashboard_page")
         else:
             messages.error(request,"Algum dado inválido foi enviado !")
             return redirect("matscholar_app:dashboard_page")
         
     else:
+        return redirect("matscholar_app:dashboard_page")
+    
+def cls_creation_forms(request):
+    try:
+        if(request.method=="POST" and request.session.get("id") and "Princ" in request.session.get("permissions") and
+        request.session.get("actual_course") and request.session.get("actual_class")):
+            valid_id=python_functions.validate_ids_entries(request.POST.get("class"))
+            if valid_id:
+                valid_id=valid_id[0]
+                valid_class=python_functions.get_and_validate_class(request,valid_id)
+                academic_users_query=python_functions.search_professors_by_institution(request)
+                if valid_class and academic_users_query:
+                    dict_valid_class={
+                        "name":valid_class[0][0],
+                        "initial":valid_class[0][1],
+                    }
+                    list_of_academic_users=python_functions.generate_academic_users_query_listofdict(academic_users_query)
+                    context={
+                        "valid_class":dict_valid_class,
+                        "academic_users":list_of_academic_users,
+                    }
+                    return render(request,"cls_creation_forms.html",context=context)
+                else:
+                    messages.error(request,"Houve algum erro na consulta dos professores ou das salas!")
+                    return redirect("matscholar_app:dashboard_page")
+    except (ValueError,IndexError,TypeError) :
+        messages.error(request,"Alteração indevida ou dado inválido enviado pelo formulário!")
+        return redirect("matscholar_app:dashboard_page")
+    
+def cls_creation_operation(request):
+    try:
+        pass#TODO
+
+    except (ValueError,IndexError,TypeError):
+        messages.error(request,"Alteração indevida ou dado inválido enviado pelo formulário!")
         return redirect("matscholar_app:dashboard_page")
