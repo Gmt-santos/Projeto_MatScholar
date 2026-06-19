@@ -1,4 +1,5 @@
 from . import db_functions
+from datetime import datetime
 '''
 Funções em Python
 Serão descritas antes de sua definição
@@ -176,6 +177,10 @@ def get_year():
     date_obj=datetime.date.today()
     return date_obj.year   
 
+'''
+Recebe uma lista de tuplas e transforma em uma lista de dicts
+Usada na criação de salas pelo "Princ"
+'''
 def generate_academic_users_query_listofdict(academic_users_query)->list[dict]:
     lista_dicts:list[dict]=[]
     for tupla in academic_users_query:
@@ -184,3 +189,15 @@ def generate_academic_users_query_listofdict(academic_users_query)->list[dict]:
             "name":tupla[1],
         })
     return lista_dicts
+'''
+Verifica se a data enviada é válida, ou seja, é uma data futura
+'''
+def validate_date(date):
+    from datetime import datetime
+    today=datetime.today()
+    date_format=datetime.strptime(date,"%Y-%m-%d")
+    
+    if date_format >= today:
+        return date
+    else:
+        return False

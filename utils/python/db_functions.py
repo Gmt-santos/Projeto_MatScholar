@@ -143,6 +143,26 @@ def get_and_validate_class(request,valid_id)->list[tuple]:
         if conn is not None:
             conn.close()
 
+'''
+Valida o academic_user_id enviado na criação de salas (redundante)
+'''
+def validate_academic_user(request,academic_user_id)->bool:
+    from matscholar_app.models import academic_users
+    try:
+       is_valid=academic_users.objects.filter(fk_institution=request.session.get("institution"),id=academic_user_id).exists()
+       return is_valid
+    except ObjectDoesNotExist as e:
+       
+        return False
+    except EmptyResultSet as e:
+      
+        return False
+    except MultipleObjectsReturned as e:
+        
+        return False
+    except ValueError:
+        
+        return False
 
 
 
@@ -808,6 +828,7 @@ def principal_cls_creation_get_abs_classes(request,valid_course_id)->list[tuple]
     try:
         if(cache.get(f"abs_classes:{valid_course_id}-{request.session.get("institution")}")):
                 classes_query=cache.get(f"abs_classes:{valid_course_id}-{request.session.get("institution")}")
+                request.session["actual_course"]=valid_course_id
                 return classes_query
         else:
             conn,cursor=f.connection_cursor()
@@ -933,4 +954,65 @@ def search_professors_by_institution(request)->list[tuple]|bool:
         if conn is not None:
             conn.close()
     
-      
+'''
+Insere uma nova classe no banco de dados, também cria sua relação com o curso na tabela classes_courses
+'''
+def principal_cls_creation_operation_create_class(request,max_length,class_name,class_initial,academic_user_id,start_date,end_date):
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if(conn and cursor):
+            cursor.execute("insert into classes(name,max_students,start_date,end_date,open,fk_professor,initial,abstract)values" \
+            "(%s,%s,%s,%s,%s,%s,%s,%s) returning id",
+            [class_name,max_length,start_date,end_date,1,academic_user_id,class_initial,0])
+            new_class_id=cursor.fetchone()[0]
+            cursor.execute("insert into classes_courses(id,id_class,id_course)values(%s,%s,%s)",
+                           [f"{new_class_id}-{request.session.get("actual_course")}",new_class_id,request.session.get("actual_course")])
+            conn.commit()
+            return True
+        else:
+            messages.error(request,"Houve um erro com a conexão ao banco de dados!")
+            return False
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except errors.UndefinedColumn:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception :
+        if conn:
+            try:
+              conn.rollback()
+            except Exception:
+                pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close() 
+        if conn is not None:
+            conn.close()
+    

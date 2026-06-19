@@ -55,6 +55,25 @@
     background-color: rgb(247, 247, 247);
     transition-duration: 1s;
 }
+
+.again_button_input{
+    height:30px;
+    width:300px;
+    padding:5px;
+    margin-top: 20px;
+    font-family: Chakra;
+    font-size: 15px;
+    border-style: none;
+    border-radius: 10px;
+    transition-duration: 1s;
+    cursor:pointer;
+    background-color: var(--color-darkblue);
+    color:white;
+}
+.again_button_input:hover{
+    background-color: var(--color-lightblue);
+    transition-duration: 1s;
+}
 /*   Formulário de criação de sala       */
 .form_form{
     display: flex;

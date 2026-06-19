@@ -181,7 +181,12 @@ def cls_creation_courses(request):
     
 def cls_creation_abs_classes(request):
     if(request.method == "POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
-        course_id=request.POST.get("course")
+        if(request.session.get("actual_course")):
+            # Caso o usuário já tenha inserido alguma sala já anteriormente e quer inserir mais
+            course_id=request.session.get("actual_course")
+        else:
+            course_id=request.POST.get("course")
+
         valid_course_id=python_functions.validate_ids_entries(entry=course_id)
         if (valid_course_id):
             valid_course_id=valid_course_id[0]
@@ -201,9 +206,10 @@ def cls_creation_abs_classes(request):
         return redirect("matscholar_app:dashboard_page")
     
 def cls_creation_forms(request):
-    try:
+    try:    
+       
         if(request.method=="POST" and request.session.get("id") and "Princ" in request.session.get("permissions") and
-        request.session.get("actual_course") and request.session.get("actual_class")):
+        request.session.get("actual_course")):
             valid_id=python_functions.validate_ids_entries(request.POST.get("class"))
             if valid_id:
                 valid_id=valid_id[0]
@@ -223,14 +229,42 @@ def cls_creation_forms(request):
                 else:
                     messages.error(request,"Houve algum erro na consulta dos professores ou das salas!")
                     return redirect("matscholar_app:dashboard_page")
+            else:
+                messages.error(request,"Algum dado inválido foi enviado!")
+                return redirect("matscholar_app:dashboard_page")
+        else:
+            messages.error(request,"Acesso indevido!")
+            return redirect("matscholar_app:dashboard_page")
     except (ValueError,IndexError,TypeError) :
         messages.error(request,"Alteração indevida ou dado inválido enviado pelo formulário!")
         return redirect("matscholar_app:dashboard_page")
     
 def cls_creation_operation(request):
     try:
-        pass#TODO
+        if(request.method=="POST" and request.session.get("id") and "Princ" in request.session.get("permissions") and
+        request.session.get("actual_course")and request.session.get("actual_class")):
+            
+            valid_max_length=python_functions.validate_ids_entries(request.POST.get("max_length"))
+            valid_academic_user_id_before_db=python_functions.validate_ids_entries(request.POST.get("academic_user"))
+            valid_start_date=python_functions.validate_date(request.POST.get("start_date"))
+            valid_end_date=python_functions.validate_date(request.POST.get("end_date"))
 
+            if valid_max_length and valid_start_date and valid_end_date and valid_academic_user_id_before_db:
+                valid_academic_user_id_before_db=valid_academic_user_id_before_db[0]
+                if(python_functions.validate_academic_user(request,valid_academic_user_id_before_db)):
+                    valid_max_length=valid_max_length[0]
+                    class_name=request.session.get("actual_class")
+                    class_initial=request.session.get("actual_class_initial")
+                    valid_academic_user_id_after_db=valid_academic_user_id_before_db
+                    if(python_functions.principal_cls_creation_operation_create_class(request,valid_max_length,class_name,class_initial,
+                    valid_academic_user_id_after_db,valid_start_date,valid_end_date)):
+                        messages.success(request,f"O curso {class_name} foi inserido com sucesso!")
+                        return render(request,"cls_creation_again.html")
+            else:
+                messages.error(request,"Algum dado inválido foi enviado pelo formulário")
+                return redirect("matscholar_app:dashboard_page")
+        else:
+            return redirect("matscholar_app:dashboard_page")
     except (ValueError,IndexError,TypeError):
         messages.error(request,"Alteração indevida ou dado inválido enviado pelo formulário!")
         return redirect("matscholar_app:dashboard_page")

@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
     <link rel="stylesheet" href="{% static 'css/specific/style_cls_creation.css' %}">
-    <form method="POST" action="{% url 'matscholar_app:std_creation_operation'%}" class="form_form">
+    <form method="POST" action="{% url 'matscholar_app:cls_creation_operation'%}" class="form_form">
      {% csrf_token %}
      <input type="hidden" name="course_id" id="course_id" value="{{course_id}}">
         <div class="forms_title_div">
@@ -17,7 +17,7 @@
         
 
         <p class="forms_aux_input_p">Data de início</p>
-        <input class="forms_input" type="date" name="initial_date" id="initial_date" required >
+        <input class="forms_input" type="date" name="start_date" id="start_date" required >
         <p class="forms_aux_input_p">Data de fim</p>
         <input class="forms_input" type="date" name="end_date" id="end_date" required >
         <p class="forms_aux_minor_input_p">Atente-se a ordem das datas</p>
