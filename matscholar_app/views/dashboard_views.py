@@ -29,7 +29,7 @@ def dashboard_page(request):
     
     elif(request.session.get("RA")):
         ...
-        #TODO
+        #TODO--->ATENÇÃO
     else:
         messages.error(request,"Para acessar aquela página, é necessário se autenticar!")
         return redirect('matscholar_app:login_page')

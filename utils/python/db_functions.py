@@ -169,7 +169,7 @@ def validate_academic_user(request,academic_user_id)->bool:
 '''
 Busca o objeto de usuario academico no banco de dados e devolve ele
 '''
-def search_academic_users_by_email(email:str)->dict:
+def search_academic_users_by_email(request,email:str)->dict:
     conn,cursor=None,None
     try:
         conn,cursor=f.connection_cursor()
@@ -206,75 +206,120 @@ def search_academic_users_by_email(email:str)->dict:
             else:
                 return False
         else:
-            raise EmptyResultSet
-    except ObjectDoesNotExist as e:
-       
+          messages.error(request,"Houve um erro com a conexão ao banco de dados!")
+          return False
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
         return False
-    except EmptyResultSet as e:
-      
+    except errors.UndefinedColumn:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
         return False
-    except MultipleObjectsReturned as e:
-        
+    except IndexError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
         return False
-    except OperationalError as e:
-        
+    except OperationalError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception :
+        if conn:
+            try:
+              conn.rollback()
+            except Exception:
+                pass
+        messages.error(request,"Algum dado inválido foi enviado!")
         return False
     finally:
+        if cursor is not None:
+            cursor.close() 
         if conn is not None:
-            cursor.close()
             conn.close()
 
 '''
-Busca o objeto de usuario academico no banco de dados e devolve ele
+Busca o objeto de estudante no banco de dados e devolve ele
 '''
-def search_students_by_email(email:str):
-    # TODO 
-   
+def search_students_by_RA(request,RA:str)->dict|bool:
     conn,cursor=None,None
     try:
         conn,cursor=f.connection_cursor()
         if conn and cursor:
-            cursor.execute("select ")
-            student=cursor.fetchall()
-           
+            
+            cursor.execute('select "RA",name,year_of_entry,fk_course,password,fk_institution from students where "RA" like %s',(RA,))
+            student=cursor.fetchone()
             if(student):
                 dictonary_student={
-                  'RA':None,
-                  'name':None,
-                  'year_of_entry':None,
-                  'fk_course':None,
-                  'password':None,
+                  'RA':student[0],
+                  'name':student[1],
+                  'year_of_entry':student[2],
+                  'fk_course':student[3],
+                  'password':student[4],
+                  'fk_institution':student[5],
                 }
-                for items in student:
-                    
-                    dictonary_student={
-                    'RA':items[0],
-                    'name':items[1],
-                    'year_of_entry':items[2],
-                    'fk_course':items[3],
-                    'password':items[4],
-                     }
+                
                 return dictonary_student
             else:
                 return False
         else:
             raise EmptyResultSet
-    except ObjectDoesNotExist as e:
-       
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
         return False
-    except EmptyResultSet as e:
-      
+    except errors.UndefinedColumn:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
         return False
-    except MultipleObjectsReturned as e:
-        
+    except IndexError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
         return False
-    except OperationalError as e:
-        
+    except OperationalError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception :
+        if conn:
+            try:
+              conn.rollback()
+            except Exception:
+                pass
+        messages.error(request,"Algum dado inválido foi enviado!")
         return False
     finally:
+        if cursor is not None:
+            cursor.close() 
         if conn is not None:
-            cursor.close()
             conn.close()
+ 
 
 
 '''
@@ -1016,3 +1061,74 @@ def principal_cls_creation_operation_create_class(request,max_length,class_name,
         if conn is not None:
             conn.close()
     
+
+'''
+Reaproveitamendo da principal_cls_creation_get_abs_classes, só que buscando classes reais e abertas
+'''
+def principal_cls_edition_get_open_classes(request,valid_course_id)->list[tuple]:
+    conn,cursor=None,None
+    try:
+        if(cache.get(f"open_classes:{valid_course_id}-{request.session.get("institution")}")):
+                classes_query=cache.get(f"open_classes:{valid_course_id}-{request.session.get("institution")}")
+                request.session["actual_course"]=valid_course_id
+                return classes_query
+        else:
+            conn,cursor=f.connection_cursor()
+            if conn and cursor:
+                cursor.execute("select classes.id,classes.name from classes join classes_courses on classes.id=classes_courses.id_class" \
+                " join courses on classes_courses.id_course=courses.id where classes.abstract=0 and open=1 and courses.id=%s and" \
+                " courses.fk_institution = %s",[valid_course_id,request.session.get("institution"),])
+                classes_query=cursor.fetchall()
+                if(classes_query):
+                    cache.set(key=f"open_classes:{valid_course_id}-{request.session.get("institution")}",value=classes_query,timeout=1200)
+                    request.session["actual_course"]=valid_course_id
+                    return classes_query
+                else:
+                    messages.error(request,"Nenhum curso com esse código foi encontrado em sua instituição!")
+                    return False
+            else:
+                messages.error(request,"Houve um erro com a conexão do banco de dados!")
+               
+
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except errors.UndefinedColumn:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception :
+        if conn:
+            try:
+              conn.rollback()
+            except Exception:
+                pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close() 
+        if conn is not None:
+            conn.close()

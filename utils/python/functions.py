@@ -81,11 +81,11 @@ def validate_passwords_entries(entry:str)->list[str]:
 '''
 Verifica se a senha enviada por POST é igual a senha do banco
 '''
-def verify_hashed(password_POST:str,academic_user:dict):
+def verify_hashed(password_POST:str,user:dict):
     from argon2 import PasswordHasher,exceptions
     try:
         ph=PasswordHasher()
-        ph.verify(academic_user["password"],password_POST)
+        ph.verify(user["password"],password_POST)
         return True
     except exceptions.VerifyMismatchError:
       
@@ -134,14 +134,13 @@ def academic_users_set_session_attributes(request,dictionary:dict)->None:
     request.session["permissions"]=dictionary["permissions_nicknames"]
 
 def students_set_session_attributes(request,dictionary:dict):
-    # request.session["id"]=dictionary["id"]
-    # request.session["name"]=dictionary["name"]
-    # request.session["role"]=dictionary["role"]
-    # request.session["email"]=dictionary["email"]
-    # request.session["institution"]=dictionary["fk_institution"]
-    # request.session["permissions"]=dictionary["permissions_nicknames"]
-    return True
-# TODO #
+    request.session["RA"]=dictionary["RA"]
+    request.session["name"]=dictionary["name"]
+    request.session["year_of_entry"]=dictionary["year_of_entry"]
+    request.session["course"]=dictionary["fk_course"]
+    request.session["institution"]=dictionary["fk_institution"]
+   
+
 '''
 Gera uma senha segura
 '''

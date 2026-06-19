@@ -250,21 +250,77 @@ def cls_creation_operation(request):
             valid_end_date=python_functions.validate_date(request.POST.get("end_date"))
 
             if valid_max_length and valid_start_date and valid_end_date and valid_academic_user_id_before_db:
+
                 valid_academic_user_id_before_db=valid_academic_user_id_before_db[0]
+
                 if(python_functions.validate_academic_user(request,valid_academic_user_id_before_db)):
+
                     valid_max_length=valid_max_length[0]
                     class_name=request.session.get("actual_class")
                     class_initial=request.session.get("actual_class_initial")
                     valid_academic_user_id_after_db=valid_academic_user_id_before_db
+
                     if(python_functions.principal_cls_creation_operation_create_class(request,valid_max_length,class_name,class_initial,
                     valid_academic_user_id_after_db,valid_start_date,valid_end_date)):
+                        
                         messages.success(request,f"O curso {class_name} foi inserido com sucesso!")
                         return render(request,"cls_creation_again.html")
+                    
             else:
                 messages.error(request,"Algum dado inválido foi enviado pelo formulário")
                 return redirect("matscholar_app:dashboard_page")
+            
         else:
+
             return redirect("matscholar_app:dashboard_page")
+        
     except (ValueError,IndexError,TypeError):
+
         messages.error(request,"Alteração indevida ou dado inválido enviado pelo formulário!")
         return redirect("matscholar_app:dashboard_page")
+    
+'''
+Reaproveitamento do código de cls_creation_courses
+'''
+def cls_edition_courses(request):
+    if(request.session.get("id") and "Princ" in request.session.get("permissions")): 
+        courses_query=python_functions.principal_cls_creation_courses(request)
+        if(courses_query):
+            context={
+                "courses_query":courses_query,
+            }
+            return render(request,"cls_edition_courses.html",context)
+        else:
+            return redirect("matscholar_app:dashboard_page")
+    else:
+        return redirect("matscholar_app:dashboard_page")
+
+def cls_edition_classes(request):
+    if(request.method == "POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
+        if(request.session.get("actual_course")):
+            # Caso o usuário já tenha inserido alguma sala já anteriormente e quer inserir mais
+            course_id=request.session.get("actual_course")
+        else:
+            course_id=request.POST.get("course")
+
+        valid_course_id=python_functions.validate_ids_entries(entry=course_id)
+        if (valid_course_id):
+            valid_course_id=valid_course_id[0]
+            classes_query=python_functions.principal_cls_edition_get_open_classes(request,valid_course_id)
+            if classes_query:
+                context={
+                    "classes_query":classes_query,
+                }
+                return render(request,"cls_edition_classes.html",context=context)
+            else:
+                return redirect("matscholar_app:dashboard_page")
+        else:
+            messages.error(request,"Algum dado inválido foi enviado !")
+            return redirect("matscholar_app:dashboard_page")
+        
+    else:
+        return redirect("matscholar_app:dashboard_page")
+
+def cls_edition_page(request):
+    pass
+    # TODO
