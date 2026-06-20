@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
     <link rel="stylesheet" href="{% static 'css/specific/style_cls_creation.css'%}">
-    <form method="POST" action="{% url 'matscholar_app:cls_edition_forms'%}">
+    <form method="POST" action="{% url 'matscholar_app:cls_edition_page'%}">
         {% csrf_token%}
         <div class="courses_select_div">
             <p class="courses_p">Salas disponíveis</p>

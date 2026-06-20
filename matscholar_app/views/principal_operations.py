@@ -263,7 +263,7 @@ def cls_creation_operation(request):
                     if(python_functions.principal_cls_creation_operation_create_class(request,valid_max_length,class_name,class_initial,
                     valid_academic_user_id_after_db,valid_start_date,valid_end_date)):
                         
-                        messages.success(request,f"O curso {class_name} foi inserido com sucesso!")
+                        messages.success(request,f"A aula {class_name} foi inserida com sucesso!")
                         return render(request,"cls_creation_again.html")
                     
             else:
@@ -296,31 +296,43 @@ def cls_edition_courses(request):
         return redirect("matscholar_app:dashboard_page")
 
 def cls_edition_classes(request):
-    if(request.method == "POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
-        if(request.session.get("actual_course")):
-            # Caso o usuário já tenha inserido alguma sala já anteriormente e quer inserir mais
-            course_id=request.session.get("actual_course")
-        else:
-            course_id=request.POST.get("course")
+    try:
 
-        valid_course_id=python_functions.validate_ids_entries(entry=course_id)
-        if (valid_course_id):
-            valid_course_id=valid_course_id[0]
-            classes_query=python_functions.principal_cls_edition_get_open_classes(request,valid_course_id)
-            if classes_query:
-                context={
-                    "classes_query":classes_query,
-                }
-                return render(request,"cls_edition_classes.html",context=context)
+        if(request.method == "POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
+            course_id=request.POST.get("course")
+            valid_course_id=python_functions.validate_ids_entries(entry=course_id)
+            if (valid_course_id):
+                valid_course_id=valid_course_id[0]
+                classes_query=python_functions.principal_cls_edition_get_open_classes(request,valid_course_id)
+                if classes_query:
+                    context={
+                        "classes_query":classes_query,
+                    }
+                    return render(request,"cls_edition_classes.html",context=context)
+                else:
+                    return redirect("matscholar_app:dashboard_page")
             else:
+                messages.error(request,"Algum dado inválido foi enviado !")
                 return redirect("matscholar_app:dashboard_page")
+            
         else:
-            messages.error(request,"Algum dado inválido foi enviado !")
             return redirect("matscholar_app:dashboard_page")
-        
-    else:
+    except (IndexError,TypeError,ValueError):
+        messages.error(request,"Alteração indevida no formulário!")
         return redirect("matscholar_app:dashboard_page")
 
 def cls_edition_page(request):
-    pass
-    # TODO
+    if(request.method=="POST" and "Princ" in request.session.get("permissions") and request.session.get("id")):
+        try:
+             valid_class_id=python_functions.validate_ids_entries(request.POST.get("class"))
+             if valid_class_id:
+                valid_class_id=valid_class_id[0]
+                classes_query=python_functions.principal_cls_edition_get_all_info_classes(request,valid_class_id)
+                # TODO
+        except (IndexError,TypeError,ValueError):
+            messages.error(request,"Alteração indevida no formulário!")
+            return redirect("matscholar_app:dashboard_page")
+    else:
+        return redirect("matscholar_app:dashboard_page")
+    
+    

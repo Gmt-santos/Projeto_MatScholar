@@ -319,8 +319,81 @@ def search_students_by_RA(request,RA:str)->dict|bool:
             cursor.close() 
         if conn is not None:
             conn.close()
- 
 
+'''
+ Busca as aulas que um determinado estudante tem no banco de dados
+ Utilizado na entrada do dashboard_page
+ '''
+def student_get_classes(request)->list[dict]|bool:  
+    conn,cursor=None,None
+    student_RA=request.session.get("RA")
+    if(student_RA):
+        try:
+            conn,cursor=f.connection_cursor()
+            cursor.execute('select classes.id,classes.name,classes.start_date,classes.end_date,academic_users.name,' \
+            'academic_users.role,academic_users.email from academic_users join classes on academic_users.id=classes.fk_professor ' \
+            'join students_classes_actual on students_classes_actual.id_class=classes.id join students on students."RA" = ' \
+            'students_classes_actual.id_student where students."RA" like %s and classes.open=1',[student_RA,])
+            classes_query=cursor.fetchall()
+            list_classs_query_dicts:list[dict]=[]
+            for register in classes_query:
+                list_classs_query_dicts.append({
+                    "class_id":register[0],
+                    "class_name":register[1],
+                    "start_date":register[2],
+                    "end_date":register[3],
+                    "academic_user_name":register[4],
+                    "academic_user_role":register[5],
+                    "academic_user_email":register[6],
+                })
+            return list_classs_query_dicts
+        except(errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+                DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+            messages.error(request,"Algum dado inválido foi enviado!")
+            return False
+        except errors.UndefinedColumn:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+            messages.error(request,"Algum dado inválido foi enviado!")
+            return False
+        except IndexError:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+            messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+            return False
+        except OperationalError:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+            messages.error(request,"Houve um erro com a conexão do banco de dados!")
+            return False
+        except Exception :
+            if conn:
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+            messages.error(request,"Algum dado inválido foi enviado!")
+            return False
+        finally:
+            if cursor is not None:
+                cursor.close() 
+            if conn is not None:
+                conn.close()
+        
+
+            
+        
+    
 
 '''
 Puxa as salas que professor X dá aula e pode acessar e ver no dashboard
@@ -347,7 +420,8 @@ def professor_get_classes(request)->dict | bool:
             messages.error(request,"Houve um erro na consulta de suas aulas!")
             messages.error(request,f"Erro:{e}")
             return False
-    return False
+    else:
+        return False
 
 '''
 Busca informações das aulas da instituição do diretor/coordenador da sessão
@@ -1132,3 +1206,84 @@ def principal_cls_edition_get_open_classes(request,valid_course_id)->list[tuple]
             cursor.close() 
         if conn is not None:
             conn.close()
+
+'''
+Utiliza o nome da sala digitada no campo de pesquisa pelo usuário do tipo student para procurar uma sala de aula aberta e não abstrata
+, a qual o usuário está vinculado pela tabela student_classes_actual, além de procurar os dados do docente responsável por essa aula
+'''
+
+def students_search_classes_by_classname(request,classname)->list[dict]|bool:
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            class_name_query_like=f.string_to_querylike(classname)
+            cursor.execute('select classes.id,classes.name,classes.start_date,classes.end_date,academic_users.name,' \
+                'academic_users.role,academic_users.email from academic_users join classes on academic_users.id=classes.fk_professor ' \
+                'join students_classes_actual on students_classes_actual.id_class=classes.id join students on students."RA" = ' \
+                'students_classes_actual.id_student where students."RA" like %s and classes.open=1 and classes.name like %s',
+                [request.session.get("RA"),class_name_query_like])
+            classes_query=cursor.fetchall()
+            
+            list_classs_query_dicts:list[dict]=[]
+            for register in classes_query:
+                list_classs_query_dicts.append({
+                    "class_id":register[0],
+                    "class_name":register[1],
+                    "start_date":register[2],
+                    "end_date":register[3],
+                    "academic_user_name":register[4],
+                    "academic_user_role":register[5],
+                    "academic_user_email":register[6],
+                })
+            return list_classs_query_dicts
+        else:
+            messages.error(request,"Houve um erro com a conexão ao banco de dados!")
+            return False
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except errors.UndefinedColumn:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception :
+        if conn:
+            try:
+              conn.rollback()
+            except Exception:
+                pass
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close() 
+        if conn is not None:
+            conn.close()
+
+def principal_cls_edition_get_all_info_classes(request,class_id):
+    conn,cursor=None
+    #TODO
+    

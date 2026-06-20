@@ -125,6 +125,7 @@ a{
     margin:20px;
     padding:20px;
     box-shadow:2px 2px 2px 1px black;
+    
 }
 .professor_class_title_p{
     font-family:Chakra;
@@ -141,7 +142,7 @@ a{
     font-size:15px;
 }
 .professor_class_access_button_a{
-    width:200px;
+    width:250px;
     height:30px;
     border-radius: var(--border-radius);
     background-color:var(--color-darkblue);
@@ -152,6 +153,7 @@ a{
     transition-duration:0.5s;
     transition-property: background-color;
     cursor:pointer;
+    font-family: Chakra;
 }
 .professor_class_access_button_a:hover{
      transition-property: background-color;
@@ -179,4 +181,18 @@ a{
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
+}
+
+/* Parte do aluno */
+.student_class_div{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color:white;
+    border-radius: var(--border-radius);
+    width:400px;
+    height:300px;
+    margin:20px;
+    padding:20px;
+    box-shadow:2px 2px 2px 1px black;
 }

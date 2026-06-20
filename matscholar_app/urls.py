@@ -12,6 +12,7 @@ urlpatterns = [
     path('dashboard/',view=views.dashboard_page,name='dashboard_page'),
     path('dashboard/query_classname/',view=views.query_classname,name='query_classname'),
     path('dashboard/query_professorname/',view=views.query_professorname,name='query_professorname'),
+    path('dashboard/std_query_classname/',view=views.student_query_classname,name="student_query_classname"),
     #       Student_creation        #
     path('dashboard/principal/std_creation_courses/',view=views.std_creation_courses,name="std_creation_courses"),
     path('dashboard/principal/std_creation_forms/',view=views.std_creation_forms,name="std_creation_forms"),
