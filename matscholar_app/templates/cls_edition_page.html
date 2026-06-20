@@ -1,0 +1,72 @@
+{% extends "general/header_footer_dashboard.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/specific/style_cls_creation.css' %}">
+<div class="cls_edition_div_organizer_div">
+
+
+    <form method="POST" action="{% url 'matscholar_app:cls_creation_operation'%}" class="form_edition_compact_form">
+     {% csrf_token %}
+     <input type="hidden" name="course_id" id="course_id" value="">
+        <div class="forms_title_div">
+            <img class="logo_forms_title_img" src="{% static 'images/logo.png' %}" alt="">
+            <p class="logo_forms_title_p">MatScholar</p>
+        </div>
+        <p class="logo_forms_title_p">{{class_query.class_name}}</p>
+        
+   
+
+        
+
+        <p class="forms_aux_input_p">Data de início</p>
+        <input class="forms_input" type="date" name="start_date" id="start_date" value="{{class_query.class_start_date}}"required >
+        <p class="forms_aux_input_p">Data de fim</p>
+        <input class="forms_input" type="date" name="end_date" id="end_date" value="{{class_query.class_end_date}}" required >
+        <p class="forms_aux_minor_input_p">Atente-se a ordem das datas</p>
+
+        <p class="forms_aux_input_p">Máximo de alunos: {{class_query.class_max_students}}</p>
+        <p class="forms_aux_input_p">Alunos atuais: {{qty_students}}</p>
+        
+
+        <p class="forms_aux_input_p">Docente responsável: {{class_query.academic_user_role}} {{class_query.academic_user_name}}</p>
+        <select class="academic_users_select"name="academic_user" id="academic_user">
+            {% for academic_user in academic_users %}
+                {% if academic_user.id == class_query.academic_user_id %}
+                    <option selected value="{{academic_user.id}}">{{academic_user.name}}</option>
+                {% else %}
+                    <option value="{{academic_user.id}}">{{academic_user.name}}</option>
+                {% endif %}
+                
+            {% endfor %}
+        </select>
+    
+        <div style="margin-top:20px;display:flex;justify-content:center;align-items:center;flex-direction:column">
+            
+           <input type="submit" class="forms_submit_input" value="Atualizar"> 
+        </div>
+    </form>
+     <div class="div_organizer_edition_buttons_div">
+        <p class="p_toggle_forms_p" id="toggle_class_name" onclick="toggle_form_add_students_visibility()">Adicionar estudantes</p>
+
+        <form action="{% url "matscholar_app:cls_edition_add_student_page" qty_students class_query.class_max_students %}" method="POST" class="forms_edit_attribute_form fechado" id="form_add_students">
+             {% csrf_token %}
+            <p class="forms_aux_input_p">Número de estudantes adicionados: </p>
+            <input class="forms_input" type="text" name="new_std_number" id="new_std_number" placeholder="Número" required >
+            <input class="forms_submit_edition_cls_input"type="submit" value="Avançar">
+        </form>
+        <p class="p_toggle_forms_p" id="toggle_class_name" onclick="toggle_form_remove_students_visibility()">Apagar estudantes</p>
+
+        <form action="" method="POST" class="forms_edit_attribute_form fechado" id="form_remove_students">
+             {% csrf_token %}
+            <input class="forms_submit_edition_cls_input"type="submit" value="Visualizar estudantes">
+        </form>
+        <p class="p_toggle_forms_p alert_color_background" id="toggle_class_name" onclick="toggle_form_delete_class_visibility()">Apagar sala</p>
+
+        <form action="" method="POST" class="forms_edit_attribute_form fechado" id="form_delete_class">
+             {% csrf_token %}
+            <input class="forms_submit_edition_cls_input alert_color_background"type="submit" value="Apagar sala">
+        </form>
+     </div>
+
+</div>
+{% endblock content %}

@@ -327,8 +327,27 @@ def cls_edition_page(request):
              valid_class_id=python_functions.validate_ids_entries(request.POST.get("class"))
              if valid_class_id:
                 valid_class_id=valid_class_id[0]
-                classes_query=python_functions.principal_cls_edition_get_all_info_classes(request,valid_class_id)
-                # TODO
+                
+                class_query,qty_students=python_functions.principal_cls_edition_get_all_info_classes(request,valid_class_id)
+                academic_users_query=python_functions.search_professors_by_institution(request)
+                if academic_users_query:
+                    academic_users_query_list_of_dict=python_functions.generate_academic_users_query_listofdict(academic_users_query)
+                else:
+                    return redirect("matscholar_app:dashboard_page")
+                
+                if class_query and qty_students >=0 and request.session.get("actual_class_id"):
+                    context={
+                        "class_query":class_query,
+                        "qty_students":qty_students,
+                        "academic_users":academic_users_query_list_of_dict,
+                    }
+                    
+                    return render(request,"cls_edition_page.html",context=context)
+                else:
+                   
+                    messages.error(request,"Erro ao consultar esse curso!")
+                    return redirect("matscholar_app:dashboard_page")
+                
         except (IndexError,TypeError,ValueError):
             messages.error(request,"Alteração indevida no formulário!")
             return redirect("matscholar_app:dashboard_page")
@@ -336,3 +355,20 @@ def cls_edition_page(request):
         return redirect("matscholar_app:dashboard_page")
     
     
+def cls_edition_deletion(request):
+        if(request.method=="POST" and "Princ" in request.session.get("permissions") and request.session.get("id")
+            and request.session.get("actual_class_id")):
+            try:
+                pass
+            except (IndexError,TypeError,ValueError):
+                messages.error(request,"Alteração indevida no formulário!")
+                return redirect("matscholar_app:dashboard_page")
+            
+def cls_edition_add_student_page(request,actual_students,max_students):
+    if(request.method=="POST" and "Princ" in request.session.get("permissions") and request.session.get("id")
+        and request.session.get("actual_class_id")):
+        pass
+def cls_edition_remove_student_page(request):
+    if(request.method=="POST" and "Princ" in request.session.get("permissions") and request.session.get("id")
+        and request.session.get("actual_class_id")):
+        pass

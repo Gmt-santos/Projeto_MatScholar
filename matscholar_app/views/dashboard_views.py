@@ -12,7 +12,8 @@ def dashboard_page(request):
         del request.session["actual_class_initial"]
     if request.session.get("actual_course"):
         del request.session["actual_course"]
-
+    if request.session.get("actual_class_id"):
+        del request.session["actual_class_id"]
 
     if(request.session.get("id")):
         if("Prof" in request.session.get("permissions")):

@@ -10,6 +10,15 @@ from django.core.cache import cache
 Funções em Python
 Serão descritas antes de sua definição
 '''
+
+'''
+Faz um rollback das operações de conn de maneira segura
+'''
+def safe_rollback(conn)->None:
+    try:
+        conn.rollback()
+    except Exception:
+        pass
 '''
 Gera RAs e verifica se eles existem no banco de dados,caso não,retorna o RA
 '''
@@ -109,32 +118,20 @@ def get_and_validate_class(request,valid_id)->list[tuple]:
         
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
             DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError,errors.UndefinedColumn):
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except IndexError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Alteração no formulário detectada! Operação abortada!")
         return False
     except OperationalError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Houve um erro com a conexão do banco de dados!")
         return False
     except Exception :
         if conn:
-            try:
-              conn.rollback()
-            except Exception:
-                pass
+            safe_rollback(conn)
         messages.error(request,"Erro desconhecido!")
         return False
     finally:
@@ -210,39 +207,24 @@ def search_academic_users_by_email(request,email:str)->dict:
           return False
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
             DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except errors.UndefinedColumn:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except IndexError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Alteração no formulário detectada! Operação abortada!")
         return False
     except OperationalError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Houve um erro com a conexão do banco de dados!")
         return False
     except Exception :
         if conn:
-            try:
-              conn.rollback()
-            except Exception:
-                pass
+            safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     finally:
@@ -279,31 +261,19 @@ def search_students_by_RA(request,RA:str)->dict|bool:
             raise EmptyResultSet
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
             DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except errors.UndefinedColumn:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except IndexError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Alteração no formulário detectada! Operação abortada!")
         return False
     except OperationalError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Houve um erro com a conexão do banco de dados!")
         return False
     except Exception :
@@ -349,39 +319,24 @@ def student_get_classes(request)->list[dict]|bool:
             return list_classs_query_dicts
         except(errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
                 DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-            try:
-                conn.rollback()
-            except Exception:
-                pass
+            safe_rollback(conn)
             messages.error(request,"Algum dado inválido foi enviado!")
             return False
         except errors.UndefinedColumn:
-            try:
-                conn.rollback()
-            except Exception:
-                pass
+            safe_rollback(conn)
             messages.error(request,"Algum dado inválido foi enviado!")
             return False
         except IndexError:
-            try:
-                conn.rollback()
-            except Exception:
-                pass
+            safe_rollback(conn)
             messages.error(request,"Alteração no formulário detectada! Operação abortada!")
             return False
         except OperationalError:
-            try:
-                conn.rollback()
-            except Exception:
-                pass
+            safe_rollback(conn)
             messages.error(request,"Houve um erro com a conexão do banco de dados!")
             return False
         except Exception :
             if conn:
-                try:
-                    conn.rollback()
-                except Exception:
-                    pass
+                safe_rollback(conn)
             messages.error(request,"Algum dado inválido foi enviado!")
             return False
         finally:
@@ -548,34 +503,22 @@ def academic_users_search_classes_by_classname(request,classname:str)->list[dict
             return False
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
     DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation):
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     
     except errors.UndefinedColumn:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     
     except IndexError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Alteração no formulário detectada! Operação abortada!")
         return False
     
     except OperationalError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Houve um erro com a conexão do banco de dados!")
         return False
     
@@ -618,35 +561,23 @@ def academic_users_search_classes_by_professorname(request,professorname:str)->l
 
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
             DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation):
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except errors.UndefinedColumn:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except IndexError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Alteração no formulário detectada! Operação abortada!")
         return False
     except OperationalError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Houve um erro com a conexão do banco de dados!")
         return False
-    except :
-        conn.rollback()
+    except Exception :
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
     finally:
         if cursor is not None:
@@ -796,37 +727,25 @@ def principal_std_creation_operation(request,password:str,name:str,valid_ra:str,
                 
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
             DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except errors.UndefinedColumn:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except IndexError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Alteração no formulário detectada! Operação abortada!")
         return False
     except OperationalError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Houve um erro com a conexão do banco de dados!")
         return False
     except Exception :
         try:
             if conn:
-             conn.rollback()
+             safe_rollback(conn)
         except Exception:
              pass
         messages.error(request,"Erro desconhecido!")
@@ -898,39 +817,24 @@ def principal_crs_creation_classes(request,name,acronym,e_mec,max_length)->bool:
         
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
             DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except errors.UndefinedColumn:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except IndexError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Alteração no formulário detectada! Operação abortada!")
         return False
     except OperationalError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Houve um erro com a conexão do banco de dados!")
         return False
     except Exception :
         if conn:
-            try:
-              conn.rollback()
-            except Exception:
-                pass
+           safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     finally:
@@ -969,39 +873,24 @@ def principal_cls_creation_get_abs_classes(request,valid_course_id)->list[tuple]
 
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
             DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except errors.UndefinedColumn:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except IndexError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Alteração no formulário detectada! Operação abortada!")
         return False
     except OperationalError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Houve um erro com a conexão do banco de dados!")
         return False
     except Exception :
         if conn:
-            try:
-              conn.rollback()
-            except Exception:
-                pass
+           safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     finally:
@@ -1032,39 +921,24 @@ def search_professors_by_institution(request)->list[tuple]|bool:
                 return False
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
             DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except errors.UndefinedColumn:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except IndexError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Alteração no formulário detectada! Operação abortada!")
         return False
     except OperationalError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Houve um erro com a conexão do banco de dados!")
         return False
     except Exception :
         if conn:
-            try:
-              conn.rollback()
-            except Exception:
-                pass
+            safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     finally:
@@ -1094,39 +968,24 @@ def principal_cls_creation_operation_create_class(request,max_length,class_name,
             return False
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
             DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except errors.UndefinedColumn:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except IndexError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Alteração no formulário detectada! Operação abortada!")
         return False
     except OperationalError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Houve um erro com a conexão do banco de dados!")
         return False
     except Exception :
         if conn:
-            try:
-              conn.rollback()
-            except Exception:
-                pass
+            safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     finally:
@@ -1166,39 +1025,24 @@ def principal_cls_edition_get_open_classes(request,valid_course_id)->list[tuple]
 
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
             DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except errors.UndefinedColumn:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except IndexError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Alteração no formulário detectada! Operação abortada!")
         return False
     except OperationalError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Houve um erro com a conexão do banco de dados!")
         return False
     except Exception :
         if conn:
-            try:
-              conn.rollback()
-            except Exception:
-                pass
+            safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     finally:
@@ -1242,39 +1086,24 @@ def students_search_classes_by_classname(request,classname)->list[dict]|bool:
             return False
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
             DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except errors.UndefinedColumn:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     except IndexError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Alteração no formulário detectada! Operação abortada!")
         return False
     except OperationalError:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
+        safe_rollback(conn)
         messages.error(request,"Houve um erro com a conexão do banco de dados!")
         return False
     except Exception :
         if conn:
-            try:
-              conn.rollback()
-            except Exception:
-                pass
+            safe_rollback(conn)
         messages.error(request,"Algum dado inválido foi enviado!")
         return False
     finally:
@@ -1283,7 +1112,118 @@ def students_search_classes_by_classname(request,classname)->list[dict]|bool:
         if conn is not None:
             conn.close()
 
-def principal_cls_edition_get_all_info_classes(request,class_id):
-    conn,cursor=None
-    #TODO
-    
+'''
+Recebe o id de uma sala e retorna quantos estudantes têm relacionamento com ela por meio da tabela studens_classes_actual
+'''
+def get_qty_students_by_class_id(conn,cursor,request,class_id)->int|bool:
+    try:
+        if conn and cursor:
+            cursor.execute('select count(*) from students join students_classes_actual on' 
+            ' students."RA" = students_classes_actual.id_student where students_classes_actual.id_class=%s and' 
+            ' students.fk_institution=%s',[class_id,request.session.get("institution")])
+            qty_students=cursor.fetchone()
+            qty_students=qty_students[0]
+            
+            return qty_students
+        else:
+            messages.error(request,"Houve um erro com a conexão ao banco de dados!")
+            return False
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except errors.UndefinedColumn:
+        safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        safe_rollback(conn)
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        safe_rollback(conn)
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception :
+        if conn:
+            safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+
+
+
+
+'''
+Adquire todos os dados de:id,nome,data de inicio,data de fim,numero maximo de estudantes,id do professor,nome do professor
+e cargo do professor/profissional da sala escolhida na cls_edition_classes através do class_id(já validado)
+Além disso,chama a função get_qty_students_by_class_id,passando a conexão,cursor e class_id. Sendo retornado o número de
+alunos da sala que detém esse class_id.Retorna os dados mencionados na primeira linha e essa quantidade de alunos em uma 
+tupla
+'''
+
+def principal_cls_edition_get_all_info_classes(request,class_id)->tuple|bool:
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            cursor.execute('select classes.id,classes.name,classes.start_date,classes.end_date,classes.max_students,' \
+            'academic_users.id,academic_users.name,academic_users.role from academic_users join classes on ' \
+            'academic_users.id=classes.fk_professor where ' \
+            'classes.id=%s and academic_users.fk_institution=%s and classes.open=1', \
+            [class_id,request.session.get("institution")])
+            class_query=cursor.fetchone()
+            if class_query:
+                request.session["actual_class_id"]=class_query[0]
+                
+                dict_class={
+                    "class_name":class_query[1],
+                    "class_start_date":f.date_to_string(class_query[2]),
+                    "class_end_date":f.date_to_string(class_query[3]),
+                    "class_max_students":class_query[4],
+                    "academic_user_id":class_query[5],
+                    "academic_user_name":class_query[6],
+                    "academic_user_role":class_query[7],
+                }
+               
+                qty_students=get_qty_students_by_class_id(conn,cursor,request,class_id)
+                if qty_students>=0 and dict_class:
+                    return dict_class,qty_students 
+                else:
+                    return False,False
+            else:
+                messages.error(request,"O curso selecionado não existe na sua instituição de ensino!")
+                return False,False
+        else:
+            messages.error(request,"Houve um erro com a conexão ao banco de dados!")
+            return False,False
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False,False
+    except errors.UndefinedColumn:
+        safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False,False
+    except IndexError:
+        safe_rollback(conn)
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False,False
+    except OperationalError:
+        safe_rollback(conn)
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False,False
+    except Exception :
+        if conn:
+            safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False,False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+
+def principal_cls_edition_delete_class(request):

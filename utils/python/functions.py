@@ -200,3 +200,12 @@ def validate_date(date):
         return date
     else:
         return False
+'''
+Tranforma um objeto do tipo date em uma string
+(Usado mais no frontend)
+'''
+def date_to_string(date)->str:
+    from datetime import datetime
+    str_date=date.strftime("%Y-%m-%d")
+  
+    return str_date

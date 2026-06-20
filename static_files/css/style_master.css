@@ -18,7 +18,14 @@
 .solid_header_background{
    background-color: rgb(5,44,101,1)!important;
 }
-
+.alert_color_background{
+    background-color: red !important;
+    color:white;
+}
+.alert_color_background:hover{
+    background-color: rgb(255, 99, 99) !important;
+    
+}
 .centralizar{
     align-items: center;
     justify-content: center;

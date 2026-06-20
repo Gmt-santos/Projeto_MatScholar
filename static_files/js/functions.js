@@ -45,3 +45,16 @@ function toggle_query_professorname_visibility(){
     const forms_class_name=window.document.getElementById("form_professor_name");
     forms_class_name.classList.toggle("fechado");
 }
+
+function toggle_form_add_students_visibility(){
+    const forms_class_name=window.document.getElementById("form_add_students");
+    forms_class_name.classList.toggle("fechado");
+}
+function toggle_form_remove_students_visibility(){
+    const forms_class_name=window.document.getElementById("form_remove_students");
+    forms_class_name.classList.toggle("fechado");
+}
+function toggle_form_delete_class_visibility(){
+    const forms_class_name=window.document.getElementById("form_delete_class");
+    forms_class_name.classList.toggle("fechado");
+}
