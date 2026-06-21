@@ -118,6 +118,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+# Máximo de tempo que a sessão pode ficar acessível. Nesse caso, 86400 segundos ou 1 dia
+SESSION_COOKIE_AGE = 86400
 
 
 # Internationalization

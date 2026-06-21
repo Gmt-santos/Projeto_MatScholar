@@ -48,7 +48,7 @@
      <div class="div_organizer_edition_buttons_div">
         <p class="p_toggle_forms_p" id="toggle_class_name" onclick="toggle_form_add_students_visibility()">Adicionar estudantes</p>
 
-        <form action="{% url "matscholar_app:cls_edition_add_student_page" qty_students class_query.class_max_students %}" method="POST" class="forms_edit_attribute_form fechado" id="form_add_students">
+        <form action="{% url 'matscholar_app:cls_edition_add_student_page' qty_students class_query.class_max_students %}" method="POST" class="forms_edit_attribute_form fechado" id="form_add_students">
              {% csrf_token %}
             <p class="forms_aux_input_p">Número de estudantes adicionados: </p>
             <input class="forms_input" type="text" name="new_std_number" id="new_std_number" placeholder="Número" required >
@@ -56,14 +56,15 @@
         </form>
         <p class="p_toggle_forms_p" id="toggle_class_name" onclick="toggle_form_remove_students_visibility()">Apagar estudantes</p>
 
-        <form action="" method="POST" class="forms_edit_attribute_form fechado" id="form_remove_students">
+        <form action="{% url 'matscholar_app:cls_edition_remove_student_page' %}" method="POST" class="forms_edit_attribute_form fechado" id="form_remove_students">
              {% csrf_token %}
             <input class="forms_submit_edition_cls_input"type="submit" value="Visualizar estudantes">
         </form>
         <p class="p_toggle_forms_p alert_color_background" id="toggle_class_name" onclick="toggle_form_delete_class_visibility()">Apagar sala</p>
 
-        <form action="" method="POST" class="forms_edit_attribute_form fechado" id="form_delete_class">
+        <form action="{% url 'matscholar_app:cls_edition_deletion'%}" method="POST" class="forms_edit_attribute_form fechado" id="form_delete_class">
              {% csrf_token %}
+             <p class="forms_aux_input_p">Atenção, essa alteração não poderá ser desfeita!</p>
             <input class="forms_submit_edition_cls_input alert_color_background"type="submit" value="Apagar sala">
         </form>
      </div>

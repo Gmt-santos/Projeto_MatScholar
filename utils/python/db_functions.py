@@ -10,7 +10,13 @@ from django.core.cache import cache
 Funções em Python
 Serão descritas antes de sua definição
 '''
-
+def delete_cache_key(request,key:str):
+    try:
+        cache.delete(key=key)
+        return True
+    except r_exceptions as exception:
+        messages.error(request,"Erro na operação com o cache!")
+        return False
 '''
 Faz um rollback das operações de conn de maneira segura
 '''
@@ -962,6 +968,7 @@ def principal_cls_creation_operation_create_class(request,max_length,class_name,
             cursor.execute("insert into classes_courses(id,id_class,id_course)values(%s,%s,%s)",
                            [f"{new_class_id}-{request.session.get("actual_course")}",new_class_id,request.session.get("actual_course")])
             conn.commit()
+            
             return True
         else:
             messages.error(request,"Houve um erro com a conexão ao banco de dados!")
@@ -1225,5 +1232,150 @@ def principal_cls_edition_get_all_info_classes(request,class_id)->tuple|bool:
         if conn is not None:
             conn.close()
 
-
+'''
+Deleta uma sala e todos os seus registros relacionados,como tarefas,notas,alunos-sala e seu registro no cache
+'''
 def principal_cls_edition_delete_class(request):
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            cursor.execute("delete from assignments where fk_class = %s",[request.session.get("actual_class_id"),])
+            cursor.execute("delete from final_grades where id_class = %s",[request.session.get("actual_class_id"),])
+            cursor.execute("delete from classes_courses where id_class=%s returning id_course",[request.session.get("actual_class_id"),])
+            course_id=cursor.fetchone()[0]
+            cursor.execute("delete from students_classes_actual where id_class= %s",[request.session.get("actual_class_id"),])
+            cursor.execute("delete from classes where id = %s ",[request.session.get("actual_class_id"),])
+            if(delete_cache_key(f"open_classes:{course_id}-{request.session.get("institution")}")):
+                conn.commit()
+                del request.session["actual_class_id"]
+                messages.success(request,"Aula excluída com sucesso!")
+                return True
+            else:
+                messages.error(request,"Algum erro na exclusão ocorreu!")
+                safe_rollback(conn)
+                return False
+        else:
+            messages.error(request,"Houve um erro com a conexão do banco de dados!")
+            return False
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        safe_rollback(conn)
+        messages.error(request,"Algum erro na exclusão ocorreu!")
+        return False
+    except errors.UndefinedColumn:
+        safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        safe_rollback(conn)
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        safe_rollback(conn)
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception as e :
+        if conn:
+            safe_rollback(conn)
+        messages.error(request,"Erro desconhecido!")
+        messages.error(request,f"Erro:{e}")
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+def principal_cls_edition_get_all_students(request):
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            cursor.execute('select students."RA",students.name from students join students_classes_actual on ' \
+            'students."RA" = students_classes_actual.id_student where students_classes_actual.id_class = %s and ' \
+            'students.fk_institution = %s',[request.session.get("actual_class_id"),request.session.get("institution")])
+            students_query:list[tuple]=cursor.fetchall()
+            return students_query
+        else:
+            messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        safe_rollback(conn)
+        messages.error(request,"Algum erro na consulta ocorreu!")
+        return False
+    except errors.UndefinedColumn:
+        safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        safe_rollback(conn)
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        safe_rollback(conn)
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception as e :
+        if conn:
+            safe_rollback(conn)
+        messages.error(request,"Erro desconhecido!")
+        messages.error(request,f"Erro:{e}")
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+def principal_cls_edition_del_students(request):
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            list_RA=request.POST.getlist("students_RA")
+            list_opt_del=request.POST.getlist("students_opt_del")
+            if len(list_RA)==len(list_opt_del):
+                for i in range(0,len(list_RA)):
+                    if f.validate_ids_entries(list_RA[i]):
+                        if list_opt_del[i] == "1":
+                            pass
+                        elif list_opt_del[i] == "0":
+                            pass
+                        else:
+                            pass
+                    else:
+                        pass
+            else:
+                pass
+            print(list_RA)
+        else:
+            messages.error(request,"Houve um erro com a conexão ao banco de dados!")
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        safe_rollback(conn)
+        messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
+        return False
+    except errors.UndefinedColumn:
+        safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        safe_rollback(conn)
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        safe_rollback(conn)
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception as e :
+        if conn:
+            safe_rollback(conn)
+        messages.error(request,"Erro desconhecido!")
+        messages.error(request,f"Erro:{e}")
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()

@@ -198,3 +198,46 @@
     background-color: rgb(247, 247, 247);
     transition-duration: 1s;
 }
+/* cls_edition_view_std */
+
+.forms_std_deletion_div{
+    display: flex;
+    flex-direction: row;
+    width:700px;
+    height:fit-content;
+    padding:20px;   
+    justify-content:space-around;
+    align-items: center;
+    gap:100px;
+}
+
+.RA_and_name_p{
+    font-family: Chakra;
+    font-size: 14px;
+    font-weight: bold;
+
+}   
+
+select{
+     font-family: Chakra;
+    font-size:14px;
+    border-radius: 10px;
+    border-style:none;
+   
+    height: 30px;
+    background-color: var(--color-gray);
+    cursor:pointer;
+    width: 50px;
+}
+.forms_being_processed_div{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: var(--border-radius);
+    width:700px;
+    height:fit-content;
+    justify-content: center;
+    align-items: center;
+    padding:20px;
+    margin-top: 100px;
+}

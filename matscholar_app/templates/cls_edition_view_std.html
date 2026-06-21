@@ -1,0 +1,45 @@
+{% extends "general/header_footer_dashboard.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/specific/style_cls_creation.css' %}">
+{% if deletion %}
+<form action="{% url "matscholar_app:cls_edition_remove_student_operation" %}"method="POST" class="forms_being_processed_div">
+{% else %}
+<div class="forms_being_processed_div">
+{% endif %}
+{% csrf_token %}
+ <p class="logo_forms_title_p">Selecione os alunos que quer retirar da sala:</p>
+        {% for student in students %}
+
+        <div class="forms_std_deletion_div">
+            <div>
+                <input type="hidden" value="{{student.RA}}" name="students_RA" readonly>
+                <p class="RA_and_name_p">RA: {{student.RA}}</p>
+                <p class="RA_and_name_p">Nome: {{student.name}}</p>
+            </div>
+            {% if deletion %}
+            <div>
+                <label class="forms_aux_input_p"for="select">Deletar</label>
+                <select name="students_opt_del">
+                    <option value="1">Sim</option>
+                    <option value="0" selected >Não</option>
+                </select>
+           
+            </div>
+            {% endif %}
+        </div>
+
+
+        {% endfor %}
+        {% if deletion %}
+            <input class="forms_submit_input"type="submit" value="Avançar">
+        {% endif %}
+{% if deletion %}
+</form>
+{% else %}
+</div>
+{% endif %}
+
+{% endblock content %}
+
+

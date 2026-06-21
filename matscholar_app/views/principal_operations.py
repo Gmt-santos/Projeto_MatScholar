@@ -265,6 +265,11 @@ def cls_creation_operation(request):
                         
                         messages.success(request,f"A aula {class_name} foi inserida com sucesso!")
                         return render(request,"cls_creation_again.html")
+                    else:
+                        return redirect("matscholar_app:dashboard_page")
+                else:
+                     messages.error(request,"Alteração indevida no formulário!")
+                     return redirect("matscholar_app:dashboard_page")
                     
             else:
                 messages.error(request,"Algum dado inválido foi enviado pelo formulário")
@@ -359,7 +364,9 @@ def cls_edition_deletion(request):
         if(request.method=="POST" and "Princ" in request.session.get("permissions") and request.session.get("id")
             and request.session.get("actual_class_id")):
             try:
-                pass
+                python_functions.principal_cls_edition_delete_class(request)
+                return redirect("matscholar_app:dashboard_page")
+                   
             except (IndexError,TypeError,ValueError):
                 messages.error(request,"Alteração indevida no formulário!")
                 return redirect("matscholar_app:dashboard_page")
@@ -371,4 +378,21 @@ def cls_edition_add_student_page(request,actual_students,max_students):
 def cls_edition_remove_student_page(request):
     if(request.method=="POST" and "Princ" in request.session.get("permissions") and request.session.get("id")
         and request.session.get("actual_class_id")):
-        pass
+        try:
+            students_query=python_functions.principal_cls_edition_get_all_students(request)
+            if students_query:
+                context={
+                    "students":python_functions.generate_student_query_listofdict(students_query),
+                    "deletion":True
+                }
+                return render(request,"cls_edition_view_std.html",context=context)
+            else:
+                return redirect("matscholar_app:dashboard_page")
+            
+        except (IndexError,TypeError,ValueError):
+            messages.error(request,"Alteração indevida no formulário!")
+            return redirect("matscholar_app:dashboard_page")
+
+def cls_edition_remove_student_operation(request):
+    python_functions.principal_cls_edition_del_students(request)
+    pass

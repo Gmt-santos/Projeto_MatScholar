@@ -188,6 +188,14 @@ def generate_academic_users_query_listofdict(academic_users_query)->list[dict]:
             "name":tupla[1],
         })
     return lista_dicts
+def generate_student_query_listofdict(students_query)->list[dict]:
+    lista_dicts:list[dict]=[]
+    for tupla in students_query:
+        lista_dicts.append({
+            "RA":tupla[0],
+            "name":tupla[1],
+        })
+    return lista_dicts
 '''
 Verifica se a data enviada é válida, ou seja, é uma data futura
 '''
