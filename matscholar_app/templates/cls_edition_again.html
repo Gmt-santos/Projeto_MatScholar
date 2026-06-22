@@ -4,22 +4,20 @@
     <link rel="stylesheet" href="{% static 'css/specific/style_cls_creation.css'%}">
   
         <div class="courses_select_div">
-            <p class="courses_p">Deseja cadastrar mais aulas?</p>
-                  <form action="{% url 'matscholar_app:cls_creation_abs_classes'%}" method="POST">
+            <p class="courses_p">Deseja editar mais?</p>
+                  <form action="{% url 'matscholar_app:cls_edition_page'%}" method="POST">
                      {% csrf_token %}
                      <input type="submit" value="Sim" class="again_button_input">
                   </form>
                   <form action="{% url 'matscholar_app:dashboard_page'%}" method="POST">
                     {% csrf_token %}
                     <input type="submit" value="Tela de início" class="again_button_input">
-                  
                   </form>
-                  {% if messages %}
-                      {% for message in messages %}
-                          {% include "specific/messages.html" %}
-                      {% endfor %}
-                  {% endif %}
+
         </div>
-        
-    
+        {% if messages %}
+            {% for message in messages %}
+                 {% include "specific/messages.html" %}
+            {% endfor %}
+        {% endif %}
 {% endblock content %}

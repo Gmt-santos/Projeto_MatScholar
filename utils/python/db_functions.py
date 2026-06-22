@@ -295,6 +295,58 @@ def search_students_by_RA(request,RA:str)->dict|bool:
             cursor.close() 
         if conn is not None:
             conn.close()
+'''
+Busca os estudantes pelo curso através do id da sala
+Utilizado ao adicionar alunos nas salas
+'''
+def search_students_by_course(request,actual_class_id)->list[dict]|bool:
+        conn,cursor=None,None
+    # try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            cursor.execute('select students."RA",students.name from students where students.fk_course = ' \
+            'any(select courses.id from courses join classes_courses on courses.id=classes_courses.id_course where ' \
+            'classes_courses.id_class = %s)',(actual_class_id,))
+            students_query=cursor.fetchall()
+            print(students_query)
+            if students_query:
+                students_query_listofdict=f.generate_student_query_listofdict(students_query)
+                return students_query_listofdict
+            else:
+                messages.error(request,"Não há estudantes no seu curso!")
+                return False
+        else:
+            messages.error(request,"Houve um erro com a conexão do banco de dados!")
+            return False
+    # except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+    #         DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+    #     safe_rollback(conn)
+    #     messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
+    #     return False
+    # except errors.UndefinedColumn:
+    #     safe_rollback(conn)
+    #     messages.error(request,"Algum dado inválido foi enviado!")
+    #     return False
+    # except IndexError:
+    #     safe_rollback(conn)
+    #     messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+    #     return False
+    # except OperationalError:
+    #     safe_rollback(conn)
+    #     messages.error(request,"Houve um erro com a conexão do banco de dados!")
+    #     return False
+    # except Exception as e :
+    #     if conn:
+    #         safe_rollback(conn)
+    #     messages.error(request,"Erro desconhecido!")
+    #     messages.error(request,f"Erro:{e}")
+    #     return False
+    # finally:
+    #     if cursor is not None:
+    #         cursor.close()
+    #     if conn is not None:
+    #         conn.close()
+    
 
 '''
  Busca as aulas que um determinado estudante tem no banco de dados
@@ -1286,8 +1338,11 @@ def principal_cls_edition_delete_class(request):
             cursor.close()
         if conn is not None:
             conn.close()
-
-def principal_cls_edition_get_all_students(request):
+'''
+Pega todos os estudantes de uma determinada sala e retorna uma lista de tuplas com seus RAs e nomes
+Usada na exclusão dos relacionamentos entre estudante e sala
+'''
+def principal_cls_edition_get_all_students_by_class(request)->list[tuple]|bool:
     conn,cursor=None,None
     try:
         conn,cursor=f.connection_cursor()
@@ -1327,30 +1382,62 @@ def principal_cls_edition_get_all_students(request):
             cursor.close()
         if conn is not None:
             conn.close()
-
+'''
+É a operação de exclusão de um estudante com sua sala,exclui os
+relacionamentos assignments,final_grades e students_classes_actual
+'''
 def principal_cls_edition_del_students(request):
+    from psycopg2.extras import execute_values
     conn,cursor=None,None
     try:
         conn,cursor=f.connection_cursor()
         if conn and cursor:
             list_RA=request.POST.getlist("students_RA")
             list_opt_del=request.POST.getlist("students_opt_del")
+            list_del_RA=[]
             if len(list_RA)==len(list_opt_del):
+                if "1" not in list_opt_del:
+                    return True
                 for i in range(0,len(list_RA)):
+
                     if f.validate_ids_entries(list_RA[i]):
+
                         if list_opt_del[i] == "1":
-                            pass
-                        elif list_opt_del[i] == "0":
-                            pass
-                        else:
-                            pass
+                            list_del_RA.append(list_RA[i])
+    
+
+                        elif list_opt_del[i] != "0":
+                            messages.error(request,"Algum dado inválido foi enviado!")
+                            return False
+            
                     else:
-                        pass
+                        messages.error(request,"Algum dado inválido foi enviado!")
+                        return False
+                
+                cursor.execute('delete from assignments where fk_id_student = any(%s) and fk_class=%s',
+                               [list_del_RA,request.session.get("actual_class_id")])
+                cursor.execute('delete from final_grades where id_student =any(%s) and id_class=%s',
+                               [list_del_RA,request.session.get("actual_class_id")])
+                cursor.execute('delete from students_classes_actual where id_class=%s and id_student in(select "RA" ' \
+                'from students where students.fk_institution = %s and students."RA" = any(%s)) returning id_student',
+                [request.session.get("actual_class_id"),request.session.get("institution"),list_del_RA])
+                if(len(cursor.fetchall()) == len(list_del_RA)):
+                    conn.commit()
+                    return True
+                else:
+                    safe_rollback(conn)
+                    return False
+                
+            
             else:
-                pass
-            print(list_RA)
+               
+                messages.error(request,"Algum dado inválido foi enviado!")
+                return False
+                
+          
         else:
             messages.error(request,"Houve um erro com a conexão ao banco de dados!")
+            return False
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
             DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
         safe_rollback(conn)
@@ -1379,3 +1466,4 @@ def principal_cls_edition_del_students(request):
             cursor.close()
         if conn is not None:
             conn.close()
+

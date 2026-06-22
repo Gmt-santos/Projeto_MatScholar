@@ -1,0 +1,37 @@
+{% extends "general/header_footer_dashboard.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/specific/style_cls_creation.css'%}">
+{% if students %}
+    <form action="{% url "matscholar_app:cls_edition_remove_student_operation" %}"method="POST" class="forms_being_processed_div">
+        {% csrf_token %}
+        <p class="logo_forms_title_p">Selecione os alunos que quer adicionar na sala:</p>
+            {% for i in new_std_number %}
+
+            <div class="forms_std_add_div">
+                
+            
+                <div>
+                    <label class="forms_aux_input_p"for="select">Adicionar:</label>
+                    <select name="students_opt_del" class="select_add_students">
+                        {% for student in students %}
+                            <option value="{{student.RA}}">{{student.RA}}-{{student.name}}</option>
+                        {% endfor %}
+                    </select>
+            
+                </div>
+            
+            </div>
+
+
+            {% endfor %}
+            <input class="forms_submit_input"type="submit" value="Adicionar">
+    </form>
+{% else %}
+    <form action="{% url "matscholar_app:cls_edition_page" %}"method="POST" class="forms_being_processed_div">
+         {% csrf_token %}
+        <p class="logo_forms_title_p">Nenhum estudante encontrado!</p>
+    <input class="forms_submit_input"type="submit" value="Voltar">
+    </form>
+{% endif %}
+{% endblock content %}

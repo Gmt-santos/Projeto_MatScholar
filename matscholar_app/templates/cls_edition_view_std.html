@@ -13,7 +13,7 @@
 
         <div class="forms_std_deletion_div">
             <div>
-                <input type="hidden" value="{{student.RA}}" name="students_RA" readonly>
+                <input type="hidden" value="{{student.RA}}" name="students_RA">
                 <p class="RA_and_name_p">RA: {{student.RA}}</p>
                 <p class="RA_and_name_p">Nome: {{student.name}}</p>
             </div>
@@ -32,7 +32,7 @@
 
         {% endfor %}
         {% if deletion %}
-            <input class="forms_submit_input"type="submit" value="Avançar">
+            <input class="forms_submit_input"type="submit" value="Deletar">
         {% endif %}
 {% if deletion %}
 </form>
