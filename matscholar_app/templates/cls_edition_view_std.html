@@ -3,12 +3,17 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/specific/style_cls_creation.css' %}">
 {% if deletion %}
-<form action="{% url "matscholar_app:cls_edition_remove_student_operation" %}"method="POST" class="forms_being_processed_div">
+<form action=""method="POST" class="forms_being_processed_div">
 {% else %}
 <div class="forms_being_processed_div">
 {% endif %}
-{% csrf_token %}
- <p class="logo_forms_title_p">Selecione os alunos que quer retirar da sala:</p>
+        {% if deletion %}
+        {% csrf_token %}
+        <p class="logo_forms_title_p">Selecione os alunos que quer retirar da sala:</p>
+        {% else %}
+        <p class="logo_forms_title_p">Alunos</p>
+        {% endif %}
+    
         {% for student in students %}
 
         <div class="forms_std_deletion_div">
@@ -32,8 +37,16 @@
 
         {% endfor %}
         {% if deletion %}
-            <input class="forms_submit_input"type="submit" value="Deletar">
+            <input class="forms_submit_input" formaction="{% url 'matscholar_app:cls_edition_add_student_operation' %}" type="submit" value="Deletar">
+            <input class="forms_submit_input" formaction="{% url 'matscholar_app:cls_edition_page' %}" type="submit" value="Voltar">
+        {% else%}
+
+        <form method="POST"action="{% url 'matscholar_app:cls_edition_page'%}">
+            {% csrf_token %}
+            <input class="forms_submit_input" formaction="{% url 'matscholar_app:cls_edition_page' %}" type="submit" value="Voltar">
+        </form>
         {% endif %}
+            
 {% if deletion %}
 </form>
 {% else %}

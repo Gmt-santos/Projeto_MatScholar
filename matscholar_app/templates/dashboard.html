@@ -154,11 +154,11 @@
     <div class="professor_classes_grid_div">
         {% if list_classes %}   
             {% for class in list_classes  %}
-            <form action="" method="POST">
+            <form action="{% url "matscholar_app:cls_edition_page" %}" method="POST">
                 {% csrf_token %}
                 <div class="principal_class_div">
                     <div class="professor_class_identify_name">
-                        <input type="hidden" name="id" id="id-{{class.id}}" value="id-{{class.id}}">
+                        <input type="hidden" name="class" value="{{class.id}}">
                         <p  class="professor_class_title_p">{{class.name}}</p>
                     </div>
                         <p class="professor_class_p">Nome do docente: {{class.professor_name}}</p>
@@ -166,7 +166,7 @@
                         <p class="professor_class_p">Data de início: {{class.start_date}}</p>
                         <p  class="professor_class_p">Data de fim: {{class.end_date}}</p>
                 
-                    <a class="professor_class_access_button_a centralizar">Acessar</a>
+                    <input type="submit"class="professor_class_access_button_a centralizar" value="Acessar">
                 </div>
             </form>
             {% endfor %}

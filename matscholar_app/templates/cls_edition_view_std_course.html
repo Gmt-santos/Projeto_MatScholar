@@ -3,7 +3,7 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/specific/style_cls_creation.css'%}">
 {% if students %}
-    <form action="{% url "matscholar_app:cls_edition_remove_student_operation" %}"method="POST" class="forms_being_processed_div">
+    <form action=""method="POST" class="forms_being_processed_div">
         {% csrf_token %}
         <p class="logo_forms_title_p">Selecione os alunos que quer adicionar na sala:</p>
             {% for i in new_std_number %}
@@ -25,7 +25,9 @@
 
 
             {% endfor %}
-            <input class="forms_submit_input"type="submit" value="Adicionar">
+            <input class="forms_submit_input"type="submit" formaction="{% url 'matscholar_app:cls_edition_add_student_operation' %}"value="Adicionar">
+            <input class="forms_submit_input"type="submit" formaction="{% url 'matscholar_app:cls_edition_page' %}"value="Voltar">
+            
     </form>
 {% else %}
     <form action="{% url "matscholar_app:cls_edition_page" %}"method="POST" class="forms_being_processed_div">

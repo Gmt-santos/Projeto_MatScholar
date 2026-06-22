@@ -201,12 +201,15 @@ Verifica se a data enviada é válida, ou seja, é uma data futura
 '''
 def validate_date(date):
     from datetime import datetime
-    today=datetime.today()
-    date_format=datetime.strptime(date,"%Y-%m-%d")
-    
-    if date_format >= today:
-        return date
-    else:
+    try:
+        today=datetime.today()
+        date_format=datetime.strptime(date,"%Y-%m-%d")
+        
+        if date_format >= today:
+            return date
+        else:
+            return False
+    except Exception:
         return False
 '''
 Tranforma um objeto do tipo date em uma string
@@ -217,3 +220,18 @@ def date_to_string(date)->str:
     str_date=date.strftime("%Y-%m-%d")
   
     return str_date
+
+'''
+Verifica se a data de fim de uma aula vem depois da data de inicio
+'''
+def validate_start_end_date(start_date,end_date):
+    try:
+        from datetime import datetime
+        start_date_format=datetime.strptime(start_date,"%Y-%m-%d")
+        end_date_format=datetime.strptime(end_date,"%Y-%m-%d")
+        if end_date_format > start_date_format:
+            return start_date,end_date
+        else:
+            return False,False
+    except Exception:
+        return False,False

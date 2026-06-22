@@ -5,7 +5,7 @@
 <div class="cls_edition_div_organizer_div">
 
 
-    <form method="POST" action="{% url 'matscholar_app:cls_creation_operation'%}" class="form_edition_compact_form">
+    <form method="POST" action="{% url 'matscholar_app:cls_edition_update_operation'%}" class="form_edition_compact_form">
      {% csrf_token %}
      <input type="hidden" name="course_id" id="course_id" value="">
         <div class="forms_title_div">
@@ -46,6 +46,18 @@
         </div>
     </form>
      <div class="div_organizer_edition_buttons_div">
+
+
+        <p class="p_toggle_forms_p" id="toggle_class_name" onclick="toggle_form_view_students_visibility()">Ver estudantes</p>
+
+        <form action="{% url 'matscholar_app:cls_edition_view_student'%}" method="POST" class="forms_edit_attribute_form fechado" id="form_view_students">
+             {% csrf_token %}
+            <input class="forms_submit_edition_cls_input"type="submit" value="Visualizar estudantes">
+        </form>
+
+
+
+
         <p class="p_toggle_forms_p" id="toggle_class_name" onclick="toggle_form_add_students_visibility()">Adicionar estudantes</p>
 
         <form action="{% url 'matscholar_app:cls_edition_add_student_page' qty_students class_query.class_max_students %}" method="POST" class="forms_edit_attribute_form fechado" id="form_add_students">

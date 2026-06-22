@@ -30,10 +30,13 @@ urlpatterns = [
     path('dashboard/principal/cls_edition_courses/',view=views.cls_edition_courses,name="cls_edition_courses"),
     path('dashboard/principal/cls_edition_classes/',view=views.cls_edition_classes,name="cls_edition_classes"),
     path('dashboard/principal/cls_edition_page/',view=views.cls_edition_page,name="cls_edition_page"),
+    path('dashboard/principal/cls_edition_page/cls_update',view=views.cls_edition_update_operation,name="cls_edition_update_operation"),
     path('dashboard/principal/cls_edition_page/cls_deletion',view=views.cls_edition_deletion,name="cls_edition_deletion"),
     path('dashboard/principal/cls_edition_page/add_student_page/<str:actual_students>/<str:max_students>/',view=views.cls_edition_add_student_page,name="cls_edition_add_student_page"),
+    path('dashboard/principal/cls_edition_page/add_student_page/operation',view=views.cls_edition_add_student_operation,name="cls_edition_add_student_operation"),
     path('dashboard/principal/cls_edition_page/remove_student_page',view=views.cls_edition_remove_student_page,name="cls_edition_remove_student_page"),
     path('dashboard/principal/cls_edition_page/remove_student_page/operation',view=views.cls_edition_remove_student_operation,name="cls_edition_remove_student_operation"),
+    path('dashboard/principal/cls_edition_page/view_student/',view=views.cls_edition_view_student,name="cls_edition_view_student"),
 
     path('logout/',view=views.logout,name="logout"),
 ]

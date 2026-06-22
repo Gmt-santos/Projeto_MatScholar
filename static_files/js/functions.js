@@ -54,7 +54,12 @@ function toggle_form_remove_students_visibility(){
     const forms_class_name=window.document.getElementById("form_remove_students");
     forms_class_name.classList.toggle("fechado");
 }
+function toggle_form_view_students_visibility(){
+    const forms_class_name=window.document.getElementById("form_view_students");
+    forms_class_name.classList.toggle("fechado");
+}
 function toggle_form_delete_class_visibility(){
     const forms_class_name=window.document.getElementById("form_delete_class");
     forms_class_name.classList.toggle("fechado");
 }
+
