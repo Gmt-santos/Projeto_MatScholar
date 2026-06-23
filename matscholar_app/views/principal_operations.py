@@ -62,7 +62,7 @@ def std_creation_operation(request):
     try:
         if(request.method=="POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
             password:list=python_functions.validate_passwords_entries(request.POST.get("password"))
-            name:list=python_functions.validate_query_entries(entry=request.POST.get("name"))
+            name:list=python_functions.validate_name_entries(entry=request.POST.get("name"))
             is_valid_ra:bool=python_functions.validate_RA(request=request,ra=request.POST.get("RA"))
             is_valid_course:bool=python_functions.validate_course(request=request,id=request.POST.get("course_id"))
             if(password and name and is_valid_ra and is_valid_course):
@@ -397,7 +397,8 @@ def cls_edition_remove_student_page(request):
                 }
                 return render(request,"cls_edition_view_std.html",context=context)
             else:
-                return redirect("matscholar_app:dashboard_page")
+                messages.error(request,"Houve algum erro ou esta sala ainda não possui alunos!")
+                return redirect("matscholar_app:cls_edition_page")
             
         except (IndexError,TypeError,ValueError):
             messages.error(request,"Alteração indevida no formulário!")
@@ -421,27 +422,33 @@ def cls_edition_remove_student_operation(request):
             return redirect("matscholar_app:dashboard_page")
     
 def cls_edition_add_student_page(request,actual_students:int,max_students:int):
-    # try:
+    try:
         if(request.method=="POST" and "Princ" in request.session.get("permissions") and request.session.get("id")
             and request.session.get("actual_class_id")):
-            if python_functions.validate_ids_entries(actual_students)  \
-            and python_functions.validate_ids_entries(max_students):
+
+            if python_functions.validate_ids_entries(actual_students) and python_functions.validate_ids_entries(max_students):
+
                 new_std_number:int=request.POST.get("new_std_number")
+
                 if(python_functions.validate_ids_entries(new_std_number)):
+                    
                     if(int(new_std_number)<=(int(max_students)-int(actual_students))):
                         
                         students_query=python_functions.search_students_by_course(request,request.session.get("actual_class_id"),True)
                         if len(students_query)<len(range(0,int(new_std_number))):
+
                             context={
                                 "new_std_number":range(0,len(students_query)),
                                 "students":students_query,
                             }
+
                         else:
                             context={
                                 "new_std_number":range(0,int(new_std_number)),
                                 "students":students_query,
                             }
                         return render(request,"cls_edition_view_std_course.html",context=context)
+                        
                     else:
                         messages.error(request,"A quantidade de alunos digitada excede o máximo!")
                         return redirect("matscholar_app:cls_edition_page")
@@ -453,9 +460,9 @@ def cls_edition_add_student_page(request,actual_students:int,max_students:int):
                 return redirect("matscholar_app:cls_edition_page")
         else:
             return redirect("matscholar_app:dashboard_page")
-    # except (IndexError,TypeError,ValueError):
-    #         messages.error(request,"Alteração indevida no formulário!")
-    #         return redirect("matscholar_app:dashboard_page")
+    except (IndexError,TypeError,ValueError):
+            messages.error(request,"Erro ocorrido!")
+            return redirect("matscholar_app:dashboard_page")
 
 def cls_edition_add_student_operation(request):
     try:
@@ -466,6 +473,7 @@ def cls_edition_add_student_operation(request):
                 messages.success(request,"Alunos adicionados!")
                 return render(request,"cls_edition_again.html")
             else:
+                
                 return redirect("matscholar_app:cls_edition_page")
         else:
             return redirect("matscholar_app:dashboard_page")
@@ -507,5 +515,82 @@ def cls_edition_update_operation(request):
         else:
             return redirect("matscholar_app:dashboard_page")
     except (IndexError,TypeError,ValueError):
+            messages.error(request,"Alteração indevida no formulário!")
+            return redirect("matscholar_app:dashboard_page")
+    
+
+
+
+
+
+def std_edition_courses(request):
+    try:
+        if(request.session.get("id") and "Princ" in request.session.get("permissions")): 
+
+            courses_query=python_functions.principal_cls_creation_courses(request) # Função reutilizada,ignorar nome
+            if(courses_query):
+                context={
+                    "courses_query":courses_query,
+                }
+                return render(request,"std_edition_courses.html",context)
+            else:
+                return redirect("matscholar_app:dashboard_page")
+        else:
+            return redirect("matscholar_app:dashboard_page")
+    except (IndexError,TypeError,ValueError):
+        messages.error(request,"Alteração indevida no formulário!")
+        return redirect("matscholar_app:dashboard_page")
+    
+def std_edition_students(request):
+    try:
+        if request.session.get("id") and "Princ" in request.session.get("permissions") and request.method == "POST":
+            students_query=python_functions.search_students_by_course(request,actual_class_id=None,adding_to_cls=None)
+            if students_query:
+                context={
+                    "students":students_query,
+                }
+                return render(request,"std_edition_students.html",context)
+        else:
+            return redirect("matscholar_app:dashboard_page")
+    except (IndexError,TypeError,ValueError):
+            messages.error(request,"Alteração indevida no formulário!")
+            return redirect("matscholar_app:dashboard_page")
+
+def std_edition_page(request):
+    try:
+        if request.session.get("id") and "Princ" in request.session.get("permissions") and request.method == "POST":
+            student_query=python_functions.principal_std_edition_get_all_info_students(request)
+            if student_query:
+                request.session["actual_student_RA"]=student_query[0]
+                student_query_dict={
+                    "RA":student_query[0],
+                    "name":student_query[1],
+                    "year_of_entry":student_query[2],
+                }
+                context={
+                    "student":student_query_dict,
+                }
+                return render(request,"std_edition_page.html",context=context)
+            else:
+                messages.error(request,"Aluno não encontrado em sua instituição!")
+                return redirect("matscholar_app:dashboard_page")
+        else:
+            return redirect("matscholar_app:dashboard_page")
+    except (IndexError,TypeError,ValueError):
+            messages.error(request,"Alteração indevida no formulário!")
+            return redirect("matscholar_app:dashboard_page")
+    
+def std_edition_operation(request):
+    try:
+        if request.session.get("id") and "Princ" in request.session.get("permissions") and request.method == "POST" and \
+         request.session.get("actual_student_RA"):
+            if(python_functions.principal_std_edition_operation(request)):
+                messages.success(request,"Estudante atualizado com sucesso!")
+               
+        
+            return redirect("matscholar_app:dashboard_page")
+        else:
+            return redirect("matscholar_app:dashboard_page")
+    except(IndexError,TypeError,ValueError):
             messages.error(request,"Alteração indevida no formulário!")
             return redirect("matscholar_app:dashboard_page")

@@ -79,6 +79,12 @@
              <p class="forms_aux_input_p">Atenção, essa alteração não poderá ser desfeita!</p>
             <input class="forms_submit_edition_cls_input alert_color_background"type="submit" value="Apagar sala">
         </form>
+        <p class="p_toggle_forms_p" id="toggle_class_name" onclick="toggle_form_back_to_dashboard_visibility()">Voltar</p>
+
+        <form action="{% url 'matscholar_app:dashboard_page'%}" method="POST" class="forms_edit_attribute_form fechado" id="form_back_to_dashboard">
+             {% csrf_token %}
+            <input class="forms_submit_edition_cls_input"type="submit" value="Voltar">
+        </form>
      </div>
 
 </div>

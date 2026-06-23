@@ -37,7 +37,7 @@
 
         {% endfor %}
         {% if deletion %}
-            <input class="forms_submit_input" formaction="{% url 'matscholar_app:cls_edition_add_student_operation' %}" type="submit" value="Deletar">
+            <input class="forms_submit_input" formaction="{% url 'matscholar_app:cls_edition_remove_student_operation' %}" type="submit" value="Deletar">
             <input class="forms_submit_input" formaction="{% url 'matscholar_app:cls_edition_page' %}" type="submit" value="Voltar">
         {% else%}
 

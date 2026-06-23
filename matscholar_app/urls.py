@@ -37,6 +37,10 @@ urlpatterns = [
     path('dashboard/principal/cls_edition_page/remove_student_page',view=views.cls_edition_remove_student_page,name="cls_edition_remove_student_page"),
     path('dashboard/principal/cls_edition_page/remove_student_page/operation',view=views.cls_edition_remove_student_operation,name="cls_edition_remove_student_operation"),
     path('dashboard/principal/cls_edition_page/view_student/',view=views.cls_edition_view_student,name="cls_edition_view_student"),
-
+    #       Student_edition     #
+    path('dashboard/principal/std_edition_courses/',view=views.std_edition_courses,name='std_edition_courses'),
+    path('dashboard/principal/std_edition_students/',view=views.std_edition_students,name='std_edition_students'),
+    path('dashboard/principal/std_edition_page/',view=views.std_edition_page,name='std_edition_page'),
+    path('dashboard/std_edition_page/operation/',view=views.std_edition_operation,name='std_edition_operation'),
     path('logout/',view=views.logout,name="logout"),
 ]

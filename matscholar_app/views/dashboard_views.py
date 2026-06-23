@@ -14,7 +14,8 @@ def dashboard_page(request):
         del request.session["actual_course"]
     if request.session.get("actual_class_id"):
         del request.session["actual_class_id"]
-
+    if request.session.get("actual_student_RA"):
+        del request.session["actual_student_RA"]
     if(request.session.get("id")):
         if("Prof" in request.session.get("permissions")):
             list_classes=python_functions.professor_get_classes(request)
@@ -73,7 +74,7 @@ def query_professorname(request):
     try:
         if(request.method ==  "POST"):
             if(request.session.get("id")):
-                name_query=python_functions.validate_query_entries(request.POST.get("name_query"))
+                name_query=python_functions.validate_name_entries(request.POST.get("name_query"))
                 if(name_query):
                     list_classes=python_functions.academic_users_search_classes_by_professorname(request=request,professorname=name_query[0])
                     context={

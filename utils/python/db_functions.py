@@ -13,10 +13,10 @@ Serão descritas antes de sua definição
 def delete_cache_key(request,key:str):
     try:
         cache.delete(key=key)
-        return True
+        
     except r_exceptions as exception:
         messages.error(request,"Erro na operação com o cache!")
-        return False
+        
 '''
 Faz um rollback das operações de conn de maneira segura
 '''
@@ -299,7 +299,7 @@ def search_students_by_RA(request,RA:str)->dict|bool:
 Busca os estudantes pelo curso através do id da sala
 Utilizado ao adicionar alunos nas salas
 '''
-def search_students_by_course(request,actual_class_id,adding_to_cls:bool)->list[dict]|bool:
+def search_students_by_course(request,actual_class_id=None,adding_to_cls:bool=False)->list[dict]|bool:
     conn,cursor=None,None
     try:
         conn,cursor=f.connection_cursor()
@@ -307,20 +307,20 @@ def search_students_by_course(request,actual_class_id,adding_to_cls:bool)->list[
             if adding_to_cls:
                 cursor.execute('select students."RA",students.name from students where students.fk_course = ' \
                 'any(select courses.id from courses join classes_courses on courses.id=classes_courses.id_course where ' \
-                'classes_courses.id_class = %s) and students."RA"!= any(select id_student from students_classes_actual ' \
-                'where students_classes_actual.id_class=%s)' \
-                ,(actual_class_id,actual_class_id))
-                # TODO  --> RESOLVER O BUG DO DASHBOARD AQUI
+                'classes_courses.id_class = %s) and students."RA"!= all(select id_student from students_classes_actual ' \
+                'where students_classes_actual.id_class=%s) and students.fk_institution=%s' \
+                ,(actual_class_id,actual_class_id,request.session.get("institution")))
+                
             else:
-                cursor.execute('select students."RA",students.name from students where students.fk_course = ' \
-                'any(select courses.id from courses join classes_courses on courses.id=classes_courses.id_course where ' \
-                'classes_courses.id_class = %s)',(actual_class_id,))
+                cursor.execute('select students."RA",students.name from students where students.fk_course=%s and' \
+                ' students.fk_institution=%s and students.graduated=0',
+                               (request.POST.get("course"),request.session.get("institution")))
             students_query=cursor.fetchall()
             if students_query:
                 students_query_listofdict=f.generate_student_query_listofdict(students_query)
                 return students_query_listofdict
             else:
-                messages.error(request,"Não há estudantes no seu curso!")
+                messages.error(request,"Não há estudantes suficientes  no seu curso!")
                 return False
         else:
             messages.error(request,"Houve um erro com a conexão do banco de dados!")
@@ -689,6 +689,7 @@ def principal_std_creation_courses(request)->models.QuerySet:
 
 '''
 Faz a exata mesma coisa da função acima, foi criada mais com a intenção de deixar o código mais flexível a mudanças futuras
+Apesar do nome, foi reutilizada no std_edition_courses também
 '''
 def principal_cls_creation_courses(request)->models.QuerySet:
     from matscholar_app.models import courses
@@ -1305,15 +1306,12 @@ def principal_cls_edition_delete_class(request):
             course_id=cursor.fetchone()[0]
             cursor.execute("delete from students_classes_actual where id_class= %s",[request.session.get("actual_class_id"),])
             cursor.execute("delete from classes where id = %s ",[request.session.get("actual_class_id"),])
-            if(delete_cache_key(f"open_classes:{course_id}-{request.session.get("institution")}")):
-                conn.commit()
-                del request.session["actual_class_id"]
-                messages.success(request,"Aula excluída com sucesso!")
-                return True
-            else:
-                messages.error(request,"Algum erro na exclusão ocorreu!")
-                safe_rollback(conn)
-                return False
+            delete_cache_key(request,f"open_classes:{course_id}-{request.session.get("institution")}")
+            conn.commit()
+            del request.session["actual_class_id"]
+            messages.success(request,"Aula excluída com sucesso!")
+            return True
+            
         else:
             messages.error(request,"Houve um erro com a conexão do banco de dados!")
             return False
@@ -1493,7 +1491,7 @@ def principal_cls_edition_add_students(request):
                         listof_tuple_RA.append((item,))
                    else:
                        messages.error(request,"Alteração indevida no formulário")
-
+                       
                        return False
                 cursor.execute('select students."RA" from students where students.fk_course = any(select courses.id from' \
                 ' courses join classes_courses on courses.id=classes_courses.id_course join classes ' \
@@ -1509,14 +1507,14 @@ def principal_cls_edition_add_students(request):
                     sizeof_class=sizeof_class[0]
                 else:
                     messages.error(request,"Houve um erro na consulta ao banco de dados!")
-
+                    
                     return False
                 cursor.execute("select max_students from classes where id =%s",[actual_class_id])
                 max_size=cursor.fetchone()
                 if max_size:
                     max_size=max_size[0]
                 else:
-
+                   
                     messages.error(request,"Houve um erro na consulta ao banco de dados!")
                     return False
                 if len(listof_tuple_sql)>(max_size-sizeof_class):
@@ -1529,7 +1527,11 @@ def principal_cls_edition_add_students(request):
                         listof_tuple_sql)
                         conn.commit()
                         return True
+                    else:
+                        messages.error(request,"Alteração indevida nos campos!")
+                        return False
             else:
+               
                 messages.error(request,"Você não inseriu nenhum campo válido!")
                 return False
 
@@ -1573,25 +1575,132 @@ Atualiza os dados de data de inicio,data de fim e discente/professor da sala esc
 def principal_cls_edition_update_cls(request):
     conn,cursor=None,None
     try:
+
         conn,cursor=f.connection_cursor()
+
         if conn and cursor:
+
             start_date,end_date=f.validate_start_end_date(request.POST.get("start_date"),request.POST.get("end_date"))
             academic_user_id=f.validate_ids_entries(request.POST.get("academic_user"))
+
             if start_date and end_date and academic_user_id:
+
                 academic_user_id=academic_user_id[0]
+
                 if(validate_academic_user(request,academic_user_id)):
+
                     cursor.execute("update classes set fk_professor=%s,start_date=%s,end_date=%s" \
                     " where id=%s and open=1 and abstract=0",[academic_user_id,start_date,end_date,
                     request.session.get("actual_class_id")])
                     conn.commit()
                     return True
+                
                 else:
+
                     messages.error(request,"Professor inválido enviado!")
                     return False
             else:
+
                 messages.error(request,"Data inválida ou professor inválido enviado!")
                 return False
 
+        else:
+            messages.error(request,"Erro com a conexão ao banco de dados!")
+            return False
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        safe_rollback(conn)
+        messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
+        return False
+    except errors.UndefinedColumn:
+        safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        safe_rollback(conn)
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        safe_rollback(conn)
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception as e :
+        if conn:
+            safe_rollback(conn)
+        messages.error(request,"Erro desconhecido!")
+        messages.error(request,f"Erro:{e}")
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+def principal_std_edition_get_all_info_students(request)->list|bool:
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            valid_RA=f.validate_ids_entries(request.POST.get("student"))
+            if valid_RA:
+                valid_RA=valid_RA[0]
+                cursor.execute('select "RA",name,year_of_entry from students where ' \
+                'fk_institution=%s and "RA"=%s and graduated=0',(request.session.get("institution"),valid_RA))
+                student_query=cursor.fetchone()
+
+                return student_query
+            else:
+                messages.error(request,"Dado inválido enviado pelo formulário!")
+                return False
+        else:
+           
+            messages.error(request,"Erro com a conexão ao banco de dados!")
+            return False
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        safe_rollback(conn)
+        messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
+        return False
+    except errors.UndefinedColumn:
+        safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        safe_rollback(conn)
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        safe_rollback(conn)
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception as e :
+        if conn:
+            safe_rollback(conn)
+        messages.error(request,"Erro desconhecido!")
+        messages.error(request,f"Erro:{e}")
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+def principal_std_edition_operation(request):
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            valid_name=f.validate_name_entries(request.POST.get("name"))
+            if valid_name:
+                valid_name=valid_name[0]
+                cursor.execute('update students set name = %s where students."RA" = %s and students.fk_institution=%s',
+                               (valid_name,request.session.get("actual_student_RA"),request.session.get("institution")))
+                conn.commit()
+                del request.session["actual_student_RA"]
+                return True
+            else:
+                messages.error(request,"Nome inválido enviado!")
+                return False
         else:
             messages.error(request,"Erro com a conexão ao banco de dados!")
             return False

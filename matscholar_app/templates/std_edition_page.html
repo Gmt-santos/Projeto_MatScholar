@@ -1,0 +1,35 @@
+{% extends 'general/header_footer_dashboard.html'%}
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/specific/style_std_creation.css' %}">
+    <form method="POST" action="{% url 'matscholar_app:std_edition_operation'%}" class="form_form">
+     {% csrf_token %}
+     <input type="hidden" name="course_id" id="course_id" value="{{course_id}}">
+        <div class="forms_title_div">
+            <img class="logo_forms_title_img" src="{% static 'images/logo.png' %}" alt="">
+            <p class="logo_forms_title_p">MatScholar</p>
+        </div>
+        <p class="logo_forms_title_p">Editar aluno</p>
+        <p class="forms_aux_input_p"></p>
+        <p class="forms_aux_input_p">Nome</p>
+        <input class="forms_input" type="text" name="name" id="name" placeholder="Nome" value={{student.name}}  required >
+
+        <p class="forms_aux_input_p">RA</p>
+        <input class="forms_input" type="text" name="RA" id="RA" placeholder="RA" value="{{student.RA}}" required readonly>
+
+        <p class="forms_aux_input_p">Ano de entrada</p>
+        <input class="forms_input" type="text" name="_" id="_" placeholder="Ano de entrada"value={{student.year_of_entry}} required readonly>
+
+        
+        <div style="margin-top:20px;display:flex;justify-content:center;align-items:center;flex-direction:column">
+            <p class="forms_aux_input_p">Caso queira alterar a senha de acesso do estudante, contate o suporte</p>
+            <p class="forms_aux_input_p"> Confira os dados antes de enviar</p>
+           <input type="submit" class="forms_submit_input" value="Atualizar"> 
+        </div>
+    </form>
+
+
+
+
+
+{% endblock content %}

@@ -1,0 +1,17 @@
+{% extends "general/header_footer_dashboard.html" %}
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/specific/style_cls_creation.css'%}">
+    <form method="POST" action="{% url 'matscholar_app:std_edition_page'%}">
+        {% csrf_token%}
+        <div class="courses_select_div">
+            <p class="courses_p">Alunos encontrados</p>
+            <select class="courses_select"name="student" id="student">
+                {% for student in students %}
+                    <option value="{{student.RA}}">{{student.RA}}-{{student.name}}</option>
+                {% endfor %}
+            </select>
+            <input class="forms_submit_input"type="submit" value="Avançar">
+        </div>
+    </form>
+{% endblock content %}

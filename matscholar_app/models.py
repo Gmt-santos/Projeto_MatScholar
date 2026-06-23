@@ -44,6 +44,7 @@ class students(models.Model):
     fk_course=models.ForeignKey(courses,on_delete=models.CASCADE,db_column="fk_course")
     password=models.CharField(max_length=255)
     fk_institution=models.ForeignKey(institution,on_delete=models.CASCADE,db_column="fk_institution",null=True)
+    graduated=models.IntegerField(default=0)
     class Meta:
         db_table='students'
 

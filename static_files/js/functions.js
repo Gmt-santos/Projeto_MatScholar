@@ -62,4 +62,8 @@ function toggle_form_delete_class_visibility(){
     const forms_class_name=window.document.getElementById("form_delete_class");
     forms_class_name.classList.toggle("fechado");
 }
+function toggle_form_back_to_dashboard_visibility(){
+    const forms_class_name=window.document.getElementById("form_back_to_dashboard");
+    forms_class_name.classList.toggle("fechado");
+}
 

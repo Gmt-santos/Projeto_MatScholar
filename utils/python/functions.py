@@ -34,14 +34,21 @@ Retorna uma String que possa ser utilizada em uma query SQL
 def string_to_querylike(string:str)->str:
     return "%"+string+"%"
 '''
-Valida a entrada de nomes de salas e pessoas
+Valida a entrada de nomes de salas
 RETORNA UMA LISTA ----> SEMPRE UTILIZAR var[0]
 '''
 def validate_query_entries(entry:str)->list[str]:
     import re as regex
     regex_entry:list=regex.findall(r"^[a-zA-ZÀ-ú0-9\'\-\s.]+$",entry)
     return regex_entry
-
+'''
+Valida a entrada de nomes de pessoas
+RETORNA UMA LISTA ----> SEMPRE UTILIZAR var[0]
+'''
+def validate_name_entries(entry:str)->list[str]:
+    import re as regex
+    regex_entry:list=regex.findall(r"^[a-zA-ZÀ-ú\'\-\s]+$",entry)
+    return regex_entry
 '''
 Valida a entrada de números positivos
 Utilizar somente após ter validado se entry é um número
@@ -222,14 +229,15 @@ def date_to_string(date)->str:
     return str_date
 
 '''
-Verifica se a data de fim de uma aula vem depois da data de inicio
+Verifica se a data de fim de uma aula vem depois da data de inicio, além de verificar se ambas sao futuras
 '''
 def validate_start_end_date(start_date,end_date):
     try:
         from datetime import datetime
+        today=datetime.today()
         start_date_format=datetime.strptime(start_date,"%Y-%m-%d")
         end_date_format=datetime.strptime(end_date,"%Y-%m-%d")
-        if end_date_format > start_date_format:
+        if end_date_format > start_date_format and end_date_format>today and start_date_format>today:
             return start_date,end_date
         else:
             return False,False

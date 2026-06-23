@@ -3,6 +3,19 @@ from django.contrib import messages
 from argon2 import PasswordHasher 
 from utils import python as python_functions
 def login_page(request):
+    '''
+    Serve para caso o usuário não esteja mais interagindo com a sala ou o curso
+    '''
+    if request.session.get("actual_class"):
+        del request.session["actual_class"]
+    if request.session.get("actual_class_initial"):
+        del request.session["actual_class_initial"]
+    if request.session.get("actual_course"):
+        del request.session["actual_course"]
+    if request.session.get("actual_class_id"):
+        del request.session["actual_class_id"]
+    if request.session.get("actual_student_RA"):
+        del request.session["actual_student_RA"]
     if(request.session.get("id") or request.session.get("RA")):
         return redirect("matscholar_app:dashboard_page")
     else:
