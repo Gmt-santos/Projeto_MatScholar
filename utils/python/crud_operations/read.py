@@ -1089,3 +1089,81 @@ def principal_std_edition_get_all_info_students(request)->list|bool:
             cursor.close()
         if conn is not None:
             conn.close()
+
+
+
+'''
+
+'''
+
+def professor_cls_edition_get_all_info_classes(request,class_id)->tuple|bool:
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            cursor.execute('select classes.id,classes.name,classes.start_date,classes.end_date from classes join academic_users on' \
+            ' classes.fk_professor=academic_users.id where academic_users.fk_institution =%s and classes.id= %s and' \
+            ' classes.open=1 and classes.fk_professor=%s',[request.session.get("institution"),class_id,
+            request.session.get("institution")])
+            class_query=cursor.fetchone()
+            if class_query:
+                cursor.execute('select assignments.id,assignments.name,assignments.deadline ' \
+                'from assignments where assignments.fk_class=%s'
+                ,[class_id,])
+                assignments_query=cursor.fetchall()
+                listof_dict_assignments=[]
+                if assignments_query:
+                    for query in assignments_query:
+        
+                        listof_dict_assignments.append({
+                            'id':query[0],
+                            'name':query[1],
+                            'deadline':query[2]
+                        })
+                
+                request.session["actual_class_id"]=class_query[0]
+
+                dict_class={
+                    "class_name":class_query[1],
+                    "class_start_date":f.date_to_string(class_query[2]),
+                    "class_end_date":f.date_to_string(class_query[3]),
+                }
+
+                qty_students=get_qty_students_by_class_id(conn,cursor,request,class_id)
+                if qty_students>=0 and dict_class:
+                    return listof_dict_assignments,dict_class,qty_students
+                else:
+                    return False,False,False
+            else:
+                messages.error(request,"O curso selecionado não existe na sua instituição de ensino!")
+                return False,False,False
+        else:
+            messages.error(request,"Houve um erro com a conexão ao banco de dados!")
+            return False,False,False
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        dbf.safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False,False,False
+    except errors.UndefinedColumn:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False,False,False
+    except IndexError:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False,False,False
+    except OperationalError:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False,False,False
+    except Exception :
+        if conn:
+            dbf.safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False,False,False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()

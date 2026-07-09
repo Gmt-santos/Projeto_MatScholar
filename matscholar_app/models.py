@@ -95,14 +95,17 @@ class students_classes_missing(models.Model):
 class assignments(models.Model):
     id=models.AutoField(primary_key=True)
     name=models.CharField(max_length=255)
-    fk_id_student=models.ForeignKey(students,on_delete=models.CASCADE,db_column="fk_id_student")
     fk_class=models.ForeignKey(classes,on_delete=models.CASCADE,db_column="fk_class")
-    grade=models.DecimalField(max_digits=10,decimal_places=2)
+    deadline=models.DateField(null=True)
     class Meta:
         db_table='assignments'
 
-
-
+class assignments_students(models.Model):
+    id=models.AutoField(primary_key=True)
+    fk_id_student=models.ForeignKey(students,on_delete=models.CASCADE,db_column="id_student")
+    fk_id_class=models.ForeignKey(classes,on_delete=models.CASCADE,db_column="id_class")
+    grade=models.DecimalField(max_digits=10,decimal_places=2,null=True)
+    
 class final_grades(models.Model):
     id=models.CharField(max_length=255,primary_key=True)
     
