@@ -1167,3 +1167,74 @@ def professor_cls_edition_get_all_info_classes(request,class_id)->tuple|bool:
             cursor.close()
         if conn is not None:
             conn.close()
+
+def professor_get_all_info_assignment(request,assignment_id:str)->tuple:
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if(conn and cursor):
+            cursor.execute('select ass.id,ass.name,ass.desc,ass.deadline,ass.weight,ass.max_grade from assignments as ass where ass.fk_class=%s' \
+            ' and ass.id = %s',[request.session.get("actual_class_id"),assignment_id])
+            assignment_query:tuple=cursor.fetchone()
+            if(assignment_query):
+                assignment_query_dict={
+                    'id':assignment_query[0],
+                    'name':assignment_query[1],
+                    'desc':assignment_query[2],
+                    'deadline':f.date_to_string(assignment_query[3]),
+                    'weight':assignment_query[4],
+                    'max_grade':assignment_query[5],
+                }
+              
+                cursor.execute('select std."RA",std.name,ass_std.id,ass_std.grade,ass_std.feedback from ' \
+                'assignments_students as ass_std' \
+                ' join assignments as ass on ass_std.fk_assignment=ass.id join classes as cls on ass.fk_class=' \
+                ' cls.id join students_classes_actual as std_cls_actual on cls.id=std_cls_actual.id_class join ' \
+                ' students as std on std_cls_actual.id_student=std."RA"' \
+                ' where cls.fk_professor=%s and cls.id=%s and ass.id= %s and std."RA" = ass_std.fk_student',
+                [request.session.get("id"),
+                request.session.get("actual_class_id"),assignment_id])
+                assignments_students_query=cursor.fetchall()
+               
+                if(assignments_students_query):
+                    assignments_students_query_listof_dict=f.generate_assignments_listof_dict(assignments_students_query)
+                    return assignment_query_dict,assignments_students_query_listof_dict
+                else:
+                    messages.error(request,"Tarefa inválida acessada!")
+                    return False,False
+            else:
+                messages.error(request,"Tarefa inválida acessada!")
+                return False,False
+            
+        else:
+            messages.error(request,"Houve um erro com a conexão ao banco de dados!")
+            return False,False
+
+
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        dbf.safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False,False
+    except errors.UndefinedColumn:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False,False
+    except IndexError:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False,False
+    except OperationalError:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False,False
+    except Exception :
+        if conn:
+            dbf.safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False,False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()

@@ -243,3 +243,22 @@ def validate_start_end_date(start_date,end_date):
             return False,False
     except Exception:
         return False,False
+'''
+Recebe uma lista de tuplas de assignments e transforma ela em uma lista de dicts
+Usada pelo usuário com permissão de professor
+(Parâmetro já verificado no caso venha vazio)
+'''
+def generate_assignments_listof_dict(assignments_students_query:list[tuple])->list[dict]:
+    listof_dict=[]
+    for tuple in assignments_students_query:
+        listof_dict.append(
+            {
+                'student_RA':tuple[0],
+                'student_name':tuple[1],
+                'register_id':tuple[2],
+                'student_grade':tuple[3],
+                'professor_feedback':tuple[4],
+            }
+
+        )
+    return listof_dict

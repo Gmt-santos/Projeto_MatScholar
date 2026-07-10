@@ -279,5 +279,27 @@ select{
     justify-content: space-evenly;
     width: 500px;
     text-decoration: none;
-    
+    color: black;
+    transition-duration: 0.2s;
+}
+.assignments_link_a:hover{
+    background-color:var(--color-gray);
+    transition-duration: 0.2s;
+}
+.organizer_horizontal_p_div{
+    display: flex;
+    flex-direction: row;
+    width:100%;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.forms_input_minor{
+    font-family: Chakra;
+    font-size:13px;
+    border-radius: 10px;
+    border-style:none;
+    width:100px;
+    padding:5px;
+    height: 20px;
+    background-color: var(--color-gray);
 }

@@ -95,20 +95,25 @@ class students_classes_missing(models.Model):
 class assignments(models.Model):
     id=models.AutoField(primary_key=True)
     name=models.CharField(max_length=255)
+    desc=models.TextField(null=True)
     fk_class=models.ForeignKey(classes,on_delete=models.CASCADE,db_column="fk_class")
+    weight=models.IntegerField(null=True)
+    max_grade=models.IntegerField(null=True)
     deadline=models.DateField(null=True)
     class Meta:
         db_table='assignments'
 
 class assignments_students(models.Model):
     id=models.AutoField(primary_key=True)
-    fk_id_student=models.ForeignKey(students,on_delete=models.CASCADE,db_column="id_student")
-    fk_id_class=models.ForeignKey(classes,on_delete=models.CASCADE,db_column="id_class")
+    fk_id_student=models.ForeignKey(students,on_delete=models.CASCADE,db_column="fk_student")
+    fk_id_assignment=models.ForeignKey(assignments,on_delete=models.CASCADE,db_column="fk_assignment",default=-1)
     grade=models.DecimalField(max_digits=10,decimal_places=2,null=True)
-    
+    feedback=models.TextField(null=True)
+    class Meta:
+        db_table='assignments_students'
+
 class final_grades(models.Model):
     id=models.CharField(max_length=255,primary_key=True)
-    
     id_student=models.ForeignKey(students,on_delete=models.CASCADE,db_column="id_student")
     id_class=models.ForeignKey(classes,on_delete=models.CASCADE,db_column="id_class")
     final_grade=models.DecimalField(max_digits=10,decimal_places=2)

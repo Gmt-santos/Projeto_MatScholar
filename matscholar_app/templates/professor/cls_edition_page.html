@@ -11,16 +11,16 @@
             <p class="logo_forms_title_p">MatScholar</p>
         </div>
         <p class="logo_forms_title_p">{{class_query.class_name}}</p>
-        
-        <p class="forms_aux_input_p">Data de início: {{class_query.class_start_date}}</p>
-        <p class="forms_aux_input_p">Data de fim: {{class_query.class_end_date}}</p>
-       
-    
-        <p class="forms_aux_input_p">Alunos atuais: {{qty_students}}</p>
-        
 
-        <p class="forms_aux_input_p">Docente responsável: {{request.session.role}} {{request.session.name}}</p>
-        
+        <div class="organizer_horizontal_p_div"> 
+            <p class="forms_aux_input_p">Data de início: {{class_query.class_start_date}}</p>
+            <p class="forms_aux_input_p">Data de fim: {{class_query.class_end_date}}</p>
+        </div>
+
+        <div class="organizer_horizontal_p_div">
+            <p class="forms_aux_input_p">Alunos atuais: {{qty_students}}</p>
+            <p class="forms_aux_input_p">Docente responsável: {{request.session.role}} {{request.session.name}}</p>
+        </div>
     
     </div>
     <div class="form_edition_compact_form">
@@ -30,7 +30,7 @@
         {% if assignments_query%}
             {% for assignment in assignments_query %}
                 <div class="assignments_card_div">
-                    <a class="assignments_link_a"target="_self" href="">
+                    <a class="assignments_link_a"target="_self" href="{% url 'matscholar_app:prof_assignment_view' assignment.id %}">
                         <p class="forms_aux_input_p">Nome: {{assignment.name}} </p>
                         <p class="forms_aux_input_p">Prazo: {{assignment.deadline}}</p>
                     </a>

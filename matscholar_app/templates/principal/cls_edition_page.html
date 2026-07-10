@@ -20,31 +20,43 @@
 
         <p class="forms_aux_input_p">Data de início</p>
         <input class="forms_input" type="date" name="start_date" id="start_date" value="{{class_query.class_start_date}}"required >
+        
         <p class="forms_aux_input_p">Data de fim</p>
         <input class="forms_input" type="date" name="end_date" id="end_date" value="{{class_query.class_end_date}}" required >
         <p class="forms_aux_minor_input_p">Atente-se a ordem das datas</p>
 
-        <p class="forms_aux_input_p">Máximo de alunos: {{class_query.class_max_students}}</p>
-        <p class="forms_aux_input_p">Alunos atuais: {{qty_students}}</p>
-        
+        <div class="organizer_horizontal_p_div">
+            <p class="forms_aux_input_p">Máximo de alunos: {{class_query.class_max_students}}</p>
+            <p class="forms_aux_input_p">Alunos atuais: {{qty_students}}</p>
+        </div>
 
         <p class="forms_aux_input_p">Docente responsável: {{class_query.academic_user_role}} {{class_query.academic_user_name}}</p>
         <select class="academic_users_select"name="academic_user" id="academic_user">
+
             {% for academic_user in academic_users %}
+
                 {% if academic_user.id == class_query.academic_user_id %}
+
                     <option selected value="{{academic_user.id}}">{{academic_user.name}}</option>
+
                 {% else %}
+
                     <option value="{{academic_user.id}}">{{academic_user.name}}</option>
+
                 {% endif %}
                 
             {% endfor %}
+
         </select>
     
         <div style="margin-top:20px;display:flex;justify-content:center;align-items:center;flex-direction:column">
             
-           <input type="submit" class="forms_submit_input" value="Atualizar"> 
+           <input type="submit" class="forms_submit_input" value="Atualizar">
+
         </div>
+
     </form>
+    
      <div class="div_organizer_edition_buttons_div">
 
 

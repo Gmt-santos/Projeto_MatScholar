@@ -38,7 +38,10 @@ body{
     align-items: center;
     margin:0px;
 }
-
+textarea{
+    resize: none;
+    height:100px !important;
+}
 .container{
     flex:1;
     display:flex;
