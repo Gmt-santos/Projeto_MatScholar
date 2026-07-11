@@ -120,4 +120,63 @@ def principal_std_edition_operation(request):
         if conn is not None:
             conn.close()
 
+'''
+Atualiza os dados das tarefas criadas pelo professor
+"actual_class_id" atribuida em  "professor_cls_edition_get_all_info_classe"
+"actual_assignment_id" atribuida em " prof_assignment_view"
+'''
+def professor_assignment_update_operation(request,name:str,desc:str,deadline:str,weight:float,max_grade:float)->bool:
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            print("jello")
+            cursor.execute('update assignments set name=%s,"desc"=%s,deadline=%s,weight=%s,max_grade=%s where id = any(' \
+            'select ass.id from assignments as ass join classes as cls on ass.fk_class=cls.id where cls.id=%s'
+            ' and cls.fk_professor=%s and ass.id=%s) returning id',[name,desc,deadline,weight,max_grade,
+            request.session.get("actual_class_id"),request.session.get("id"),request.session.get("actual_assignment_id")])
+            if(cursor.fetchone()):
+                conn.commit()
+                messages.success(request,"Alteração bem sucedida!")
+                return True
+            else:
+                dbf.safe_rollback(conn)
+                messages.error(request,"A alteração dessa tarefa não é válida!")
+                return False
+        else:
+            messages.error(request,"Erro com a conexão ao banco de dados!")
+            return False
 
+     
+
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        dbf.safe_rollback(conn)
+        messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
+        return False
+    except errors.UndefinedColumn:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception as e :
+        if conn:
+            dbf.safe_rollback(conn)
+        messages.error(request,"Erro desconhecido!")
+       
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+
+    

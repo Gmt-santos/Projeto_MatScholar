@@ -1093,7 +1093,8 @@ def principal_std_edition_get_all_info_students(request)->list|bool:
 
 
 '''
-
+Puxa as informações da sala,assim como suas tarefas. Assim, o professor pode acessar as tarefas e editá-las ou 
+atribuir as notas
 '''
 
 def professor_cls_edition_get_all_info_classes(request,class_id)->tuple|bool:
@@ -1104,7 +1105,7 @@ def professor_cls_edition_get_all_info_classes(request,class_id)->tuple|bool:
             cursor.execute('select classes.id,classes.name,classes.start_date,classes.end_date from classes join academic_users on' \
             ' classes.fk_professor=academic_users.id where academic_users.fk_institution =%s and classes.id= %s and' \
             ' classes.open=1 and classes.fk_professor=%s',[request.session.get("institution"),class_id,
-            request.session.get("institution")])
+            request.session.get("id")])
             class_query=cursor.fetchone()
             if class_query:
                 cursor.execute('select assignments.id,assignments.name,assignments.deadline ' \
@@ -1167,7 +1168,10 @@ def professor_cls_edition_get_all_info_classes(request,class_id)->tuple|bool:
             cursor.close()
         if conn is not None:
             conn.close()
-
+'''
+Após clicar no link para acessar a tarefa, essa função puxa todas as informações da tarefa e as informações das tarefas
+dos alunos. Assim, o professor pode atualizar as tarefas dos alunos, assim como atualizar alguma informação da tarefa "mãe"
+'''
 def professor_get_all_info_assignment(request,assignment_id:str)->tuple:
     conn,cursor=None,None
     try:

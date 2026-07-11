@@ -6,6 +6,8 @@ def dashboard_page(request):
     '''
     Serve para caso o usuário não esteja mais interagindo com a sala ou o curso
     '''
+    if request.session.get('actual_assignment_id'):
+        del request.session['actual_assignment_id']
     if request.session.get("actual_class"):
         del request.session["actual_class"]
     if request.session.get("actual_class_initial"):

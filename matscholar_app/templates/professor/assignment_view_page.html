@@ -21,11 +21,11 @@
         <input class="forms_input" type="text" name="name" id="name" value="{{assignment_info.name}}" placeholder="Nome"required >
 
         <p class="forms_aux_input_p">Descrição: </p>
-        <textarea class="forms_input" name="desc" id="desc" rows="5" required>{{assignment_info.desc}}</textarea>
+        <textarea class="forms_input" name="desc" id="desc" rows="5" placeholder="Descrição"required>{{assignment_info.desc}}</textarea>
 
         <p class="forms_aux_input_p">Prazo máximo: </p>
         <input class="forms_input" type="date" name="deadline" id="deadline" value="{{assignment_info.deadline}}" placeholder="Prazo">
-
+        <p class="forms_aux_minor_input_p">São aceitas apenas datas atuais ou futuras</p>
         <div class="organizer_horizontal_p_div">
 
         
@@ -46,10 +46,62 @@
      
 
 </div>
-<div>
-    {% for assignment in assignments_std_info  %}
-        <p>{{assignment.student_RA}} </p>
-    {% endfor %}
+<div >
+    <form class="assignments_organizer_form" action="{%  url 'matscholar_app:prof_update_assignment_std' %}" method="POST">
+        {% for assignment in assignments_std_info  %}
+        <div class="assignments_grade_card_div">
 
+            <div class="organizer_horizontal_p_div">
+
+                <p class="forms_aux_input_p">RA: {{assignment.student_RA}} </p>
+                <p class="forms_aux_input_p">Nome: {{assignment.student_name}} </p>
+
+            </div>
+
+
+            <div class="organizer_horizontal_p_div">
+                <label class="forms_aux_input_p"for="select">Deseja atualizar?</label>
+                <select class="select_update_assignments"name="assignment_update" id="select">
+                    <option value="1">Sim</option>
+                    <option value="0" selected >Não</option>
+                </select>
+            </div>
+
+
+
+            <div class="organizer_horizontal_p_div">
+
+                <div>
+
+                 <p class="forms_aux_input_p">Nota</p>
+                 <input class="forms_input_minor"type="text" id="grade" name="grade" placeholder="Nota" value="{{assignment.student_grade}}">
+                
+                </div>
+
+                <div>
+                    <p class="forms_aux_input_p">Feedback</p>
+                    <textarea class="input_feedback_textarea" name="feedback" id="feedback" rows="5" placeholder="Feedback">{{assignment.feedback}}</textarea>
+                
+                </div>
+
+            </div>
+            {%  if forloop.last    %}
+
+                <div style="display:flex;justify-content:center;align-items:center;flex-direction:column">
+                
+                    <input type="submit" class="forms_submit_input" value="Enviar notas e feedbacks"> 
+
+                </div>
+
+
+            {% endif %}
+            
+
+    
+        </div>
+        
+        {% endfor %}
+        
+    </form>
 </div>
 {% endblock content %}

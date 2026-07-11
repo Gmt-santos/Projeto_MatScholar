@@ -50,5 +50,6 @@ urlpatterns = [
     #       Professor urls      #
     path('dashboard/professor/cls_edition_page/',view=views.prof_cls_edition_page,name='prof_cls_edition_page'),
     path('dashboard/professor/assignment_view/<str:assignment_id>/',view=views.prof_assignment_view,name='prof_assignment_view'),
-    path('dashboard/professor/assignment_view/update_assignment_info/',view=views.prof_assignment_update_info,name='prof_update_assignment_info'),
+    path('dashboard/professor/assignment_view/update_assignment_info/operation',view=views.prof_assignment_update_info,name='prof_update_assignment_info'),
+    path('dashboard/professor/assignment_view/update_assignment_std/operation',view=views.prof_assignment_student_update,name='prof_update_assignment_std')
 ]

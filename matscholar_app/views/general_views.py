@@ -2,12 +2,12 @@ from django.shortcuts import render,redirect
 
 # Create your views here.
 def index(request):
-    '''
-    Serve para caso o usuário(academic_user) não esteja mais interagindo com a sala ou o curso
-    '''
+
     '''
     Serve para caso o usuário não esteja mais interagindo com a sala ou o curso
     '''
+    if request.session.get('actual_assignment_id'):
+        del request.session['actual_assignment_id']
     if request.session.get("actual_class"):
         del request.session["actual_class"]
     if request.session.get("actual_class_initial"):

@@ -206,13 +206,13 @@ def generate_student_query_listofdict(students_query)->list[dict]:
 '''
 Verifica se a data enviada é válida, ou seja, é uma data futura
 '''
-def validate_date(date):
-    from datetime import datetime
+def validate_date(date)->str|bool:
+    from datetime import datetime,timedelta
     try:
         today=datetime.today()
         date_format=datetime.strptime(date,"%Y-%m-%d")
         
-        if date_format >= today:
+        if date_format >= today-timedelta(days=1):
             return date
         else:
             return False
@@ -262,3 +262,26 @@ def generate_assignments_listof_dict(assignments_students_query:list[tuple])->li
 
         )
     return listof_dict
+
+'''
+Valida a entrada de notas e pesos
+Usada nos assignments
+'''
+def validate_grades_and_weights(entry:str)-> float|bool:
+    import re as regex
+    regex_entry:list[str]=regex.findall(r"^[0-9]{1,3}[,.]{0,1}[0-9]{0,2}$",entry)
+    if(regex_entry):
+        regex_entry_float=float(regex_entry[0].replace(',','.'))    
+        return regex_entry_float
+    else:
+        return False
+    
+'''
+Valida a entrada de textos
+Usada nos assignments
+Retorna uma lista, então use regex_entry[0] no retorno da função
+'''
+def validate_texts(entry:str)->list[str]:
+    import re as regex
+    regex_entry:list[str]=regex.findall(r"^[0-9a-zA-ZÀ-ú\s!.()?%$#@/\\:=+-{}]+$",entry,flags=regex.MULTILINE)
+    return regex_entry

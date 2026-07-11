@@ -1,11 +1,12 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
-from argon2 import PasswordHasher 
 from utils import python as python_functions
 def login_page(request):
     '''
     Serve para caso o usuário não esteja mais interagindo com a sala ou o curso
     '''
+    if request.session.get('actual_assignment_id'):
+        del request.session['actual_assignment_id']
     if request.session.get("actual_class"):
         del request.session["actual_class"]
     if request.session.get("actual_class_initial"):

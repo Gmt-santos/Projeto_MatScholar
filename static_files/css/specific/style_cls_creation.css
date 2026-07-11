@@ -303,3 +303,39 @@ select{
     height: 20px;
     background-color: var(--color-gray);
 }
+.input_feedback_textarea{
+    width:300px;
+    font-family: Chakra;
+    font-size:11px;
+    border-radius: 10px;
+    border-style:none;
+    padding:5px;
+   
+    background-color: var(--color-gray);
+
+}
+.assignments_grade_card_div{
+    display: flex;
+    flex-direction:column;
+    width:500px;
+    padding:10px;
+    height: fit-content;
+    background-color: white;
+    border-radius: var(--border-radius);
+}
+.assignments_organizer_form{
+    display: flex;
+    flex-direction: column;
+    gap:30px;
+    margin-top: 10px;
+}
+.select_update_assignments{
+    font-family: Chakra;
+    font-size:14px;
+    border-radius: 10px;
+    border-style:none;
+    height: 30px;
+    background-color: var(--color-gray);
+    cursor:pointer;
+    width: 80px;   
+}
