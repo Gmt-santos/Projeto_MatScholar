@@ -235,8 +235,55 @@ def search_students_by_course(request,actual_class_id=None,adding_to_cls:bool=Fa
             cursor.close()
         if conn is not None:
             conn.close()
+'''
+Busca os estudantes pela tarefa
+Utilizada na assignment_view_page
+"actual_assignment_id" já atribuída ao entrar nessa página
+Já recebe conn e cursor inicializados
+'''
+def search_students_by_assignment(request,conn,cursor)->list[str]|bool:
+        listof_RA=[]
+    # try:
+       
+        if conn and cursor:
+            cursor.execute('select std."RA" from students as std join students_classes_actual as std_cls_act on' \
+            ' std."RA" = std_cls_act.id_student join classes as cls on std_cls_act.id_class=cls.id join assignments as ass ' \
+            'on cls.id = ass.fk_class where ass.id= %s and cls.fk_professor=%s and cls.id=%s and std.fk_institution=%s'
+            ,[request.session.get("actual_assignment_id"),request.session.get("id"),request.session.get("actual_class_id"),
+              request.session.get("institution")])
+            
+            for item in cursor.fetchall():
+                listof_RA.append(item[0])
 
-
+         
+            return listof_RA
+        else:
+            messages.error(request,"Houve um erro com a conexão ao banco de dados")
+            return False
+    # except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+    #         DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
+    #     return False
+    # except errors.UndefinedColumn:
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Algum dado inválido foi enviado!")
+    #     return False
+    # except IndexError:
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+    #     return False
+    # except OperationalError:
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Houve um erro com a conexão do banco de dados!")
+    #     return False
+    # except Exception as e :
+    #     if conn:
+    #         dbf.safe_rollback(conn)
+    #     messages.error(request,"Erro desconhecido!")
+       
+    #     return False
+    
 '''
  Busca as aulas que um determinado estudante tem no banco de dados
  Utilizado na entrada do dashboard_page
@@ -1190,7 +1237,7 @@ def professor_get_all_info_assignment(request,assignment_id:str)->tuple:
                     'max_grade':assignment_query[5],
                 }
               
-                cursor.execute('select std."RA",std.name,ass_std.id,ass_std.grade,ass_std.feedback from ' \
+                cursor.execute('select std."RA",std.name,ass_std.grade,ass_std.feedback from ' \
                 'assignments_students as ass_std' \
                 ' join assignments as ass on ass_std.fk_assignment=ass.id join classes as cls on ass.fk_class=' \
                 ' cls.id join students_classes_actual as std_cls_actual on cls.id=std_cls_actual.id_class join ' \

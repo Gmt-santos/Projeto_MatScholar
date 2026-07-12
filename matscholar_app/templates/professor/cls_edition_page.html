@@ -39,7 +39,17 @@
             {% endfor %}
         {% else %}
         {% endif %}
+        <div class="assignments_card_div">
+
+            <a class="add_assignments_link_a"target="_self" href="{% url 'matscholar_app:prof_add_assignment_view'%}">
+                
+                <p class="forms_aux_input_p">Adicionar tarefa!</p>
+            </a>
+                    
+        </div>
+
     </div>
+    
      
 
 </div>

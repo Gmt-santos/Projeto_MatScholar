@@ -339,3 +339,21 @@ select{
     cursor:pointer;
     width: 80px;   
 }
+.add_assignment_link_p{
+    font-family: Chakra;
+    font-size: 15px;
+}
+.add_assignments_link_a{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 500px;
+    text-decoration: none;
+    color: white;
+    transition-duration: 0.2s;
+    background-color: var(--color-darkgreen);
+}
+.add_assignments_link_a:hover{
+    background-color:var(--color-lightgreen);
+    transition-duration: 0.2s;
+}

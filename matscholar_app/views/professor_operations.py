@@ -99,5 +99,17 @@ def prof_assignment_update_info(request):
         return redirect("matscholar_app:dashboard_page")
 
 def prof_assignment_student_update(request):
-    # TODO Atualizar os feedbacks e notas dos estudantes
+    if(request.method== "POST" and "Prof" in request.session.get("permissions") and request.session.get("id")):
+        try:
+            
+            python_functions.professor_assignments_students_operation(request)
+            return render(request,"professor/cls_edition_again.html")
+        
+        except (IndexError,TypeError,ValueError):
+            messages.error(request,"Alteração indevida no formulário!")
+            return redirect("matscholar_app:dashboard_page")
+    else:
+        return redirect("matscholar_app:dashboard_page")
+
+def prof_add_assignment_view(request):
     pass

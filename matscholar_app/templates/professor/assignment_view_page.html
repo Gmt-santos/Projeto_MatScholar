@@ -48,20 +48,21 @@
 </div>
 <div >
     <form class="assignments_organizer_form" action="{%  url 'matscholar_app:prof_update_assignment_std' %}" method="POST">
+        {% csrf_token %}
         {% for assignment in assignments_std_info  %}
         <div class="assignments_grade_card_div">
 
             <div class="organizer_horizontal_p_div">
 
-                <p class="forms_aux_input_p">RA: {{assignment.student_RA}} </p>
                 <p class="forms_aux_input_p">Nome: {{assignment.student_name}} </p>
-
+                <p class="forms_aux_input_p">RA: {{assignment.student_RA}} </p>
+                <input type="hidden" value="{{assignment.student_RA}}" name="student_RA">
             </div>
 
 
             <div class="organizer_horizontal_p_div">
                 <label class="forms_aux_input_p"for="select">Deseja atualizar?</label>
-                <select class="select_update_assignments"name="assignment_update" id="select">
+                <select class="select_update_assignments"name="assignment_update" id="assignment_update">
                     <option value="1">Sim</option>
                     <option value="0" selected >Não</option>
                 </select>
@@ -80,8 +81,8 @@
 
                 <div>
                     <p class="forms_aux_input_p">Feedback</p>
-                    <textarea class="input_feedback_textarea" name="feedback" id="feedback" rows="5" placeholder="Feedback">{{assignment.feedback}}</textarea>
-                
+                    <textarea class="input_feedback_textarea" name="feedback" id="feedback" rows="5" placeholder="Feedback">{{assignment.professor_feedback}}</textarea>
+                    
                 </div>
 
             </div>

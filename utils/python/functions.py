@@ -255,9 +255,8 @@ def generate_assignments_listof_dict(assignments_students_query:list[tuple])->li
             {
                 'student_RA':tuple[0],
                 'student_name':tuple[1],
-                'register_id':tuple[2],
-                'student_grade':tuple[3],
-                'professor_feedback':tuple[4],
+                'student_grade':tuple[2],
+                'professor_feedback':tuple[3],
             }
 
         )
@@ -284,4 +283,5 @@ Retorna uma lista, então use regex_entry[0] no retorno da função
 def validate_texts(entry:str)->list[str]:
     import re as regex
     regex_entry:list[str]=regex.findall(r"^[0-9a-zA-ZÀ-ú\s!.()?%$#@/\\:=+-{}]+$",entry,flags=regex.MULTILINE)
+
     return regex_entry
