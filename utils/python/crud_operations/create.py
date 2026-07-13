@@ -1,7 +1,9 @@
 from .. import functions as f
 from .. import db_functions as dbf
+from . import read
 from psycopg2 import OperationalError,errors,DatabaseError
 from django.contrib import messages
+from psycopg2.extras import execute_values
 
 '''
 Cria o estudante,com suas aulas iniciais e aulas "faltantes"
@@ -14,7 +16,7 @@ def principal_std_creation_operation(request,password:str,name:str,valid_ra:str,
         hashed_password=f.generate_hash(password) #Faz o Hashing da senha já validada na def std_creation_operation
         if(hashed_password and conn and cursor):
 
-            cursor.execute('insert into students("RA",name,year_of_entry,fk_course,password,fk_institution)values(%s,%s,%s,%s,%s,%s)',
+            cursor.execute('insert into students("RA",name,year_of_entry,fk_course,password,fk_institution,graduated)values(%s,%s,%s,%s,%s,%s,0)',
                         [valid_ra,name,f.get_year(),valid_course,hashed_password,request.session.get("institution")])
             #Cria o estudante com o RA,nome,curso e senha validados,além de ser vinculado à instituição do criador
 
@@ -45,7 +47,6 @@ def principal_std_creation_operation(request,password:str,name:str,valid_ra:str,
             Se o usuário tentar criar um estudante sem nenhuma aula com open = 1 e abstract = 0, levanta erro aqui!
             '''
             cursor.execute(insert_into_classes_actual_str)
-
             #Insere na tabela 'students_classes_actual" os relacionamentos dos estudantes com as suas aulas atuais e ativas
 
             cursor.execute('select classes.id from classes join classes_courses on classes.id=classes_courses.id_class join ' \
@@ -117,7 +118,6 @@ Código relativamente complexo,será explicado ação por ação
 '''
 def principal_crs_creation_classes(request,name,acronym,e_mec,max_length)->bool:
     from psycopg2 import errors,errorcodes
-    from psycopg2.extras import execute_values
     from django.contrib import messages
     conn,cursor=None,None
     try:
@@ -253,9 +253,8 @@ def principal_cls_creation_operation_create_class(request,max_length,class_name,
 Adiciona o relacionamento dos estudantes com uma sala, de maneira a respeitar o limite da sala
 '''
 def principal_cls_edition_add_students(request):
-    from psycopg2.extras import execute_values
-    conn,cursor=None,None
-    try:
+        conn,cursor=None,None
+    # try:
         conn,cursor=f.connection_cursor()
         if conn and cursor:
             list_students_RA:list=request.POST.getlist("students_opt_del")
@@ -303,6 +302,27 @@ def principal_cls_edition_add_students(request):
                     if(set(listof_tuple_RA).issubset(students_query)):
                         execute_values(cursor,"insert into students_classes_actual(id,id_class,id_student) values %s",
                         listof_tuple_sql)
+
+                        cursor.execute("select assignments.id from assignments where assignments.fk_class=%s",
+                        [actual_class_id])
+
+                        listof_tuple_assignment=cursor.fetchall()
+                        if listof_tuple_assignment:
+
+                            listof_tuple_assignments_students=[]
+
+                            for i in range(0,len(listof_tuple_RA)):
+
+                                for j in range(0,len(listof_tuple_assignment)):
+
+                                    listof_tuple_assignments_students.append((list_students_RA[i],
+                                                                              listof_tuple_assignment[j][0]))
+                            print(listof_tuple_assignments_students)
+                            execute_values(cursor,"insert into assignments_students(fk_student,fk_assignment) values %s",
+                                           listof_tuple_assignments_students)
+                            
+                        else:
+                            pass
                         conn.commit()
                         return True
                     else:
@@ -318,31 +338,110 @@ def principal_cls_edition_add_students(request):
         else:
             messages.error(request,"Erro com a conexão ao banco de dados!")
             return False
-    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
-            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-        dbf.safe_rollback(conn)
-        messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
-        return False
-    except errors.UndefinedColumn:
-        dbf.safe_rollback(conn)
-        messages.error(request,"Algum dado inválido foi enviado!")
-        return False
-    except IndexError:
-        dbf.safe_rollback(conn)
-        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
-        return False
-    except OperationalError:
-        dbf.safe_rollback(conn)
-        messages.error(request,"Houve um erro com a conexão do banco de dados!")
-        return False
-    except Exception as e :
-        if conn:
-            dbf.safe_rollback(conn)
-        messages.error(request,"Erro desconhecido!")
+    # except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+    #         DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
+    #     return False
+    # except errors.UndefinedColumn:
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Algum dado inválido foi enviado!")
+    #     return False
+    # except IndexError:
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+    #     return False
+    # except OperationalError:
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Houve um erro com a conexão do banco de dados!")
+    #     return False
+    # except Exception as e :
+    #     if conn:
+    #         dbf.safe_rollback(conn)
+    #     messages.error(request,"Erro desconhecido!")
         
-        return False
-    finally:
-        if cursor is not None:
-            cursor.close()
-        if conn is not None:
-            conn.close()
+    #     return False
+    # finally:
+    #     if cursor is not None:
+    #         cursor.close()
+    #     if conn is not None:
+    #         conn.close()
+
+def professor_add_assignment_operation(request):
+        conn,cursor=None,None
+    # try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            is_valid_name=f.validate_query_entries(request.POST.get("name"))
+            is_valid_desc=f.validate_texts(request.POST.get("desc"))
+            is_valid_deadline=f.validate_date(request.POST.get("deadline"))
+            is_valid_weight=f.validate_grades_and_weights(request.POST.get("weight"))
+            is_valid_max_grade=f.validate_grades_and_weights(request.POST.get("weight"))
+            if is_valid_name and is_valid_desc and is_valid_deadline and is_valid_weight and is_valid_max_grade:
+                valid_name=is_valid_name[0]
+                valid_desc=is_valid_desc[0]
+                valid_weight=abs(is_valid_weight)
+                valid_max_grade=abs(is_valid_max_grade)
+                # Puxando dados dos alunos da sala
+                students_query=read.professor_add_assignment_get_all_students_by_class(request,conn,cursor)
+                if students_query:
+                    cursor.execute('insert into assignments(name,fk_class,deadline,"desc",max_grade,weight)'
+                    'values(%s,%s,%s,%s,%s,%s) returning id',[valid_name,request.session.get("actual_class_id"),
+                   is_valid_deadline,valid_desc,valid_max_grade,valid_weight])
+                    new_assignment_id_tuple=cursor.fetchone()
+                    
+                    if new_assignment_id_tuple:
+                        list_insert_values=[]
+                        for register in students_query:
+                            list_insert_values.append((register[0],new_assignment_id_tuple[0]))
+                        execute_values(cursor,"insert into assignments_students(fk_student,fk_assignment) values %s"
+                        ,list_insert_values)
+                        conn.commit()
+                        messages.success(request,"Adição feita com sucesso!")
+                        return True
+                    else:
+                        dbf.safe_rollback(conn)
+                        messages.error(request,"Houve um erro com a criação da sua tarefa!")
+                        return False
+                else:
+                    dbf.safe_rollback(conn)
+                    messages.error(request,"Não há alunos nessa sala,consulte o diretor responsável!")
+                    return False
+            else:
+                dbf.safe_rollback(conn)
+                messages.error(request,"Alguma informação inválida foi enviada!")
+                return False
+        else:
+            messages.error(request,"Houve um erro com a conexão ao banco de dados!")
+            return False
+
+
+
+    # except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+    #         DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
+    #     return False
+    # except errors.UndefinedColumn:
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Algum dado inválido foi enviado!")
+    #     return False
+    # except IndexError:
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+    #     return False
+    # except OperationalError:
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Houve um erro com a conexão do banco de dados!")
+    #     return False
+    # except Exception as e :
+    #     if conn:
+    #         dbf.safe_rollback(conn)
+    #     messages.error(request,"Erro desconhecido!")
+        
+    #     return False
+    # finally:
+    #     if cursor is not None:
+    #         cursor.close()
+    #     if conn is not None:
+    #         conn.close()

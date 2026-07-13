@@ -5,7 +5,7 @@
 <div class="cls_edition_div_organizer_div">
 
 
-    <form method="POST" action="{% url 'matscholar_app:prof_update_assignment_info' %}"class="form_edition_compact_form">
+    <form method="POST" class="form_edition_compact_form">
      {% csrf_token %}
         <div class="forms_title_div">
             <img class="logo_forms_title_img" src="{% static 'images/logo.png' %}" alt="">
@@ -40,7 +40,11 @@
     
         <div style="display:flex;justify-content:center;align-items:center;flex-direction:column">
             
-           <input type="submit" class="forms_submit_input" value="Atualizar"> 
+           <input type="submit" class="forms_submit_input" value="Atualizar" formaction={% url 'matscholar_app:prof_update_assignment_info' %}> 
+           <input type="submit" class="forms_submit_input" value="Excluir" formaction={% url 'matscholar_app:prof_del_assignment_view' %}> 
+           <input type="submit" class="forms_submit_input" value="Voltar" formaction={% url 'matscholar_app:prof_cls_edition_page' %}> 
+
+           
         </div>
     </form>
      
@@ -74,14 +78,25 @@
 
                 <div>
 
-                 <p class="forms_aux_input_p">Nota</p>
-                 <input class="forms_input_minor"type="text" id="grade" name="grade" placeholder="Nota" value="{{assignment.student_grade}}">
+                    <p class="forms_aux_input_p">Nota</p>
+                    <p class="forms_aux_minor_input_p">Até duas casas decimais aceitas</p>
+                    {% if assignment.student_grade == None %}
+                        <input class="forms_input_minor"type="text" id="grade" name="grade" placeholder="Nota">
+                    {% else %}
+                        <input class="forms_input_minor"type="text" id="grade" name="grade" placeholder="Nota" value="{{assignment.student_grade}}">
+                
+                    {% endif %}
                 
                 </div>
 
                 <div>
                     <p class="forms_aux_input_p">Feedback</p>
-                    <textarea class="input_feedback_textarea" name="feedback" id="feedback" rows="5" placeholder="Feedback">{{assignment.professor_feedback}}</textarea>
+                    {% if assignment.professor_feedback == None %}
+                            <textarea class="input_feedback_textarea" name="feedback" id="feedback" rows="5" placeholder="Feedback"></textarea>
+                    {% else %}
+                        <textarea class="input_feedback_textarea" name="feedback" id="feedback" rows="5" placeholder="Feedback">{{assignment.professor_feedback}}</textarea>
+                    {% endif %}
+
                     
                 </div>
 

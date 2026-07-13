@@ -88,17 +88,17 @@ def validate_passwords_entries(entry:str)->list[str]:
 '''
 Verifica se a senha enviada por POST é igual a senha do banco
 '''
-def verify_hashed(password_POST:str,user:dict):
+def verify_hashed(password_POST:str,password_db:str):
     from argon2 import PasswordHasher,exceptions
     try:
         ph=PasswordHasher()
-        ph.verify(user["password"],password_POST)
+        ph.verify(password_db,password_POST)
         return True
     except exceptions.VerifyMismatchError:
       
         return False
 '''
-Caso o usuario erre o email,faz um hashing generico pra evitar timing attacks
+Caso o usuario erre o email,faz um hashing generico
 '''
 def hashing_false():
     from argon2 import PasswordHasher,exceptions
@@ -204,7 +204,7 @@ def generate_student_query_listofdict(students_query)->list[dict]:
         })
     return lista_dicts
 '''
-Verifica se a data enviada é válida, ou seja, é uma data futura
+Verifica se a data enviada é válida, ou seja, é uma data futura ou atual
 '''
 def validate_date(date)->str|bool:
     from datetime import datetime,timedelta
@@ -268,11 +268,18 @@ Usada nos assignments
 '''
 def validate_grades_and_weights(entry:str)-> float|bool:
     import re as regex
-    regex_entry:list[str]=regex.findall(r"^[0-9]{1,3}[,.]{0,1}[0-9]{0,2}$",entry)
-    if(regex_entry):
-        regex_entry_float=float(regex_entry[0].replace(',','.'))    
-        return regex_entry_float
-    else:
+    try:
+        
+        regex_entry:list[str]=regex.findall(r"^[0-9]{1,3}[,.]{0,1}[0-9]{0,2}$",entry)
+        
+        if(regex_entry):
+            regex_entry_float=float(regex_entry[0].replace(',','.'))    
+            return regex_entry_float
+        else:
+            
+            return False
+    except Exception :
+       
         return False
     
 '''

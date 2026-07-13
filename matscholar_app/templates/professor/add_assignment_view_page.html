@@ -1,0 +1,47 @@
+{% extends "general/header_footer_dashboard.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/specific/style_cls_creation.css' %}">
+<div class="cls_edition_div_organizer_div">
+
+
+    <form method="POST" class="form_edition_compact_form">
+     {% csrf_token %}
+        <div class="forms_title_div">
+            <img class="logo_forms_title_img" src="{% static 'images/logo.png' %}" alt="">
+            <p class="logo_forms_title_p">MatScholar</p>
+        </div>
+        <p class="logo_forms_title_p">Adicionar tarefa</p>
+        <p class="forms_aux_input_p">Nome: </p>
+        <input class="forms_input" type="text" name="name" id="name" placeholder="Nome"required >
+
+        <p class="forms_aux_input_p">Descrição: </p>
+        <textarea class="forms_input" name="desc" id="desc" rows="5" placeholder="Descrição"required></textarea>
+
+        <p class="forms_aux_input_p">Prazo máximo: </p>
+        <input class="forms_input" type="date" name="deadline" id="deadline"  placeholder="Prazo">
+        <p class="forms_aux_minor_input_p">São aceitas apenas datas atuais ou futuras</p>
+        <div class="organizer_horizontal_p_div">
+
+        
+            <p class="forms_aux_input_p">Peso: </p>
+            <input class="forms_input_minor" type="text" name="weight" id="weight" placeholder="Peso"required >
+            
+            <p class="forms_aux_input_p">Nota máxima: </p>
+            <input class="forms_input_minor" type="text" name="max_grade" id="max_grade"  placeholder="Nota máxima"required >
+
+        </div>
+     
+    
+        <div style="display:flex;justify-content:center;align-items:center;flex-direction:column">
+            
+           <input type="submit" class="forms_submit_input" value="Atualizar" formaction={% url 'matscholar_app:prof_add_assignment_operation' %}> 
+           <input type="submit" class="forms_submit_input" value="Voltar" formaction={% url 'matscholar_app:prof_cls_edition_page' %}> 
+           
+        </div>
+    </form>
+     
+
+</div>
+
+{% endblock content %}

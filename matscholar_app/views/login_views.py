@@ -38,7 +38,7 @@ def login_operation_academic_user(request):
                     if academic_user:
                         
                     
-                        if python_functions.verify_hashed(password_POST=password_POST,user=academic_user):
+                        if python_functions.verify_hashed(password_POST=password_POST,password_db=academic_user["password"]):
                             python_functions.academic_users_set_session_attributes(request=request,dictionary=academic_user)
                             return redirect('matscholar_app:dashboard_page')
                         else:
@@ -76,7 +76,7 @@ def login_operation_student(request):
 
             if student:
                 
-                if python_functions.verify_hashed(password_POST=password_POST,user=student):
+                if python_functions.verify_hashed(password_POST=password_POST,password_db=student["password"]):
                         python_functions.students_set_session_attributes(request=request,dictionary=student)
                         return redirect("matscholar_app:dashboard_page")
                 else:

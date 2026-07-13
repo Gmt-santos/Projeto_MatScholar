@@ -50,7 +50,12 @@ urlpatterns = [
     #       Professor urls      #
     path('dashboard/professor/cls_edition_page/',view=views.prof_cls_edition_page,name='prof_cls_edition_page'),
     path('dashboard/professor/assignment_view/<str:assignment_id>/',view=views.prof_assignment_view,name='prof_assignment_view'),
-    path('dashboard/professor/assignment_view/update_assignment_info/operation',view=views.prof_assignment_update_info,name='prof_update_assignment_info'),
-    path('dashboard/professor/assignment_view/update_assignment_std/operation',view=views.prof_assignment_student_update,name='prof_update_assignment_std'),
-    path('dashboard/professor/add_assignment_view',view=views.prof_add_assignment_view,name="prof_add_assignment_view"),
+    path('dashboard/professor/assignment_view/update_assignment_info/operation/',view=views.prof_assignment_update_info,name='prof_update_assignment_info'),
+    path('dashboard/professor/assignment_view/update_assignment_std/operation/',view=views.prof_assignment_student_update,name='prof_update_assignment_std'),
+    path('dashboard/professor/add_assignment_view/',view=views.prof_add_assignment_view,name="prof_add_assignment_view"),
+    path('dashboard/professor/add_assignment_view/operation',view=views.prof_add_assignment,name='prof_add_assignment_operation'),
+    path('dashboard/professor/del_assignment_view/',view=views.prof_del_assignment_view,name='prof_del_assignment_view'),
+    path('dashboard/professor/del_assignment_view/operation/',view=views.prof_del_assignment_operation,name='prof_del_assignment_operation'),
+    path('dashboard/professor/cls_edition_page/attendance/',view=views.prof_cls_edition_attendance,name='prof_attendance'),
+    path('dashboard/professor/cls_edition_page/attendance/operation/',view=views.prof_cls_edition_attendance_operation,name='prof_attendance_operation'),
 ]

@@ -12,14 +12,21 @@
         </div>
         <p class="logo_forms_title_p">{{class_query.class_name}}</p>
 
-        <div class="organizer_horizontal_p_div"> 
             <p class="forms_aux_input_p">Data de início: {{class_query.class_start_date}}</p>
             <p class="forms_aux_input_p">Data de fim: {{class_query.class_end_date}}</p>
-        </div>
+       
 
         <div class="organizer_horizontal_p_div">
             <p class="forms_aux_input_p">Alunos atuais: {{qty_students}}</p>
             <p class="forms_aux_input_p">Docente responsável: {{request.session.role}} {{request.session.name}}</p>
+        </div>
+         <div class="assignments_card_div">
+
+            <a class="add_assignments_link_a"target="_self" href="{% url 'matscholar_app:prof_attendence'%}">
+                
+                <p class="forms_aux_input_p">Registrar presença</p>
+            </a>
+                    
         </div>
     
     </div>
@@ -37,17 +44,17 @@
                     
                 </div>
             {% endfor %}
-        {% else %}
         {% endif %}
         <div class="assignments_card_div">
 
             <a class="add_assignments_link_a"target="_self" href="{% url 'matscholar_app:prof_add_assignment_view'%}">
                 
-                <p class="forms_aux_input_p">Adicionar tarefa!</p>
+                <p class="forms_aux_input_p">Adicionar tarefa</p>
+                
             </a>
                     
         </div>
-
+        
     </div>
     
      

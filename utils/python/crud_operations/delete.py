@@ -13,7 +13,8 @@ def principal_cls_edition_delete_class(request):
         if conn and cursor:
             cursor.execute("delete from assignments where fk_class = %s",[request.session.get("actual_class_id"),])
             cursor.execute("delete from final_grades where id_class = %s",[request.session.get("actual_class_id"),])
-            cursor.execute("delete from classes_courses where id_class=%s returning id_course",[request.session.get("actual_class_id"),])
+            cursor.execute("delete from classes_courses where id_class=%s returning id_course",
+            [request.session.get("actual_class_id"),])
             course_id=cursor.fetchone()[0]
             cursor.execute("delete from students_classes_actual where id_class= %s",[request.session.get("actual_class_id"),])
             cursor.execute("delete from classes where id = %s ",[request.session.get("actual_class_id"),])
@@ -86,10 +87,10 @@ def principal_cls_edition_del_students(request):
                         messages.error(request,"Algum dado inválido foi enviado!")
                         return False
 
-                cursor.execute('delete from assignments where fk_id_student = any(%s) and fk_class=%s',
-                               [list_del_RA,request.session.get("actual_class_id")])
                 cursor.execute('delete from final_grades where id_student =any(%s) and id_class=%s',
                                [list_del_RA,request.session.get("actual_class_id")])
+                cursor.execute('delete from assignments_students where fk_student=any(%s) and fk_assignment = any(' \
+                'select assignments.id from assignments where fk_class=%s)',[list_del_RA,request.session.get("actual_class_id")])
                 cursor.execute('delete from students_classes_actual where id_class=%s and id_student in(select "RA" ' \
                 'from students where students.fk_institution = %s and students."RA" = any(%s)) returning id_student',
                 [request.session.get("actual_class_id"),request.session.get("institution"),list_del_RA])
@@ -138,3 +139,71 @@ def principal_cls_edition_del_students(request):
             cursor.close()
         if conn is not None:
             conn.close()
+'''
+Deleta a tarefa e todos os relacionamentos dos estudantes com ela
+'''
+def professor_del_assignment(request,password:str):
+        conn,cursor=None,None
+    # try:
+        conn,cursor=f.connection_cursor()
+        
+        if conn and cursor:
+            cursor.execute("select password from academic_users join classes on academic_users.id=classes.fk_professor " \
+            "join assignments on classes.id=assignments.fk_class where" \
+            " academic_users.id = %s and classes.id= %s and assignments.id =%s",[request.session.get("id"),
+            request.session.get("actual_class_id"),request.session.get("actual_assignment_id")])
+            password_db=cursor.fetchone()
+            if password_db:
+                if(f.verify_hashed(password,password_db[0])):
+
+                    cursor.execute("delete from assignments_students where fk_assignment = any(" \
+                    "select ass.id from assignments as ass join classes as cls on ass.fk_class=cls.id where ass.id=%s and" \
+                    " cls.id=%s and cls.fk_professor=%s)",[request.session.get("actual_assignment_id"),
+                    request.session.get("actual_class_id"),request.session.get("id")])
+                    cursor.execute("delete from assignments where id= any(" \
+                    "select ass.id from assignments as ass join classes as cls on ass.fk_class=cls.id where ass.id=%s and" \
+                    " cls.id=%s and cls.fk_professor=%s)",[request.session.get("actual_assignment_id"),
+                    request.session.get("actual_class_id"),request.session.get("id")])
+                    conn.commit()
+                    del request.session['actual_assignment_id']
+                    messages.success(request,"Tarefa excluída com sucesso!")
+                    return True
+                else:
+                    messages.error(request,"Senha incorreta!")
+                    return False
+            else:
+                messages.error(request,"A tarefa selecionada não existe ou o usuário não tem acesso a ela!")
+                return False
+
+        else:
+            messages.error(request,"Houve um erro com a conexão ao banco de dados!")
+            return False
+        
+    # except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+    #         DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
+    #     return False
+    # except errors.UndefinedColumn:
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Algum dado inválido foi enviado!")
+    #     return False
+    # except IndexError:
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+    #     return False
+    # except OperationalError:
+    #     dbf.safe_rollback(conn)
+    #     messages.error(request,"Houve um erro com a conexão do banco de dados!")
+    #     return False
+    # except Exception as e :
+    #     if conn:
+    #         dbf.safe_rollback(conn)
+    #     messages.error(request,"Erro desconhecido!")
+        
+    #     return False
+    # finally:
+    #     if cursor is not None:
+    #         cursor.close()
+    #     if conn is not None:
+    #         conn.close()

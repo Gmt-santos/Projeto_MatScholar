@@ -86,7 +86,7 @@ def prof_assignment_update_info(request):
             max_grade=python_functions.validate_grades_and_weights(request.POST.get("max_grade"))
             
             if name and desc and deadline and weight and max_grade:
-               python_functions.professor_assignment_update_operation(request,name[0],desc[0],deadline,weight,max_grade)
+               python_functions.professor_assignment_update_operation(request,name[0],desc[0],deadline,abs(weight),abs(max_grade))
             else:
                 messages.error(request,"Alguma informação inválida foi enviada!")
             return render(request,'professor/cls_edition_again.html')
@@ -112,4 +112,80 @@ def prof_assignment_student_update(request):
         return redirect("matscholar_app:dashboard_page")
 
 def prof_add_assignment_view(request):
-    pass
+    if("Prof" in request.session.get("permissions") and request.session.get("id")
+       and request.session.get("actual_class_id")):
+        try:
+            return render(request,'professor/add_assignment_view_page.html')
+        except (IndexError,TypeError,ValueError):
+            messages.error(request,"Alteração indevida no formulário!")
+            return redirect("matscholar_app:dashboard_page")
+    else:
+        return redirect("matscholar_app:dashboard_page")
+    
+def prof_add_assignment(request):
+    if("Prof" in request.session.get("permissions") and request.session.get("id")
+       and request.session.get("actual_class_id") and request.method=="POST"):
+         
+        try:
+
+            python_functions.professor_add_assignment_operation(request)
+            return redirect('matscholar_app:prof_cls_edition_page')
+
+        except (IndexError,TypeError,ValueError):
+            messages.error(request,"Alteração indevida no formulário!")
+            return redirect("matscholar_app:dashboard_page")
+    else:
+        return redirect("matscholar_app:dashboard_page")
+    
+def prof_del_assignment_view(request):
+    if("Prof" in request.session.get("permissions") and request.session.get("id")
+       and request.session.get("actual_class_id") and request.session.get("actual_assignment_id") ):   
+        return render(request,"professor/deletion_assignment_view_page.html")
+    else:
+        return redirect("matscholar_app:dashboard_page")
+    
+
+def prof_del_assignment_operation(request):
+    if("Prof" in request.session.get("permissions") and request.session.get("id")
+       and request.session.get("actual_class_id") and request.session.get("actual_assignment_id") and request.method=="POST"):
+        try:
+            password=request.POST.get("password")
+            python_functions.professor_del_assignment(request,password)
+            return render(request,"professor/cls_edition_again.html")
+        
+        except (IndexError,TypeError,ValueError):
+            messages.error(request,"Alteração indevida no formulário!")
+            return redirect("matscholar_app:dashboard_page")
+    else:
+        return redirect("matscholar_app:dashboard_page")
+    
+
+def prof_cls_edition_attendance(request):
+    if ("Prof" in request.session.get("permissions") and request.session.get("id") and request.session.get("actual_class_id")):
+       try:
+             students_query=python_functions.professor_attendance_get_all_students_by_class(request)
+             if(students_query):
+                context={
+                     'students':python_functions.generate_student_query_listofdict(students_query),
+                 }
+    
+                return render(request,"professor/attendance_view_page.html",context)
+             else:
+                messages.error(request,"A sala não possui estudantes, consulte o diretor responsável!")
+                return redirect("matscholar_app:prof_cls_edition_page")
+             
+            
+       except (IndexError,TypeError,ValueError):
+            messages.error(request,"Alteração indevida no formulário!")
+            return redirect("matscholar_app:dashboard_page")
+    else:
+        return redirect("matscholar_app:dashboard_page")
+       
+def prof_cls_edition_attendance_operation(request):
+    if ("Prof" in request.session.get("permissions") and request.session.get("id") and
+         request.session.get("actual_class_id") and request.method=="POST") :
+        try:
+            pass
+        except (IndexError,TypeError,ValueError):
+            messages.error(request,"Alteração indevida no formulário!")
+            return redirect("matscholar_app:dashboard_page")

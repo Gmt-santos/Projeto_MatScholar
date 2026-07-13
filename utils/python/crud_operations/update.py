@@ -178,10 +178,14 @@ def professor_assignment_update_operation(request,name:str,desc:str,deadline:str
             cursor.close()
         if conn is not None:
             conn.close()
-
+'''
+Recebe uma request com método POST e organiza os dados dela em matrizes. Após isso,valida se os RAs enviados realmente
+são daquela sala e depois percorre as matrizes executando updates nos registros que select = 1.
+No fim,caso nada dê errado, faz o commit, caso contrário, faz o rollback
+'''
 def professor_assignments_students_operation(request)->bool:
-        conn,cursor=None,None
-    # try:
+    conn,cursor=None,None
+    try:
         conn,cursor=f.connection_cursor()
         if conn and cursor:
             list_RA:list[str]=request.POST.getlist("student_RA")
@@ -197,45 +201,46 @@ def professor_assignments_students_operation(request)->bool:
                 if(listof_RA_from_assignment_query):
 
                     if(sorted(listof_RA_from_assignment_query) == sorted(list_RA)):
-
                         # 'for' pra validação e organização dos dados
                         for i in range(0,len(list_grades)):
-
-                            is_valid_grade:bool|float =f.validate_grades_and_weights(list_grades[i])
-                            is_valid_feedback:list[str] =f.validate_texts(list_feedbacks[i])
-                            is_valid_RA:list[str]=f.validate_ids_entries(list_RA[i])
-
-                            if is_valid_grade and is_valid_feedback and is_valid_RA :
-
                                 if(list_select_update[i] ==  "1"):
+
+                                    is_valid_grade:bool|float =f.validate_grades_and_weights(list_grades[i])
+                                    is_valid_feedback:list[str] =f.validate_texts(list_feedbacks[i])
+                                    is_valid_RA:list[str]=f.validate_ids_entries(list_RA[i])
+
+                                    if is_valid_feedback and is_valid_grade and is_valid_RA:
+
+                                        cursor.execute('update assignments_students set grade=%s,feedback=%s where'
+                                        ' assignments_students.fk_student=%s and assignments_students.fk_assignment=%s',
+                                        [abs(is_valid_grade),is_valid_feedback[0],is_valid_RA[0],
+                                        request.session.get("actual_assignment_id")])
+
+                                    else:
+
+                                        messages.error(request,"Dado inválido enviado!")
+                                        dbf.safe_rollback(conn)
+                                        return False
                                     
-                                    cursor.execute('update assignments_students set grade=%s,feedback=%s where'
-                                    ' assignments_students.fk_student=%s and assignments_students.fk_assignment=%s',
-                                    [is_valid_grade,is_valid_feedback[0],is_valid_RA[0],
-                                     request.session.get("actual_assignment_id")])
-                                    #TODO VALIDAR MAX GRADE
                                 elif(list_select_update[i] == "0"):
 
                                     pass
                                 
                                 else:
-                                    messages.error(request,"Dado inválido enviado!")
+                                    messages.error(request,"Opção inválida enviada!")
                                     dbf.safe_rollback(conn)
                                     return False
-                            
-                            else:
-                                messages.error(request,"Dado inválido enviado!")
-                                dbf.safe_rollback(conn)
-                                return False
-                            
+                                
                         conn.commit()
                         messages.success(request,"Alteração feita com sucesso!")
                         return True
 
                     else:
+                        dbf.safe_rollback(conn)
                         messages.error(request,"Os dados dos alunos enviados não pertencem a essa sala!")
                         return False
                 else:
+                    dbf.safe_rollback(conn)
                     messages.error(request,"Não há alunos nessa sala!")
                     return False
         else:
@@ -244,33 +249,71 @@ def professor_assignments_students_operation(request)->bool:
 
             
             
-    # except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
-    #         DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-    #     dbf.safe_rollback(conn)
-    #     messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
-    #     return False
-    # except errors.UndefinedColumn:
-    #     dbf.safe_rollback(conn)
-    #     messages.error(request,"Algum dado inválido foi enviado!")
-    #     return False
-    # except IndexError:
-    #     dbf.safe_rollback(conn)
-    #     messages.error(request,"Alteração no formulário detectada! Operação abortada!")
-    #     return False
-    # except OperationalError:
-    #     dbf.safe_rollback(conn)
-    #     messages.error(request,"Houve um erro com a conexão do banco de dados!")
-    #     return False
-    # except Exception as e :
-    #     if conn:
-    #         dbf.safe_rollback(conn)
-    #     messages.error(request,"Erro desconhecido!")
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        dbf.safe_rollback(conn)
+        messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
+        return False
+    except errors.UndefinedColumn:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception as e :
+        if conn:
+            dbf.safe_rollback(conn)
+        messages.error(request,"Erro desconhecido!")
        
-    #     return False
-    # finally:
-    #     if cursor is not None:
-    #         cursor.close()
-    #     if conn is not None:
-    #         conn.close()
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
 
-    
+def professor_attendance_update(request):
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            listof_RA=request.POST.getlist("student_RA")
+            listof_attendance=request.POST.getlist("attendance")
+            if listof_RA and listof_attendance and len(listof_RA) == len(listof_attendance):
+                pass
+                #TODO FINALIZAR
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        dbf.safe_rollback(conn)
+        messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
+        return False
+    except errors.UndefinedColumn:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception as e :
+        if conn:
+            dbf.safe_rollback(conn)
+        messages.error(request,"Erro desconhecido!")
+       
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+

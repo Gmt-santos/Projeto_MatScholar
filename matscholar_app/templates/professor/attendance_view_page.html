@@ -1,0 +1,51 @@
+{% extends "general/header_footer_dashboard.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/specific/style_cls_creation.css' %}">
+<div >
+    <form class="attendance_organizer_form" action="{%  url 'matscholar_app:prof_attendance_operation' %}" method="POST">
+        {% csrf_token %}
+        <div class="assignments_grade_card_div" style="justify-content:center;align-items:center">
+        
+             <p class="logo_forms_title_p">Registro de presença</p>
+
+        </div>
+        {% for student in students  %}
+        <div class="assignments_grade_card_div">
+
+            <div class="organizer_horizontal_p_div">
+
+                <p class="forms_aux_input_p">Nome: {{student.name}} </p>
+                <p class="forms_aux_input_p">RA: {{student.RA}} </p>
+                <input type="hidden" value="{{student.RA}}" name="student_RA">
+            </div>
+
+
+            <div class="organizer_horizontal_p_div">
+                <label class="forms_aux_input_p"for="select">Presença</label>
+                <select class="select_update_assignments"name="attendance" id="attendance">
+                    <option value="1" selected>Presente</option>
+                    <option value="0">Faltou</option>
+                </select>
+            </div>
+
+            {%  if forloop.last    %}
+
+                <div style="display:flex;justify-content:center;align-items:center;flex-direction:column">
+                
+                    <input type="submit" class="forms_submit_input" value="Registrar presença"> 
+
+                </div>
+
+
+            {% endif %}
+            
+
+    
+        </div>
+        
+        {% endfor %}
+        
+    </form>
+</div>
+{% endblock content %}
