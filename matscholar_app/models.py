@@ -6,6 +6,7 @@ class institution(models.Model):
     name=models.CharField(max_length=255)
     acronym=models.CharField(max_length=255)
     cnpj=models.CharField(max_length=255)
+    universal_absence_limit=models.DecimalField(max_digits=3,decimal_places=2,null=True)
     class Meta:
         db_table='institution'
 
@@ -81,7 +82,7 @@ class students_classes_actual(models.Model):
     id_class=models.ForeignKey(classes,on_delete=models.CASCADE,db_column="id_class")
     id_student=models.ForeignKey(students,on_delete=models.CASCADE,db_column="id_student")
     absence=models.IntegerField(null=True)
-    attendence=models.IntegerField(null=True)
+    attendance=models.IntegerField(null=True)
     
     class Meta:
         db_table='students_classes_actual'
@@ -110,7 +111,7 @@ class assignments_students(models.Model):
     id=models.AutoField(primary_key=True)
     fk_id_student=models.ForeignKey(students,on_delete=models.CASCADE,db_column="fk_student")
     fk_id_assignment=models.ForeignKey(assignments,on_delete=models.CASCADE,db_column="fk_assignment",default=-1)
-    grade=models.DecimalField(max_digits=10,decimal_places=2,null=True)
+    grade=models.DecimalField(max_digits=5,decimal_places=2,null=True)
     feedback=models.TextField(null=True)
     class Meta:
         db_table='assignments_students'
@@ -119,6 +120,6 @@ class final_grades(models.Model):
     id=models.CharField(max_length=255,primary_key=True)
     id_student=models.ForeignKey(students,on_delete=models.CASCADE,db_column="id_student")
     id_class=models.ForeignKey(classes,on_delete=models.CASCADE,db_column="id_class")
-    final_grade=models.DecimalField(max_digits=10,decimal_places=2)
+    final_grade=models.DecimalField(max_digits=5,decimal_places=2)
     class Meta:
         db_table='final_grades'

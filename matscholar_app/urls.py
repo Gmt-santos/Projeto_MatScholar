@@ -58,4 +58,7 @@ urlpatterns = [
     path('dashboard/professor/del_assignment_view/operation/',view=views.prof_del_assignment_operation,name='prof_del_assignment_operation'),
     path('dashboard/professor/cls_edition_page/attendance/',view=views.prof_cls_edition_attendance,name='prof_attendance'),
     path('dashboard/professor/cls_edition_page/attendance/operation/',view=views.prof_cls_edition_attendance_operation,name='prof_attendance_operation'),
+    
+    #       Student urls        #
+    path('dashboard/student/cls_view_page/',view=views.std_cls_view_page,name='std_cls_view_page')
 ]

@@ -196,3 +196,26 @@ a{
     padding:20px;
     box-shadow:2px 2px 2px 1px black;
 }
+.assignment_div{
+    display:flex;
+    flex-direction: row;
+    width:100%;
+    gap:100px;
+}
+.assignment_organizer_div{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color:white;
+    border-radius: var(--border-radius);
+    width:800px;
+    height:fit-content;
+    margin:20px;
+    padding:20px;
+    box-shadow:2px 2px 2px 1px black;
+}
+.assignment_info_td{
+    font-family:Chakra;
+    font-size:15px;
+    text-align: center;
+}

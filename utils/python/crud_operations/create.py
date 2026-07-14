@@ -251,10 +251,11 @@ def principal_cls_creation_operation_create_class(request,max_length,class_name,
 
 '''
 Adiciona o relacionamento dos estudantes com uma sala, de maneira a respeitar o limite da sala
+Além disso, cria o relacionamento dos estudantes com as tarefas já existentes na turma
 '''
 def principal_cls_edition_add_students(request):
-        conn,cursor=None,None
-    # try:
+    conn,cursor=None,None
+    try:
         conn,cursor=f.connection_cursor()
         if conn and cursor:
             list_students_RA:list=request.POST.getlist("students_opt_del")
@@ -264,7 +265,7 @@ def principal_cls_edition_add_students(request):
                 listof_tuple_RA=[]
                 for item in list_students_RA:
                    if f.validate_ids_entries(item):
-                        listof_tuple_sql.append((f"{actual_class_id}-{item}",actual_class_id,item))
+                        listof_tuple_sql.append((f"{actual_class_id}-{item}",actual_class_id,item,0,0))
                         listof_tuple_RA.append((item,))
                    else:
                        messages.error(request,"Alteração indevida no formulário")
@@ -300,7 +301,7 @@ def principal_cls_edition_add_students(request):
                     return False
                 else:
                     if(set(listof_tuple_RA).issubset(students_query)):
-                        execute_values(cursor,"insert into students_classes_actual(id,id_class,id_student) values %s",
+                        execute_values(cursor,"insert into students_classes_actual(id,id_class,id_student,absence,attendance) values %s",
                         listof_tuple_sql)
 
                         cursor.execute("select assignments.id from assignments where assignments.fk_class=%s",
@@ -338,34 +339,34 @@ def principal_cls_edition_add_students(request):
         else:
             messages.error(request,"Erro com a conexão ao banco de dados!")
             return False
-    # except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
-    #         DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-    #     dbf.safe_rollback(conn)
-    #     messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
-    #     return False
-    # except errors.UndefinedColumn:
-    #     dbf.safe_rollback(conn)
-    #     messages.error(request,"Algum dado inválido foi enviado!")
-    #     return False
-    # except IndexError:
-    #     dbf.safe_rollback(conn)
-    #     messages.error(request,"Alteração no formulário detectada! Operação abortada!")
-    #     return False
-    # except OperationalError:
-    #     dbf.safe_rollback(conn)
-    #     messages.error(request,"Houve um erro com a conexão do banco de dados!")
-    #     return False
-    # except Exception as e :
-    #     if conn:
-    #         dbf.safe_rollback(conn)
-    #     messages.error(request,"Erro desconhecido!")
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        dbf.safe_rollback(conn)
+        messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
+        return False
+    except errors.UndefinedColumn:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception as e :
+        if conn:
+            dbf.safe_rollback(conn)
+        messages.error(request,"Erro desconhecido!")
         
-    #     return False
-    # finally:
-    #     if cursor is not None:
-    #         cursor.close()
-    #     if conn is not None:
-    #         conn.close()
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
 
 def professor_add_assignment_operation(request):
         conn,cursor=None,None

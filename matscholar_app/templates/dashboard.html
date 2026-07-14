@@ -209,40 +209,90 @@
                     {% include "specific/messages.html" %}
                 {% endfor %}
         {% endif %}
+
         {% if query_active %}
             <p class="professor_classes_grid_p">Resultados de '{{query_classname}}'</p>
         {% else %}
-        <p class="professor_classes_grid_p">Suas aulas</p>
+        
+        {% if list_assignments %}
+            <p class="professor_classes_grid_p">Suas próximas tarefas</p>
+            <div class="assignment_organizer_div">
+                <table style="width:100%;">
+                    <tr>
+                        <th class="assignment_info_td">Disciplina</th>
+                        <th class="assignment_info_td">Nome</th>
+                        <th class="assignment_info_td">Docente</th>
+                        <th class="assignment_info_td">Data de entrega/avaliação</th>
+                    </tr>
+                
+                
+                    {% for assignment in list_assignments %}
+                        <!-- <div class="assignment_div"> -->
+                        <tr>
+                            <td class="assignment_info_td">{{assignment.class_name}}</td>
+                            <td class="assignment_info_td">{{assignment.name}}</td>
+                            <td class="assignment_info_td">{{assignment.prof_role}} {{assignment.prof_name}}</td>
+                            <td class="assignment_info_td">{{assignment.deadline}}</td>
+                        </tr>
+    <!-- 
+                        </div> -->
+
+
+                    {%  endfor  %}
+                </table>
+            </div>
+            
         {% endif %}
+
+
+
+
+
+
+
+
+
+        <p class="professor_classes_grid_p">Suas aulas</p>
+
+        {% endif %}
+
         <div class="professor_classes_grid_div">
-            {% if list_classes %}   
+
+            {% if list_classes %} 
+
                 {% for class in list_classes  %}
-                <form action="" method="POST">
-                    {% csrf_token %}
-                    <div class="student_class_div">
-                        <div class="professor_class_identify_name">
-                            <input type="hidden" name="id" id="id-{{class.class_id}}" value="id-{{class.class_id}}">
-                            <p  class="professor_class_title_p">{{class.class_name}}</p>
-                        </div>
-                            <p class="professor_class_p">Docente: {{class.academic_user_role}} {{class.academic_user_name}}</p>
-                            <p class="professor_class_p">Email do docente: {{class.academic_user_email}}</p>
-                            <p class="professor_class_p">Data de início: {{class.start_date}}</p>
-                            <p  class="professor_class_p">Data de fim: {{class.end_date}}</p>
                     
-                        <a class="professor_class_access_button_a centralizar">Acessar</a>
-                    </div>
-                </form>
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <div class="student_class_div">
+                            <div class="professor_class_identify_name">
+                                <input type="hidden" name="id" value="{{class.class_id}}">
+                                <p  class="professor_class_title_p">{{class.class_name}}</p>
+                            </div>
+                                <p class="professor_class_p">Docente: {{class.academic_user_role}} {{class.academic_user_name}}</p>
+                                <p class="professor_class_p">Email do docente: {{class.academic_user_email}}</p>
+                                <p class="professor_class_p">Data de início: {{class.start_date}}</p>
+                                <p  class="professor_class_p">Data de fim: {{class.end_date}}</p>
+                        
+                            <a class="professor_class_access_button_a centralizar">Acessar</a>
+                        </div>
+                    </form>
+
                 {% endfor %}
+
 
             
             {% else %}
+
                 <div class="professor_class_div" style="justify-content:center">
                         <div class="professor_class_identify_name">
                             <p  class="professor_class_title_p">Não foi possível encontrar suas aulas!</p>
                         </div>
                     
                     </div>
+
             {% endif %}
+
         </div>
     </div>
 {% endif %}

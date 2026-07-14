@@ -199,8 +199,9 @@ def professor_assignments_students_operation(request)->bool:
                 listof_RA_from_assignment_query=read.search_students_by_assignment(request,conn,cursor)
 
                 if(listof_RA_from_assignment_query):
-
+                    print(listof_RA_from_assignment_query,list_RA)
                     if(sorted(listof_RA_from_assignment_query) == sorted(list_RA)):
+                      
                         # 'for' pra validação e organização dos dados
                         for i in range(0,len(list_grades)):
                                 if(list_select_update[i] ==  "1"):
@@ -285,9 +286,50 @@ def professor_attendance_update(request):
         if conn and cursor:
             listof_RA=request.POST.getlist("student_RA")
             listof_attendance=request.POST.getlist("attendance")
-            if listof_RA and listof_attendance and len(listof_RA) == len(listof_attendance):
-                pass
-                #TODO FINALIZAR
+            if listof_RA and listof_attendance and len(listof_RA) == len(listof_attendance) and ("1" in listof_attendance
+            or "0" in listof_attendance):
+                
+                students_query=read.professor_attendance_get_all_students_by_class(request,conn,cursor,True)
+
+                if (students_query) and (len(students_query) ==  len(listof_RA)):
+                    listof_students_query=[]
+
+                    for tupla in students_query:
+                        listof_students_query.append(tupla[0])
+
+                    if(sorted(listof_students_query) == sorted(listof_RA)):
+
+                        for i in range(0,len(listof_RA)):
+
+                            if listof_attendance[i] ==  "1":
+                                cursor.execute("update students_classes_actual set attendance=attendance+1 where" \
+                                " id_student = %s and id_class = %s",[listof_RA[i],request.session.get("actual_class_id")])
+                            elif listof_attendance[i] ==  "0":
+                                 cursor.execute("update students_classes_actual set absence=absence+1 where" \
+                                " id_student = %s and id_class = %s",[listof_RA[i],request.session.get("actual_class_id")])
+                            else:
+                                messages.error(request,"Dado inválido enviado!")
+                                dbf.safe_rollback(conn)
+                                return False
+                            
+                        conn.commit()
+                        messages.success(request,"Dados registrados com sucesso!")
+                        return True
+                    
+                    else:
+                        messages.error(request,"Dado inválido enviado!")
+                        return False
+                else:
+                    messages.error(request,"Dado inválido enviado!")
+                    return False
+            else:
+                messages.error(request,"Dado inválido enviado!")
+                return False
+        else:
+            messages.error(request,"Houve um erro com a conexão ao banco de dados!")
+            return False
+
+
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
             DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
         dbf.safe_rollback(conn)

@@ -182,7 +182,17 @@ def get_year():
     import datetime 
     date_obj=datetime.date.today()
     return date_obj.year   
-
+'''
+Retorna a data no qual o usuário está e pode usar também o dia anterior caso esteja sendo feita uma busca pela data futura de
+algum campo
+'''
+def get_today_date(deadline_comparison=False):
+    import datetime
+    if deadline_comparison:
+        date_obj=datetime.date.today()-datetime.timedelta(days=1)
+    else:
+        date_obj=datetime.date.today()
+    return date_obj
 '''
 Recebe uma lista de tuplas e transforma em uma lista de dicts
 Usada na criação de salas pelo "Princ"

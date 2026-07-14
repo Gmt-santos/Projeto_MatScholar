@@ -185,7 +185,10 @@ def prof_cls_edition_attendance_operation(request):
     if ("Prof" in request.session.get("permissions") and request.session.get("id") and
          request.session.get("actual_class_id") and request.method=="POST") :
         try:
-            pass
+            python_functions.professor_attendance_update(request)
+            return render(request,'professor/cls_edition_again.html')
         except (IndexError,TypeError,ValueError):
             messages.error(request,"Alteração indevida no formulário!")
             return redirect("matscholar_app:dashboard_page")
+    else:
+        return redirect("matscholar_app:dashboard_page")

@@ -465,7 +465,7 @@ def princ_cls_edition_add_student_page(request,actual_students:int,max_students:
             return redirect("matscholar_app:dashboard_page")
 
 def princ_cls_edition_add_student_operation(request):
-    # try:
+    try:
         if(request.method=="POST" and "Princ" in request.session.get("permissions") and request.session.get("id")
             and request.session.get("actual_class_id")):
            
@@ -477,9 +477,9 @@ def princ_cls_edition_add_student_operation(request):
                 return redirect("matscholar_app:cls_edition_page")
         else:
             return redirect("matscholar_app:dashboard_page")
-    # except (IndexError,TypeError,ValueError):
-    #         messages.error(request,"Alteração indevida no formulário!")
-    #         return redirect("matscholar_app:dashboard_page")
+    except (IndexError,TypeError,ValueError):
+            messages.error(request,"Alteração indevida no formulário!")
+            return redirect("matscholar_app:dashboard_page")
     
     
 def princ_cls_edition_view_student(request):

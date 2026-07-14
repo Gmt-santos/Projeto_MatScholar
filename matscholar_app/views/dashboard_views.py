@@ -35,8 +35,10 @@ def dashboard_page(request):
     
     elif(request.session.get("RA")):
         list_classes=python_functions.student_get_classes(request)
+        list_assignments=python_functions.student_get_assignments(request)
         context={
             'list_classes':list_classes,
+            'list_assignments':list_assignments,
             'query_active':False,
 
         }
