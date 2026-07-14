@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from utils import python as python_functions
 def prof_cls_edition_page(request):
-    if(request.method== "POST" and "Prof" in request.session.get("permissions") and request.session.get("id")):
+    if("Prof" in request.session.get("permissions") and request.session.get("id")):
       
         try:
             # Deleta o registro do id da tarefa da sessão 

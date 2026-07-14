@@ -267,7 +267,7 @@ select{
     width: 300px;
 }
 
-/* cls_edition->professor */
+/* cls_edition->professor e student*/
 .assignments_card_div{
     width:500px;
     display: flex;
@@ -378,4 +378,30 @@ select{
     margin-top: 100px;
     border-radius: var(--border-radius);
     background-color: white;
+}
+.organizer_vertical_p_div{
+    display: flex;
+    flex-direction: row;
+    width:100%;
+    justify-content: space-evenly;
+   
+}
+.a_back_a{
+    height:20px;
+    width:420px;
+    padding:5px;
+    margin-top: 20px;
+    font-family: Chakra;
+    color:black;
+    font-size: 15px;
+    text-align: center;
+    border-style: none;
+    border-radius: 10px;
+    transition-duration: 1s;
+    cursor:pointer;
+    background-color: var(--color-gray);
+}
+.a_back_a:hover{
+    background-color: rgb(247, 247, 247);
+    transition-duration: 1s;
 }

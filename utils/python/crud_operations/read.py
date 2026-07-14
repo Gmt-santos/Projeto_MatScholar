@@ -356,7 +356,8 @@ def student_get_assignments(request)->list[dict]:
             cursor.execute("select ass.id,ass.name,ass.deadline,a_users.name,a_users.role,cls.name from assignments as ass" \
             " join classes as cls on ass.fk_class=cls.id join students_classes_actual as std_cls_actual on cls.id=" \
             "std_cls_actual.id_class join academic_users as a_users on cls.fk_professor=a_users.id where" \
-            " std_cls_actual.id_student = %s and a_users.fk_institution = %s and ass.deadline>=%s",
+            " std_cls_actual.id_student = %s and a_users.fk_institution = %s and ass.deadline>=%s " \
+            "order by ass.deadline asc limit 5;",
             [request.session.get("RA"),request.session.get("institution"),yesterday])
             assignments_query=cursor.fetchall()
             if assignments_query:
@@ -1353,6 +1354,7 @@ def professor_get_all_info_assignment(request,assignment_id:str)->tuple:
 '''
 Pega todos os estudantes de uma determinada sala e retorna uma lista de tuplas com seus RAs
 Usada na criação do relacionamento de estudantes e tarefas
+Sem finally,pois é usada dentro de outra função com a conexão aberta
 '''
 def professor_add_assignment_get_all_students_by_class(request,conn,cursor)->list[tuple]|bool:
     try:
@@ -1412,6 +1414,7 @@ def professor_attendance_get_all_students_by_class(request,conn=None,cursor=None
             return students_query
         else:
             messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
+            return False
     except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
             DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
          
@@ -1441,3 +1444,193 @@ def professor_attendance_get_all_students_by_class(request,conn=None,cursor=None
                 cursor.close()
             if conn is not None:
                 conn.close()
+'''
+Pega todos os assignments de determinada sala.
+Tudo já foi validado na student_get_all_info_class, então é garantido que esses assignments realmente pertencem ao usuário
+solicitante
+Sem finally,pois é chamada dentro da função student_get_all_info_class, a qual ainda usará a conexão
+'''
+def student_get_assignments_by_class(request,conn,cursor,class_id)-> list[dict]|bool:
+    try:
+        if conn and cursor:
+            cursor.execute("select ass.id,ass.name,ass.deadline from assignments as ass where fk_class=%s",[class_id,])
+            assignments_query:tuple[tuple]=cursor.fetchall()
+            listof_assignments_dict=[]
+            for assignment in assignments_query:
+                listof_assignments_dict.append({
+                    'id':assignment[0],
+                    'name':assignment[1],
+                    'deadline':assignment[2],
+                })
+            return listof_assignments_dict
+        else:
+            messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
+            return False
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+         
+        messages.error(request,"Algum erro na consulta ocorreu!")
+        return False
+    except errors.UndefinedColumn:
+         
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+         
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+         
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception as e :
+         
+             
+        messages.error(request,"Erro desconhecido!")
+        
+        return False
+
+'''
+Puxa todas as informações das salas e combina elas com as informações da função acima e disponibiliza na 
+página de visualização de sala para o estudante
+'''
+def student_get_all_info_class(request):
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            if request.session.get("actual_class_id"):
+                is_valid_class_id=f.validate_ids_entries(request.session.get("actual_class_id"))
+            else:
+                is_valid_class_id=f.validate_ids_entries(request.POST.get("id"))
+            if is_valid_class_id:
+                valid_class_id=is_valid_class_id[0]
+                cursor.execute("select cls.name,cls.start_date,cls.end_date,a_users.name,a_users.role," \
+                "std_cls_actual.attendance,std_cls_actual.absence from academic_users as a_users join classes as cls on" \
+                " a_users.id=cls.fk_professor join students_classes_actual as std_cls_actual on" \
+                " cls.id=std_cls_actual.id_class where cls.id=%s and std_cls_actual.id_student = %s and" \
+                " a_users.fk_institution=%s",[valid_class_id,request.session.get("RA"),request.session.get("institution")])
+                class_query:tuple=cursor.fetchone()
+                if class_query:
+                    class_dict={
+                        'class_name':class_query[0],
+                        'class_start_date':  class_query[1],
+                        'class_end_date':  class_query[2],
+                        'prof_name':  class_query[3],
+                        'prof_role':  class_query[4],
+                        'class_attendance':  class_query[5],
+                        'class_absence': class_query[6],
+                        'class_attendance_rate':f.get_attendance_rate
+                        (attendance=class_query[5],absence=class_query[6],return_string=True)
+                    }
+                    assignments_query:list[dict]|bool=student_get_assignments_by_class(request,conn,cursor,valid_class_id)
+                    request.session["actual_class_id"]=valid_class_id
+                    return class_dict,assignments_query
+                else:
+                    messages.error(request,"A sala procurada não existe na sua instituição!")
+                    return False,False
+            else:
+                messages.error(request,"Dado inválido enviado!")
+                return False,False
+        else:
+            messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
+            return False,False
+        
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+        DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        
+        messages.error(request,"Algum erro na consulta ocorreu!")
+        return False,False
+    except errors.UndefinedColumn:
+         
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False,False
+    except IndexError:
+         
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False,False
+    except OperationalError:
+         
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False,False
+    except Exception as e :
+         
+             
+        messages.error(request,"Erro desconhecido!")
+        
+        return False,False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+'''
+Busca as informações da tarefa acessada na cls_view_page pelo id da tarefa.
+Esse id vem via GET da url
+'''
+def student_get_all_info_assignment(request,assignment_id)->dict|bool:
+        conn,cursor=None,None
+    # try:
+        is_valid_assignment_id=f.validate_ids_entries(assignment_id)
+        if is_valid_assignment_id:
+            valid_assignment_id=is_valid_assignment_id[0]
+            conn,cursor=f.connection_cursor()
+            if conn and cursor:
+               
+                cursor.execute("select ass.name,ass.desc,ass.weight,ass.max_grade,ass.deadline," \
+                " ass_std.grade,ass_std.feedback from assignments_students as ass_std join assignments as ass on" \
+                " ass_std.fk_assignment=ass.id join classes as cls on ass.fk_class=cls.id " \
+                " where ass.id=%s and cls.id=%s and ass_std.fk_student=%s and ass.fk_class=%s and ass_std.fk_assignment=%s",
+                [valid_assignment_id,request.session.get("actual_class_id"),
+                 request.session.get("RA"),request.session.get("actual_class_id"),valid_assignment_id])
+                
+                assignment_query=cursor.fetchone()
+                if assignment_query:
+                    assignment_dict={
+                        'ass_name':assignment_query[0],
+                        'ass_desc': assignment_query[1],
+                        'ass_weight':  assignment_query[2],
+                        'ass_max_grade':  assignment_query[3],
+                        'ass_deadline':assignment_query[4],
+                        'std_grade':  assignment_query[5],
+                        'prof_feedback':  assignment_query[6],
+                    }
+                    return assignment_dict
+                else:
+                    messages.error(request,'Tarefa inválida consultada!')
+                    return False
+            else:
+                messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
+                return False
+        else:
+            messages.error(request,'Tarefa inválida consultada!')
+            return False
+    # except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+    #         DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+         
+    #     messages.error(request,"Algum erro na consulta ocorreu!")
+    #     return False
+    # except errors.UndefinedColumn:
+         
+    #     messages.error(request,"Algum dado inválido foi enviado!")
+    #     return False
+    # except IndexError:
+         
+    #     messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+    #     return False
+    # except OperationalError:
+         
+    #     messages.error(request,"Houve um erro com a conexão do banco de dados!")
+    #     return False
+    # except Exception as e :
+         
+             
+    #     messages.error(request,"Erro desconhecido!")
+        
+    #     return False
+    # finally:
+    #     if cursor is not None:
+    #         cursor.close()
+    #     if conn is not None:
+    #         conn.close()

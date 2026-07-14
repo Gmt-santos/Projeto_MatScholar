@@ -1,0 +1,57 @@
+{% extends "general/header_footer_dashboard.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/specific/style_cls_creation.css' %}">
+<div class="cls_edition_div_organizer_div">
+
+
+    <div class="form_edition_compact_form">
+        <div class="forms_title_div">
+            <img class="logo_forms_title_img" src="{% static 'images/logo.png' %}" alt="">
+            <p class="logo_forms_title_p">MatScholar</p>
+        </div>
+        <p class="logo_forms_title_p">{{class_query.class_name}}</p>
+
+            <p class="forms_aux_input_p">Data de início: {{class_query.class_start_date}}</p>
+            <p class="forms_aux_input_p">Data de fim: {{class_query.class_end_date}}</p>
+       
+
+       
+            <p class="forms_aux_input_p">Docente responsável: {{class_query.prof_role}} {{class_query.prof_name}}</p>
+        
+        <div class="organizer_horizontal_p_div">
+            <p class="forms_aux_input_p">Presenças: {{class_query.class_attendance}}</p>
+            <p class="forms_aux_input_p">Faltas: {{class_query.class_absence}}</p>
+            <p class="forms_aux_input_p">Frequência: {{class_query.class_attendance_rate}}</p>
+
+        </div>
+    
+    </div>
+    <div class="form_edition_compact_form">
+        <div class="forms_title_div">
+            <p class="logo_forms_title_p">Tarefas</p>
+        </div>
+        {% if assignments_query%}
+            {% for assignment in assignments_query %}
+                <div class="assignments_card_div">
+                    <a class="assignments_link_a"target="_self" href="{% url 'matscholar_app:std_assignment_view' assignment.id %}">
+                        <p class="forms_aux_input_p">Nome: {{assignment.name}} </p>
+                        <p class="forms_aux_input_p">Prazo: {{assignment.deadline}}</p>
+                    </a>
+                    
+                </div>
+            {% endfor %}
+        {% endif %}
+        <form method = "POST" action="{% url 'matscholar_app:dashboard_page' %}">
+            {% csrf_token %}
+            
+        <div style="display:flex;justify-content:center;align-items:center;flex-direction:column">
+            <input type="submit" class="forms_submit_input" value="Voltar" >
+        </div>
+        
+    </div>
+    
+     
+
+</div>
+{% endblock content %}

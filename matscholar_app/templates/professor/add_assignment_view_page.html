@@ -35,9 +35,10 @@
     
         <div style="display:flex;justify-content:center;align-items:center;flex-direction:column">
             
-           <input type="submit" class="forms_submit_input" value="Atualizar" formaction={% url 'matscholar_app:prof_add_assignment_operation' %}> 
-           <input type="submit" class="forms_submit_input" value="Voltar" formaction={% url 'matscholar_app:prof_cls_edition_page' %}> 
-           
+           <input type="submit" class="forms_submit_input" value="Criar" formaction={% url 'matscholar_app:prof_add_assignment_operation' %}> 
+           <a href="{% url 'matscholar_app:prof_cls_edition_page' %}" class="a_back_a">
+                Voltar
+           </a>
         </div>
     </form>
      

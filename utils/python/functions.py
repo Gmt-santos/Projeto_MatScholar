@@ -176,6 +176,21 @@ def generate_safe_password()->str:
     return secret_password
 
 '''
+Recebe a quantidade de presenças e faltas e retorna a string ou decimal da porcentagem de presença.
+'''
+def get_attendance_rate(attendance:int,absence:int,return_string:bool)-> str|float:
+    try:
+        if return_string:
+
+            return "{attendance_rate:.2f}%".format(attendance_rate=( ( attendance/(attendance+absence) ) * 100 ))
+        else:
+            return float( ( attendance/(attendance+absence) )  )
+        
+    except ZeroDivisionError:
+        return "0%"
+
+
+'''
 Retorna o ano no qual o usuário está
 '''
 def get_year():

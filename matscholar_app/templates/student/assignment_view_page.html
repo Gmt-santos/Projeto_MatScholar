@@ -1,0 +1,54 @@
+{% extends "general/header_footer_dashboard.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/specific/style_cls_creation.css' %}">
+<div class="cls_edition_div_organizer_div">
+
+
+    <div class="form_edition_compact_form">
+        <div class="forms_title_div">
+            <img class="logo_forms_title_img" src="{% static 'images/logo.png' %}" alt="">
+            <p class="logo_forms_title_p">MatScholar</p>
+        </div>
+        <p class="logo_forms_title_p">{{assignment.ass_name}}</p>
+
+        <p class="forms_aux_input_p">Prazo máximo: {{assignment.ass_deadline}}</p>
+        <div class="organizer_vertical_p_div">
+            <p class="forms_aux_input_p">Descrição: </p>
+            <p class="forms_aux_minor_input_p">{{assignment.ass_desc}}</p>
+        </div>
+        <div class="organizer_horizontal_p_div">
+            <p class="forms_aux_input_p">Nota máxima: {{assignment.ass_max_grade}}</p>
+            <p class="forms_aux_input_p">Peso: {{assignment.ass_weight}}</p>
+        </div>
+    
+    </div>
+    <div class="form_edition_compact_form">
+        <p class="logo_forms_title_p">Dados do aluno</p>
+        {% if assignment.std_grade %}
+            <p class="forms_aux_input_p">Nota: {{assignment.std_grade}}</p>
+        {% else %}
+            <p class="forms_aux_input_p">Nota: Nenhuma</p>
+        {% endif %}
+        
+        <div class="organizer_vertical_p_div">
+            <p class="forms_aux_input_p">Feedback: </p>
+            {% if assignment.prof_feedback%}
+                <p class="forms_aux_minor_input_p">{{assignment.prof_feedback}}</p>
+            {% else %}
+                <p class="forms_aux_minor_input_p">Nenhum</p>
+            {% endif %}
+        </div>
+        <form method = "POST" action="{% url 'matscholar_app:std_cls_view_page' %}">
+            {% csrf_token %}
+            
+        <div style="display:flex;justify-content:center;align-items:center;flex-direction:column">
+            <input type="submit" class="forms_submit_input" value="Voltar" >
+        </div>
+        </form>
+    </div>
+    
+     
+
+</div>
+{% endblock content %}

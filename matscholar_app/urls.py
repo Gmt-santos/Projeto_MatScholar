@@ -60,5 +60,6 @@ urlpatterns = [
     path('dashboard/professor/cls_edition_page/attendance/operation/',view=views.prof_cls_edition_attendance_operation,name='prof_attendance_operation'),
     
     #       Student urls        #
-    path('dashboard/student/cls_view_page/',view=views.std_cls_view_page,name='std_cls_view_page')
+    path('dashboard/student/cls_view/',view=views.std_cls_view_page,name='std_cls_view_page'),
+    path('dashboard/student/assignment_view/<str:assignment_id>/',view=views.std_assignment_view_page,name='std_assignment_view'),
 ]

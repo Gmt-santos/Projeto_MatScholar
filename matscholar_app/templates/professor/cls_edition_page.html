@@ -54,6 +54,12 @@
             </a>
                     
         </div>
+        <form method = "POST" action="{% url 'matscholar_app:dashboard_page' %}">
+            {% csrf_token %}
+            
+        <div style="display:flex;justify-content:center;align-items:center;flex-direction:column">
+            <input type="submit" class="forms_submit_input" value="Voltar" >
+        </div>
         
     </div>
     

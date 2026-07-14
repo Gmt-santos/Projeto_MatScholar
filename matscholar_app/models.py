@@ -120,6 +120,7 @@ class final_grades(models.Model):
     id=models.CharField(max_length=255,primary_key=True)
     id_student=models.ForeignKey(students,on_delete=models.CASCADE,db_column="id_student")
     id_class=models.ForeignKey(classes,on_delete=models.CASCADE,db_column="id_class")
+    final_attendance= models.DecimalField(max_digits=3,decimal_places=2,null=True)
     final_grade=models.DecimalField(max_digits=5,decimal_places=2)
     class Meta:
         db_table='final_grades'

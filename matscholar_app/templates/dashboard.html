@@ -227,15 +227,14 @@
                 
                 
                     {% for assignment in list_assignments %}
-                        <!-- <div class="assignment_div"> -->
+                    
                         <tr>
                             <td class="assignment_info_td">{{assignment.class_name}}</td>
                             <td class="assignment_info_td">{{assignment.name}}</td>
                             <td class="assignment_info_td">{{assignment.prof_role}} {{assignment.prof_name}}</td>
                             <td class="assignment_info_td">{{assignment.deadline}}</td>
                         </tr>
-    <!-- 
-                        </div> -->
+    
 
 
                     {%  endfor  %}
@@ -262,7 +261,7 @@
 
                 {% for class in list_classes  %}
                     
-                    <form action="" method="POST">
+                    <form action="{% url 'matscholar_app:std_cls_view_page'  %}" method="POST">
                         {% csrf_token %}
                         <div class="student_class_div">
                             <div class="professor_class_identify_name">
@@ -274,7 +273,7 @@
                                 <p class="professor_class_p">Data de início: {{class.start_date}}</p>
                                 <p  class="professor_class_p">Data de fim: {{class.end_date}}</p>
                         
-                            <a class="professor_class_access_button_a centralizar">Acessar</a>
+                            <input type="submit" class="professor_class_access_button_a centralizar" value="Acessar">
                         </div>
                     </form>
 

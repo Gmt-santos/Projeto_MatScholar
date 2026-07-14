@@ -34,13 +34,13 @@ def principal_std_creation_operation(request,password:str,name:str,valid_ra:str,
                 dbf.safe_rollback(conn)
                 return False
 
-            insert_into_classes_actual_str="insert into students_classes_actual(id,id_class,id_student)values"
+            insert_into_classes_actual_str="insert into students_classes_actual(id,id_class,id_student,absence,attendance)values"
             #Inicializa uma string para o insert
             for tupla in classes_initial:
                 if tupla == classes_initial[-1]:
-                    insert_into_classes_actual_str+=f"('{tupla[0]}-{valid_ra}',{tupla[0]},{valid_ra});"
+                    insert_into_classes_actual_str+=f"('{tupla[0]}-{valid_ra}',{tupla[0]},{valid_ra},0,0);"
                 else:
-                    insert_into_classes_actual_str+=f"('{tupla[0]}-{valid_ra}',{tupla[0]},{valid_ra}),"
+                    insert_into_classes_actual_str+=f"('{tupla[0]}-{valid_ra}',{tupla[0]},{valid_ra},0,0),"
             # Percorre a lista de tuplas retornada pela busca anterior de Ids das aulas e adiciona esses Ids na string
             # do insert
             '''
