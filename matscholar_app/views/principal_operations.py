@@ -20,9 +20,9 @@ def princ_std_creation_forms(request):
 
     try:
         if(request.method=="POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
-            course_id=python_functions.validate_ids_entries(request.POST.get("course"))
+            course_id=python_functions.regex_list_to_string(
+            python_functions.validate_ids_entries(request.POST.get("course")))
             if(course_id):
-                course_id=course_id[0]
                 if(courses.objects.filter(id=course_id,fk_institution=request.session.get("institution")).exists()):
                     recommended_password=python_functions.generate_safe_password()
                     valid_RA=python_functions.generate_RA(request=request)
@@ -42,33 +42,23 @@ def princ_std_creation_forms(request):
         else:
             return redirect("matscholar_app:dashboard_page")
 
-    except OperationalError:
-        messages.error(request,"Houve algum erro com a conexão com o banco de dados!")
-        return redirect("matscholar_app:dashboard_page")
-    except DatabaseError:
-        messages.error(request,"Houve algum erro com a conexão com o banco de dados!")
-        return redirect("matscholar_app:dashboard_page")
-    except ProgrammingError:
-        messages.error(request,"Houve algum erro com a conexão com o banco de dados!")
-        return redirect("matscholar_app:dashboard_page")
-    except PermissionDenied:
-        messages.error(request,"Erro de submissão de formulário!")
-        return redirect("matscholar_app:dashboard_page")
-    except TypeError:
-        messages.error(request,"Erro de submissão de formulário!")
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
         return redirect("matscholar_app:dashboard_page")
     
 def princ_std_creation_operation(request):
     try:
         if(request.method=="POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
-            password:list=python_functions.validate_passwords_entries(request.POST.get("password"))
-            name:list=python_functions.validate_name_entries(entry=request.POST.get("name"))
-            is_valid_ra:bool=python_functions.validate_RA(request=request,ra=request.POST.get("RA"))
+            password=python_functions.regex_list_to_string(
+                python_functions.validate_passwords_entries(request.POST.get("password")))
+
+            name=python_functions.regex_list_to_string(
+                python_functions.validate_name_entries(entry=request.POST.get("name")))
+
+            is_valid_ra=python_functions.validate_RA(request=request,ra=request.POST.get("RA"))
             is_valid_course:bool=python_functions.validate_course(request=request,id=request.POST.get("course_id"))
             if(password and name and is_valid_ra and is_valid_course):
 
-                password=password[0]
-                name=name[0]
                 valid_ra=request.POST.get("RA")
                 valid_course=request.POST.get("course_id")
                 if(python_functions.principal_std_creation_operation(request,password,name,valid_ra,valid_course)):
@@ -81,10 +71,10 @@ def princ_std_creation_operation(request):
         else:
 
              return redirect("matscholar_app:dashboard_page")
-    except TypeError:
-        messages.error(request,"Erro de submissão de formulário!")
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
         return redirect("matscholar_app:dashboard_page")
-    return redirect('matscholar_app:dashboard_page')
+ 
 
 
 
@@ -98,25 +88,31 @@ def princ_crs_creation_classes(request):
     try:
         if(request.method ==  "POST"):
             if(request.session.get("id") and "Princ" in request.session.get("permissions")):
-                name:list=python_functions.validate_query_entries(entry=request.POST.get("name"))
-                acronym:list=python_functions.validate_acronym_entries(entry=request.POST.get("acronym"))
-                e_mec:list=python_functions.validate_ids_entries(entry=request.POST.get("e_mec"))
-                max_length:list=python_functions.validate_ids_entries(entry=request.POST.get("max_length"))
-                quant_classes:list=python_functions.validate_ids_entries(entry=request.POST.get("quant_classes"))
-                if(name and acronym and e_mec and python_functions.validate_strictpositive_numbers_entries(max_length[0]) 
-                and python_functions.validate_strictpositive_numbers_entries(quant_classes[0])):
-                    name=name[0]
-                    acronym=acronym[0]
-                    e_mec=e_mec[0]
-                    max_length=max_length[0]
-                    quant_classes=int(quant_classes[0])
+                name=python_functions.regex_list_to_string(
+                    python_functions.validate_query_entries(entry=request.POST.get("name")))
+                
+                acronym=python_functions.regex_list_to_string(
+                python_functions.validate_acronym_entries(entry=request.POST.get("acronym")))
+
+                e_mec=python_functions.regex_list_to_string(
+                python_functions.validate_ids_entries(entry=request.POST.get("e_mec")))
+
+                max_length=python_functions.regex_list_to_string(
+                python_functions.validate_ids_entries(entry=request.POST.get("max_length")))
+
+                quant_classes=python_functions.regex_list_to_string(
+                python_functions.validate_ids_entries(entry=request.POST.get("quant_classes")))
+
+                if(name and acronym and e_mec and python_functions.validate_strictpositive_numbers_entries(max_length) 
+                and python_functions.validate_strictpositive_numbers_entries(quant_classes)):
+                    quant_classes=int(quant_classes)
                     context={
                         "course_name":name,
                         "course_acronym":acronym,
                         "course_e_mec":e_mec,
                         "course_max_length":max_length,
                         "course_quant_classes":quant_classes,
-                        "in_range":range(0,int(quant_classes))
+                        "in_range":range(0,quant_classes)
                     }
                     return render(request,"principal/crs_creation_classes.html",context=context)
                 else:
@@ -127,29 +123,32 @@ def princ_crs_creation_classes(request):
         else:
             messages.error(request,"Erro na submissão de formulário!")
             return redirect("matscholar_app:dashboard_page")
-    except ValueError:
-        messages.error(request,"Dado inapropriado enviado!")
-        return redirect("matscholar_app:dashboard_page")
-    except TypeError:
-        messages.error(request,"Erro na submissão de formulário!")
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
         return redirect("matscholar_app:dashboard_page")
     
 def princ_crs_creation_classes_operation(request):
     try:
         if(request.method == "POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
-            name:list=python_functions.validate_query_entries(entry=request.POST.get("course_name"))
-            acronym:list=python_functions.validate_acronym_entries(entry=request.POST.get("course_acronym"))
-            e_mec:list=python_functions.validate_ids_entries(entry=request.POST.get("course_e_mec"))
-            max_length:list=python_functions.validate_ids_entries(entry=request.POST.get("course_max_length"))
-            quant_classes:list=python_functions.validate_ids_entries(entry=request.POST.get("course_quant_classes"))
+            name=python_functions.regex_list_to_string(
+            python_functions.validate_query_entries(entry=request.POST.get("course_name")))
+
+            acronym=python_functions.regex_list_to_string(
+            python_functions.validate_acronym_entries(entry=request.POST.get("course_acronym")))
+
+            e_mec=python_functions.regex_list_to_string(
+            python_functions.validate_ids_entries(entry=request.POST.get("course_e_mec")))
+
+            max_length=python_functions.regex_list_to_string(
+            python_functions.validate_ids_entries(entry=request.POST.get("course_max_length")))
+
+            quant_classes=python_functions.regex_list_to_string(
+            python_functions.validate_ids_entries(entry=request.POST.get("course_quant_classes")))
   
-            if(name and acronym and e_mec and python_functions.validate_strictpositive_numbers_entries(max_length[0]) 
-            and python_functions.validate_strictpositive_numbers_entries(quant_classes[0])):
-                name=name[0]
-                acronym=acronym[0]
-                e_mec=e_mec[0]
-                max_length=max_length[0]
-                quant_classes=int(quant_classes[0])
+            if(name and acronym and e_mec and python_functions.validate_strictpositive_numbers_entries(max_length) 
+            and python_functions.validate_strictpositive_numbers_entries(quant_classes)):
+
+
                 python_functions.principal_crs_creation_classes(request,name,acronym,e_mec,max_length)
                 return redirect("matscholar_app:dashboard_page")
             else:
@@ -158,10 +157,9 @@ def princ_crs_creation_classes_operation(request):
         else:
             messages.error(request,"Algum dado inválido foi enviado !")
             return redirect("matscholar_app:dashboard_page")
-    except (ValueError,TypeError,IndexError):
-        messages.error(request,"Algum dado inválido foi enviado !")
-        return redirect("matscholar_app:dashboard_page")
-    except Exception :
+        
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
         messages.error(request,"Erro desconhecido!")
         return redirect("matscholar_app:dashboard_page")
     
@@ -180,39 +178,44 @@ def princ_cls_creation_courses(request):
         return redirect("matscholar_app:dashboard_page")
     
 def princ_cls_creation_abs_classes(request):
-    if(request.method == "POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
-        if(request.session.get("actual_course")):
-            # Caso o usuário já tenha inserido alguma sala já anteriormente e quer inserir mais
-            course_id=request.session.get("actual_course")
-        else:
-            course_id=request.POST.get("course")
-
-        valid_course_id=python_functions.validate_ids_entries(entry=course_id)
-        if (valid_course_id):
-            valid_course_id=valid_course_id[0]
-            classes_query=python_functions.principal_cls_creation_get_abs_classes(request,valid_course_id)
-            if classes_query:
-                context={
-                    "classes_query":classes_query,
-                }
-                return render(request,"principal/cls_creation_abs_classes.html",context=context)
+    try:
+        if(request.method == "POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
+            if(request.session.get("actual_course")):
+                # Caso o usuário já tenha inserido alguma sala já anteriormente e quer inserir mais
+                course_id=request.session.get("actual_course")
             else:
+                course_id=request.POST.get("course")
+
+            valid_course_id=python_functions.regex_list_to_string(
+            python_functions.validate_ids_entries(entry=course_id))
+            if (valid_course_id):
+                classes_query=python_functions.principal_cls_creation_get_abs_classes(request,valid_course_id)
+                if classes_query:
+                    context={
+                        "classes_query":classes_query,
+                    }
+                    return render(request,"principal/cls_creation_abs_classes.html",context=context)
+                else:
+                    return redirect("matscholar_app:dashboard_page")
+            else:
+                messages.error(request,"Algum dado inválido foi enviado !")
                 return redirect("matscholar_app:dashboard_page")
+            
         else:
-            messages.error(request,"Algum dado inválido foi enviado !")
             return redirect("matscholar_app:dashboard_page")
         
-    else:
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
         return redirect("matscholar_app:dashboard_page")
-    
 def princ_cls_creation_forms(request):
     try:    
        
         if(request.method=="POST" and request.session.get("id") and "Princ" in request.session.get("permissions") and
         request.session.get("actual_course")):
-            valid_id=python_functions.validate_ids_entries(request.POST.get("class"))
+            valid_id=python_functions.regex_list_to_string(
+            python_functions.validate_ids_entries(request.POST.get("class")))
             if valid_id:
-                valid_id=valid_id[0]
+    
                 valid_class=python_functions.get_and_validate_class(request,valid_id)
                 academic_users_query=python_functions.search_professors_by_institution(request)
                 if valid_class and academic_users_query:
@@ -235,8 +238,8 @@ def princ_cls_creation_forms(request):
         else:
             messages.error(request,"Acesso indevido!")
             return redirect("matscholar_app:dashboard_page")
-    except (ValueError,IndexError,TypeError) :
-        messages.error(request,"Alteração indevida ou dado inválido enviado pelo formulário!")
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
         return redirect("matscholar_app:dashboard_page")
     
 def princ_cls_creation_operation(request):
@@ -244,18 +247,21 @@ def princ_cls_creation_operation(request):
         if(request.method=="POST" and request.session.get("id") and "Princ" in request.session.get("permissions") and
         request.session.get("actual_course")and request.session.get("actual_class")):
             
-            valid_max_length=python_functions.validate_ids_entries(request.POST.get("max_length"))
-            valid_academic_user_id_before_db=python_functions.validate_ids_entries(request.POST.get("academic_user"))
+            valid_max_length=python_functions.regex_list_to_string(
+            python_functions.validate_ids_entries(request.POST.get("max_length")))
+
+            valid_academic_user_id_before_db=python_functions.regex_list_to_string(
+            python_functions.validate_ids_entries(request.POST.get("academic_user")))
+
             valid_start_date=python_functions.validate_date(request.POST.get("start_date"))
             valid_end_date=python_functions.validate_date(request.POST.get("end_date"))
 
             if valid_max_length and valid_start_date and valid_end_date and valid_academic_user_id_before_db:
 
-                valid_academic_user_id_before_db=valid_academic_user_id_before_db[0]
 
                 if(python_functions.validate_academic_user(request,valid_academic_user_id_before_db)):
 
-                    valid_max_length=valid_max_length[0]
+
                     class_name=request.session.get("actual_class")
                     class_initial=request.session.get("actual_class_initial")
                     valid_academic_user_id_after_db=valid_academic_user_id_before_db
@@ -279,9 +285,8 @@ def princ_cls_creation_operation(request):
 
             return redirect("matscholar_app:dashboard_page")
         
-    except (ValueError,IndexError,TypeError):
-
-        messages.error(request,"Alteração indevida ou dado inválido enviado pelo formulário!")
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
         return redirect("matscholar_app:dashboard_page")
     
 '''
@@ -305,9 +310,9 @@ def princ_cls_edition_classes(request):
 
         if(request.method == "POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
             course_id=request.POST.get("course")
-            valid_course_id=python_functions.validate_ids_entries(entry=course_id)
+            valid_course_id=python_functions.regex_list_to_string(
+            python_functions.validate_ids_entries(entry=course_id))
             if (valid_course_id):
-                valid_course_id=valid_course_id[0]
                 classes_query=python_functions.principal_cls_edition_get_open_classes(request,valid_course_id)
                 if classes_query:
                     context={
@@ -322,8 +327,8 @@ def princ_cls_edition_classes(request):
             
         else:
             return redirect("matscholar_app:dashboard_page")
-    except (IndexError,TypeError,ValueError):
-        messages.error(request,"Alteração indevida no formulário!")
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
         return redirect("matscholar_app:dashboard_page")
 
 def princ_cls_edition_page(request):
@@ -332,15 +337,12 @@ def princ_cls_edition_page(request):
         try:
             if(request.session.get("actual_class_id")):
                 valid_class_id=request.session.get("actual_class_id")
-                again=True
+                
             else:
-             valid_class_id=python_functions.validate_ids_entries(request.POST.get("class"))
-             again=False
+             valid_class_id=python_functions.regex_list_to_string(
+             python_functions.validate_ids_entries(request.POST.get("class")))
+             
             if valid_class_id:
-                if again:
-                    pass
-                else:
-                    valid_class_id=valid_class_id[0]
                 
                 class_query,qty_students=python_functions.principal_cls_edition_get_all_info_classes(request,valid_class_id)
                 academic_users_query=python_functions.search_professors_by_institution(request)
@@ -367,8 +369,8 @@ def princ_cls_edition_page(request):
                 messages.error(request,"Dado inválido enviado no formulário!")
                 return redirect("matscholar_app:dashboard_page")
                 
-        except (IndexError,TypeError,ValueError):
-            messages.error(request,"Alteração indevida no formulário!")
+        except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
             return redirect("matscholar_app:dashboard_page")
     else:
         return redirect("matscholar_app:dashboard_page")
@@ -400,9 +402,11 @@ def princ_cls_edition_remove_student_page(request):
                 messages.error(request,"Houve algum erro ou esta sala ainda não possui alunos!")
                 return redirect("matscholar_app:cls_edition_page")
             
-        except (IndexError,TypeError,ValueError):
-            messages.error(request,"Alteração indevida no formulário!")
+        except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
             return redirect("matscholar_app:dashboard_page")
+    else:
+        return redirect('matscholar_app:dashboard_page')
 
 def princ_cls_edition_remove_student_operation(request):
     try:
@@ -417,8 +421,8 @@ def princ_cls_edition_remove_student_operation(request):
                 return redirect("matscholar_app:dashboard_page")
         else:
             return redirect("matscholar_app:dashboard_page")
-    except (IndexError,TypeError,ValueError):
-            messages.error(request,"Alteração indevida no formulário!")
+    except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
             return redirect("matscholar_app:dashboard_page")
     
 def princ_cls_edition_add_student_page(request,actual_students:int,max_students:int):
@@ -460,8 +464,8 @@ def princ_cls_edition_add_student_page(request,actual_students:int,max_students:
                 return redirect("matscholar_app:cls_edition_page")
         else:
             return redirect("matscholar_app:dashboard_page")
-    except (IndexError,TypeError,ValueError):
-            messages.error(request,"Erro ocorrido!")
+    except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
             return redirect("matscholar_app:dashboard_page")
 
 def princ_cls_edition_add_student_operation(request):
@@ -477,8 +481,8 @@ def princ_cls_edition_add_student_operation(request):
                 return redirect("matscholar_app:cls_edition_page")
         else:
             return redirect("matscholar_app:dashboard_page")
-    except (IndexError,TypeError,ValueError):
-            messages.error(request,"Alteração indevida no formulário!")
+    except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
             return redirect("matscholar_app:dashboard_page")
     
     
@@ -499,8 +503,8 @@ def princ_cls_edition_view_student(request):
         else:
             return redirect("matscholar_app:dashboard_page")
           
-    except (IndexError,TypeError,ValueError):
-            messages.error(request,"Alteração indevida no formulário!")
+    except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
             return redirect("matscholar_app:dashboard_page")
     
 def princ_cls_edition_update_operation(request):
@@ -514,8 +518,8 @@ def princ_cls_edition_update_operation(request):
                 return redirect("matscholar_app:cls_edition_page")
         else:
             return redirect("matscholar_app:dashboard_page")
-    except (IndexError,TypeError,ValueError):
-            messages.error(request,"Alteração indevida no formulário!")
+    except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
             return redirect("matscholar_app:dashboard_page")
     
 
@@ -537,8 +541,8 @@ def princ_std_edition_courses(request):
                 return redirect("matscholar_app:dashboard_page")
         else:
             return redirect("matscholar_app:dashboard_page")
-    except (IndexError,TypeError,ValueError):
-        messages.error(request,"Alteração indevida no formulário!")
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
         return redirect("matscholar_app:dashboard_page")
     
 def princ_std_edition_students(request):
@@ -550,10 +554,12 @@ def princ_std_edition_students(request):
                     "students":students_query,
                 }
                 return render(request,"principal/std_edition_students.html",context)
+            else:
+                messages.error(request,"Não há estudantes no curso escolhido!")
         else:
             return redirect("matscholar_app:dashboard_page")
-    except (IndexError,TypeError,ValueError):
-            messages.error(request,"Alteração indevida no formulário!")
+    except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
             return redirect("matscholar_app:dashboard_page")
 
 def princ_std_edition_page(request):
@@ -567,7 +573,6 @@ def princ_std_edition_page(request):
                     "name":student_query[1],
                     "year_of_entry":student_query[2],
                 }
-                print(student_query_dict)
                 context={
                     "student":student_query_dict,
                 }
@@ -577,8 +582,8 @@ def princ_std_edition_page(request):
                 return redirect("matscholar_app:dashboard_page")
         else:
             return redirect("matscholar_app:dashboard_page")
-    except (IndexError,TypeError,ValueError):
-            messages.error(request,"Alteração indevida no formulário!")
+    except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
             return redirect("matscholar_app:dashboard_page")
     
 def princ_std_edition_operation(request):
@@ -592,6 +597,6 @@ def princ_std_edition_operation(request):
             return redirect("matscholar_app:dashboard_page")
         else:
             return redirect("matscholar_app:dashboard_page")
-    except(IndexError,TypeError,ValueError):
-            messages.error(request,"Alteração indevida no formulário!")
+    except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
             return redirect("matscholar_app:dashboard_page")

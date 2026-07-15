@@ -11,14 +11,18 @@ def principal_cls_edition_delete_class(request):
     try:
         conn,cursor=f.connection_cursor()
         if conn and cursor:
-            cursor.execute("delete from assignments where fk_class = %s",[request.session.get("actual_class_id"),])
             cursor.execute("delete from final_grades where id_class = %s",[request.session.get("actual_class_id"),])
             cursor.execute("delete from classes_courses where id_class=%s returning id_course",
             [request.session.get("actual_class_id"),])
             course_id=cursor.fetchone()[0]
             cursor.execute("delete from students_classes_actual where id_class= %s",[request.session.get("actual_class_id"),])
+            cursor.execute('delete from assignments_students where fk_assignment = any(' \
+            'select id from assignments where fk_class=%s) ',[request.session.get("actual_class_id"),])
+            cursor.execute('delete from assignments where fk_class=%s',[request.session.get("actual_class_id")])
             cursor.execute("delete from classes where id = %s ",[request.session.get("actual_class_id"),])
+            
             dbf.delete_cache_key(request,f"open_classes:{course_id}-{request.session.get("institution")}")
+            dbf.delete_cache_key(request,f"institution_id_classes:{request.session.get("institution")}")
             conn.commit()
             del request.session["actual_class_id"]
             messages.success(request,"Aula excluída com sucesso!")
@@ -50,6 +54,7 @@ def principal_cls_edition_delete_class(request):
         messages.error(request,"Erro desconhecido!")
         return False
     finally:
+       
         if cursor is not None:
             cursor.close()
         if conn is not None:

@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-
+from django.contrib.auth import logout
 # Create your views here.
 def index(request):
 
@@ -18,5 +18,5 @@ def index(request):
         del request.session["actual_class_id"]
     if request.session.get("actual_student_RA"):
         del request.session["actual_student_RA"]
-
+    logout(request)
     return render(request,'index.html')

@@ -10,15 +10,12 @@ def prof_cls_edition_page(request):
                 del request.session['actual_assignment_id']
             if(request.session.get("actual_class_id")):
                 valid_class_id=request.session.get("actual_class_id")
-                again=True
             else:
-             valid_class_id=python_functions.validate_ids_entries(request.POST.get("class"))
-             again=False
+             valid_class_id=python_functions.regex_list_to_string(
+             python_functions.validate_ids_entries(request.POST.get("class")))
+       
             if valid_class_id:
-                if again:
-                    pass
-                else:
-                    valid_class_id=valid_class_id[0]
+                
                 
                 listof_dict_assignments,class_query,qty_students=\
                 python_functions.professor_cls_edition_get_all_info_classes(request,valid_class_id)
@@ -50,11 +47,12 @@ def prof_assignment_view(request,assignment_id:None):
     if("Prof" in request.session.get("permissions") \
     and request.session.get("id") and assignment_id):
         try:
-            is_valid_assignment_id=python_functions.validate_ids_entries(assignment_id)
+            is_valid_assignment_id=python_functions.regex_list_to_string(
+            python_functions.validate_ids_entries(assignment_id))
             if(is_valid_assignment_id):
-                validated_assignment_id=is_valid_assignment_id[0]
+                
                 assignment_query_dict,assignments_students_query_listof_dict=\
-                python_functions.professor_get_all_info_assignment(request,validated_assignment_id)
+                python_functions.professor_get_all_info_assignment(request,is_valid_assignment_id)
                 if assignment_query_dict:
                     request.session['actual_assignment_id']=assignment_id
                     context={
@@ -79,14 +77,20 @@ def prof_assignment_view(request,assignment_id:None):
 def prof_assignment_update_info(request):
     if(request.method== "POST" and "Prof" in request.session.get("permissions") and request.session.get("id")):
         try:
-            name=python_functions.validate_query_entries(request.POST.get("name"))
-            desc=python_functions.validate_texts(request.POST.get("desc"))
+            name=python_functions.regex_list_to_string(
+            python_functions.validate_query_entries(request.POST.get("name")))
+
+            desc=python_functions.regex_list_to_string(
+            python_functions.validate_texts(request.POST.get("desc")))
+
             deadline=python_functions.validate_date(request.POST.get("deadline"))
+
             weight=python_functions.validate_grades_and_weights(request.POST.get("weight"))
+            
             max_grade=python_functions.validate_grades_and_weights(request.POST.get("max_grade"))
             
             if name and desc and deadline and weight and max_grade:
-               python_functions.professor_assignment_update_operation(request,name[0],desc[0],deadline,abs(weight),abs(max_grade))
+               python_functions.professor_assignment_update_operation(request,name,desc,deadline,abs(weight),abs(max_grade))
             else:
                 messages.error(request,"Alguma informação inválida foi enviada!")
             return render(request,'professor/cls_edition_again.html')

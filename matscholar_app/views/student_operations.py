@@ -14,8 +14,8 @@ def std_cls_view_page(request):
                 return render(request,'student/cls_view_page.html',context)
             else:
                 return redirect("matscholar_app:dashboard_page")            
-        except (IndexError,TypeError,ValueError):
-            messages.error(request,"Alteração indevida no formulário!")
+        except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
             return redirect("matscholar_app:dashboard_page")
     else:
         return redirect('matscholar_app:dashboard_page')
@@ -31,7 +31,8 @@ def std_assignment_view_page(request,assignment_id):
                 return render(request,'student/assignment_view_page.html',context)
             else:
                 return redirect("matscholar_app:std_cls_view_page")
-        except (IndexError,TypeError,ValueError):
-            messages.error(request,"Alteração indevida no formulário!")
+        except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
             return redirect("matscholar_app:dashboard_page")
-     pass
+     else:
+         return redirect("matscholar_app:dashboard_page")

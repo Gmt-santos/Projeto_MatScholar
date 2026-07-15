@@ -55,46 +55,48 @@ def login_operation_academic_user(request):
                     return render(request,'login.html')
             else:
                 return redirect("matscholar_app:login_page")
-    except PermissionDenied:
-        messages.error(request,"Erro na submissão do formulário!")
-        return redirect("matscholar_app:login_page")
-    except TypeError:
-        messages.error(request,"Erro na submissão do formulário!")
-        return redirect("matscholar_app:login_page")
-    except OperationalError:
-        messages.error(request,"Houve um erro na conexão com o banco de dados!")
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
         return redirect("matscholar_app:login_page")
 
 def login_operation_student(request):
-    if(request.method == "POST"):
+    try:
+        if(request.method == "POST"):
 
-        password_POST=request.POST.get("password")
-        RA_POST=request.POST.get("RA")
-        if(python_functions.validate_ids_entries(RA_POST)):
+            password_POST=request.POST.get("password")
+            RA_POST=request.POST.get("RA")
+            if(python_functions.validate_ids_entries(RA_POST)):
 
-            student=python_functions.search_students_by_RA(request,RA_POST)
+                student=python_functions.search_students_by_RA(request,RA_POST)
 
-            if student:
-                
-                if python_functions.verify_hashed(password_POST=password_POST,password_db=student["password"]):
-                        python_functions.students_set_session_attributes(request=request,dictionary=student)
-                        return redirect("matscholar_app:dashboard_page")
+                if student:
+                    
+                    if python_functions.verify_hashed(password_POST=password_POST,password_db=student["password"]):
+                            python_functions.students_set_session_attributes(request=request,dictionary=student)
+                            return redirect("matscholar_app:dashboard_page")
+                    else:
+                        messages.error(request,"Esse RA não está cadastrado ou a senha é inválida")
+                        return render(request,"login.html")
+                    
                 else:
+                    
+                    python_functions.hashing_false()
                     messages.error(request,"Esse RA não está cadastrado ou a senha é inválida")
-                    return render(request,"login.html")
-                
+                    return render(request,'login.html')
             else:
-                
-                python_functions.hashing_false()
-                messages.error(request,"Esse RA não está cadastrado ou a senha é inválida")
+                messages.error(request,"Esse RA não é válido ")
                 return render(request,'login.html')
         else:
-            messages.error(request,"Esse RA não é válido ")
-            return render(request,'login.html')
-    else:
+            return redirect("matscholar_app:login_page")
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
         return redirect("matscholar_app:login_page")
     
 def logout(request):
     from django.contrib.auth import logout
-    logout(request)
-    return redirect("matscholar_app:login_page")
+    try:
+        logout(request)
+        
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
+        return redirect("matscholar_app:login_page")

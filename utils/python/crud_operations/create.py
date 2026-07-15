@@ -171,28 +171,10 @@ def principal_crs_creation_classes(request,name,acronym,e_mec,max_length)->bool:
         # Caso dê errado, tratamos os erros tentando fazer o rollback das operações feitas anteriormente para evitar erros
         # e inconsistências no banco de dados
 
-    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
-            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-        dbf.safe_rollback(conn)
-        messages.error(request,"Algum dado inválido foi enviado!")
-        return False
-    except errors.UndefinedColumn:
-        dbf.e_rollback(conn)
-        messages.error(request,"Algum dado inválido foi enviado!")
-        return False
-    except IndexError:
-        dbf.safe_rollback(conn)
-        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
-        return False
-    except OperationalError:
-        dbf.safe_rollback(conn)
-        messages.error(request,"Houve um erro com a conexão do banco de dados!")
-        return False
-    except Exception :
-        if conn:
-           dbf.safe_rollback(conn)
-        messages.error(request,"Algum dado inválido foi enviado!")
-        return False
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
+            dbf.safe_rollback(conn)
+            return False
     finally:
         if cursor is not None:
             cursor.close()
@@ -219,28 +201,10 @@ def principal_cls_creation_operation_create_class(request,max_length,class_name,
         else:
             messages.error(request,"Houve um erro com a conexão ao banco de dados!")
             return False
-    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
-            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-        dbf.safe_rollback(conn)
-        messages.error(request,"Algum dado inválido foi enviado!")
-        return False
-    except errors.UndefinedColumn:
-        dbf.safe_rollback(conn)
-        messages.error(request,"Algum dado inválido foi enviado!")
-        return False
-    except IndexError:
-        dbf.safe_rollback(conn)
-        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
-        return False
-    except OperationalError:
-        dbf.safe_rollback(conn)
-        messages.error(request,"Houve um erro com a conexão do banco de dados!")
-        return False
-    except Exception :
-        if conn:
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
             dbf.safe_rollback(conn)
-        messages.error(request,"Algum dado inválido foi enviado!")
-        return False
+            return False
     finally:
         if cursor is not None:
             cursor.close()
@@ -318,7 +282,7 @@ def principal_cls_edition_add_students(request):
 
                                     listof_tuple_assignments_students.append((list_students_RA[i],
                                                                               listof_tuple_assignment[j][0]))
-                            print(listof_tuple_assignments_students)
+                        
                             execute_values(cursor,"insert into assignments_students(fk_student,fk_assignment) values %s",
                                            listof_tuple_assignments_students)
                             
@@ -339,29 +303,11 @@ def principal_cls_edition_add_students(request):
         else:
             messages.error(request,"Erro com a conexão ao banco de dados!")
             return False
-    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
-            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-        dbf.safe_rollback(conn)
-        messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
-        return False
-    except errors.UndefinedColumn:
-        dbf.safe_rollback(conn)
-        messages.error(request,"Algum dado inválido foi enviado!")
-        return False
-    except IndexError:
-        dbf.safe_rollback(conn)
-        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
-        return False
-    except OperationalError:
-        dbf.safe_rollback(conn)
-        messages.error(request,"Houve um erro com a conexão do banco de dados!")
-        return False
-    except Exception as e :
-        if conn:
-            dbf.safe_rollback(conn)
-        messages.error(request,"Erro desconhecido!")
         
-        return False
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
+            dbf.safe_rollback(conn)
+            return False
     finally:
         if cursor is not None:
             cursor.close()
@@ -369,26 +315,32 @@ def principal_cls_edition_add_students(request):
             conn.close()
 
 def professor_add_assignment_operation(request):
-        conn,cursor=None,None
-    # try:
+    conn,cursor=None,None
+    try:
         conn,cursor=f.connection_cursor()
         if conn and cursor:
-            is_valid_name=f.validate_query_entries(request.POST.get("name"))
-            is_valid_desc=f.validate_texts(request.POST.get("desc"))
+            is_valid_name=f.regex_list_to_string(
+            f.validate_query_entries(request.POST.get("name")))
+
+            is_valid_desc=f.regex_list_to_string(
+            f.validate_texts(request.POST.get("desc")))
+
             is_valid_deadline=f.validate_date(request.POST.get("deadline"))
+
             is_valid_weight=f.validate_grades_and_weights(request.POST.get("weight"))
+
             is_valid_max_grade=f.validate_grades_and_weights(request.POST.get("weight"))
+
             if is_valid_name and is_valid_desc and is_valid_deadline and is_valid_weight and is_valid_max_grade:
-                valid_name=is_valid_name[0]
-                valid_desc=is_valid_desc[0]
+            
                 valid_weight=abs(is_valid_weight)
                 valid_max_grade=abs(is_valid_max_grade)
                 # Puxando dados dos alunos da sala
                 students_query=read.professor_add_assignment_get_all_students_by_class(request,conn,cursor)
                 if students_query:
                     cursor.execute('insert into assignments(name,fk_class,deadline,"desc",max_grade,weight)'
-                    'values(%s,%s,%s,%s,%s,%s) returning id',[valid_name,request.session.get("actual_class_id"),
-                   is_valid_deadline,valid_desc,valid_max_grade,valid_weight])
+                    'values(%s,%s,%s,%s,%s,%s) returning id',[is_valid_name,request.session.get("actual_class_id"),
+                   is_valid_deadline,is_valid_desc,valid_max_grade,valid_weight])
                     new_assignment_id_tuple=cursor.fetchone()
                     
                     if new_assignment_id_tuple:
@@ -418,31 +370,31 @@ def professor_add_assignment_operation(request):
 
 
 
-    # except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
-    #         DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-    #     dbf.safe_rollback(conn)
-    #     messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
-    #     return False
-    # except errors.UndefinedColumn:
-    #     dbf.safe_rollback(conn)
-    #     messages.error(request,"Algum dado inválido foi enviado!")
-    #     return False
-    # except IndexError:
-    #     dbf.safe_rollback(conn)
-    #     messages.error(request,"Alteração no formulário detectada! Operação abortada!")
-    #     return False
-    # except OperationalError:
-    #     dbf.safe_rollback(conn)
-    #     messages.error(request,"Houve um erro com a conexão do banco de dados!")
-    #     return False
-    # except Exception as e :
-    #     if conn:
-    #         dbf.safe_rollback(conn)
-    #     messages.error(request,"Erro desconhecido!")
+    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
+            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
+        dbf.safe_rollback(conn)
+        messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
+        return False
+    except errors.UndefinedColumn:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Algum dado inválido foi enviado!")
+        return False
+    except IndexError:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
+        return False
+    except OperationalError:
+        dbf.safe_rollback(conn)
+        messages.error(request,"Houve um erro com a conexão do banco de dados!")
+        return False
+    except Exception as e :
+        if conn:
+            dbf.safe_rollback(conn)
+        messages.error(request,"Erro desconhecido!")
         
-    #     return False
-    # finally:
-    #     if cursor is not None:
-    #         cursor.close()
-    #     if conn is not None:
-    #         conn.close()
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()

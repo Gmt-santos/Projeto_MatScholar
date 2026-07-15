@@ -54,10 +54,14 @@ Valida a entrada de números positivos
 Utilizar somente após ter validado se entry é um número
 '''
 def validate_strictpositive_numbers_entries(entry:str)->bool:
-    if(int(entry) <=0):
+    try:
+
+        if(int(entry) <=0):
+            return False
+        else:
+            return True
+    except Exception:
         return False
-    else:
-        return True
 '''
 Valida a entrada de siglas/acrônimos
 RETORNA UMA LISTA ----> SEMPRE UTILIZAR var[0]
@@ -317,3 +321,74 @@ def validate_texts(entry:str)->list[str]:
     regex_entry:list[str]=regex.findall(r"^[0-9a-zA-ZÀ-ú\s!.()?%$#@/\\:=+-{}]+$",entry,flags=regex.MULTILINE)
 
     return regex_entry
+
+'''
+Recebe as listas vindas do regex e retorna a string encontrada ou o valor False
+'''
+def regex_list_to_string(regex_list:list)->str|bool:
+    if regex_list:
+        return regex_list[0]
+    else:
+        return False
+    
+
+
+
+'''
+Recebe exceções e trata elas de acordo com o caso
+Recebe type(raised_exception).__name__ e a request
+'''
+def receive_exceptions_and_deal(request,exception_name):
+    from django.contrib import messages
+    match(exception_name):
+        case "ConnectionError":
+            messages.error(request,"Houve um erro com a conexão ao cache!")
+
+        case "TimeoutError":
+            messages.error(request,"Tempo de consulta ao cache expirado!")
+
+        case "InvalidTextRepresentation" |'NameTooLong'\
+        |'DatatypeMismatch'|'DataError'|'NumericValueOutOfRange'|'NullValueNotAllowed'\
+        |'InvalidDatetimeFormat'|'DatetimeFieldOverflow'|'DataError'|'InvalidForeignKey'|'FloatingPointException':
+            messages.error(request,'Dado incompatível com o banco de dados enviado!')
+
+        case 'IntegrityConstraintViolation'|'RestrictViolation'|'NotNullViolation'\
+            |'ForeignKeyViolation'|'UniqueViolation'|'CheckViolation'|'ExclusionViolation'|'IntegrityError':
+            messages.error(request,'Operação invalidada pelas regras de negócio!')
+
+        case 'InsufficientResources'|'DiskFull'|'OutOfMemory'|'TooManyConnections'|'ConfigurationLimitExceeded':
+            messages.error(request,'Tráfego intenso no servidor, a operação não pôde ser executada!')
+
+        case 'ConnectionException'|'SqlclientUnableToEstablishSqlconnection'|'ConnectionDoesNotExist'| \
+        'SqlserverRejectedEstablishmentOfSqlconnection'|'ConnectionFailure'|'TransactionResolutionUnknown'|\
+        'ProtocolViolation'|'DatabaseError':
+            messages.error(request,'Houve um erro com a conexão ao banco de dados!')
+        
+        case 'OperationalError':
+            messages.error(request,"Houve um erro interno no banco de dados, a operação não pôde ser executada")
+        
+        case 'InternalError_'|'DataCorrupted'|'IndexCorrupted'|'InternalError':
+            messages.error(request,'Erro crítico interno, contate o suporte imediatamente!')
+
+        case 'IndexError'|'KeyError':
+            messages.error(request,"Houve alguma alteração inválida nas informações enviadas!")
+
+        case 'OverflowError':
+            messages.error(request,'O número enviado não pôde ser processado!')
+
+        case 'TypeError'|'ValueError':
+            messages.error(request,'Alguma informação enviada é inválida!')
+
+        case 'ZeroDivisionError':
+            messages.error(request,'A operação não pôde ser matematicamente executada!')
+
+        case 'ObjectDoesNotExist'|'EmptyResultSet'|'MultipleObjectsReturned':
+            messages.error(request,'A operação realizada retornou registros inesperados!')
+
+        case _:
+            messages.error(request,f'Erro desconhecido: {exception_name}')
+        
+
+
+        
+        

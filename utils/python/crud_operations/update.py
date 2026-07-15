@@ -17,11 +17,10 @@ def principal_cls_edition_update_cls(request):
         if conn and cursor:
 
             start_date,end_date=f.validate_start_end_date(request.POST.get("start_date"),request.POST.get("end_date"))
-            academic_user_id=f.validate_ids_entries(request.POST.get("academic_user"))
+            academic_user_id=f.regex_list_to_string(
+            f.validate_ids_entries(request.POST.get("academic_user")))
 
             if start_date and end_date and academic_user_id:
-
-                academic_user_id=academic_user_id[0]
 
                 if(dbf.validate_academic_user(request,academic_user_id)):
 
@@ -78,9 +77,10 @@ def principal_std_edition_operation(request)->bool:
     try:
         conn,cursor=f.connection_cursor()
         if conn and cursor:
-            valid_name=f.validate_name_entries(request.POST.get("name"))
+            valid_name=f.regex_list_to_string(
+            f.validate_name_entries(request.POST.get("name")))
             if valid_name:
-                valid_name=valid_name[0]
+              
                 cursor.execute('update students set name = %s where students."RA" = %s and students.fk_institution=%s',
                                (valid_name,request.session.get("actual_student_RA"),request.session.get("institution")))
                 conn.commit()
@@ -199,7 +199,7 @@ def professor_assignments_students_operation(request)->bool:
                 listof_RA_from_assignment_query=read.search_students_by_assignment(request,conn,cursor)
 
                 if(listof_RA_from_assignment_query):
-                    print(listof_RA_from_assignment_query,list_RA)
+                    
                     if(sorted(listof_RA_from_assignment_query) == sorted(list_RA)):
                       
                         # 'for' pra validação e organização dos dados
@@ -207,14 +207,18 @@ def professor_assignments_students_operation(request)->bool:
                                 if(list_select_update[i] ==  "1"):
 
                                     is_valid_grade:bool|float =f.validate_grades_and_weights(list_grades[i])
-                                    is_valid_feedback:list[str] =f.validate_texts(list_feedbacks[i])
-                                    is_valid_RA:list[str]=f.validate_ids_entries(list_RA[i])
+
+                                    is_valid_feedback:list =f.regex_list_to_string(
+                                    f.validate_texts(list_feedbacks[i]))
+
+                                    is_valid_RA=f.regex_list_to_string(
+                                    f.validate_ids_entries(list_RA[i]))
 
                                     if is_valid_feedback and is_valid_grade and is_valid_RA:
 
                                         cursor.execute('update assignments_students set grade=%s,feedback=%s where'
                                         ' assignments_students.fk_student=%s and assignments_students.fk_assignment=%s',
-                                        [abs(is_valid_grade),is_valid_feedback[0],is_valid_RA[0],
+                                        [abs(is_valid_grade),is_valid_feedback,is_valid_RA,
                                         request.session.get("actual_assignment_id")])
 
                                     else:
