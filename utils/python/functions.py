@@ -391,4 +391,19 @@ def receive_exceptions_and_deal(request,exception_name):
 
 
         
-        
+'''
+Recebe uma lista com os pesos e as notas de tarefas de uma determinada sala e retorna a média ponderada
+'''
+def calculate_gpa(listof_assignments_weight_grade:list[tuple],return_string:bool):
+    weights=0
+    sum_of_grades=0
+    try:
+        for tupla in listof_assignments_weight_grade:
+            weights+=tupla[0]
+            sum_of_grades+=tupla[0]*tupla[1]
+        if return_string:
+            return "{gpa:.2f}".format(gpa=sum_of_grades/weights)
+        else:
+            return sum_of_grades/weights
+    except ZeroDivisionError:
+        return False

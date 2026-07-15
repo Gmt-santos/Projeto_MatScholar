@@ -25,7 +25,9 @@
             <p class="forms_aux_input_p">Frequência: {{class_query.class_attendance_rate}}</p>
 
         </div>
-    
+        {% if gpa %}
+            <p class="forms_aux_input_p">Média atual: {{gpa}}</p>
+        {% endif %}
     </div>
     <div class="form_edition_compact_form">
         <div class="forms_title_div">
@@ -40,6 +42,11 @@
                     </a>
                     
                 </div>
+            {% endfor %}
+        {% endif %}
+         {% if messages %}
+            {% for message in messages %}
+                 {% include "specific/messages.html" %}
             {% endfor %}
         {% endif %}
         <form method = "POST" action="{% url 'matscholar_app:dashboard_page' %}">

@@ -8,6 +8,7 @@ urlpatterns = [
     path('login/',view=views.login_page,name="login_page"),
     path('login/login_operation_academic_user/',view=views.login_operation_academic_user,name='login_operation_academic_user'),
     path('login/login_operation_student/',view=views.login_operation_student,name='login_operation_student'),
+    path('logout/',view=views.logout,name="logout"),
     #       Dashboard       #       
     path('dashboard/',view=views.dashboard_page,name='dashboard_page'),
     path('dashboard/query_classname/',view=views.query_classname,name='query_classname'),
@@ -45,7 +46,9 @@ urlpatterns = [
     path('dashboard/principal/std_edition_students/',view=views.princ_std_edition_students,name='std_edition_students'),
     path('dashboard/principal/std_edition_page/',view=views.princ_std_edition_page,name='std_edition_page'),
     path('dashboard/std_edition_page/operation/',view=views.princ_std_edition_operation,name='std_edition_operation'),
-    path('logout/',view=views.logout,name="logout"),
+   
+    #       Course_edition      #
+    path('dashboard/principal/crs_edition_courses/',view=views.princ_crs_edition_page,name='crs_edition_page'),
 
     #       Professor urls      #
     path('dashboard/professor/cls_edition_page/',view=views.prof_cls_edition_page,name='prof_cls_edition_page'),

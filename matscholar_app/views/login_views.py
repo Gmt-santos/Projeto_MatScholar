@@ -96,7 +96,7 @@ def logout(request):
     from django.contrib.auth import logout
     try:
         logout(request)
-        
+        return redirect("matscholar_app:login_page")
     except Exception as e:
         python_functions.receive_exceptions_and_deal(request,type(e).__name__)
         return redirect("matscholar_app:login_page")

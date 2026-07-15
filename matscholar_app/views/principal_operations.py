@@ -15,8 +15,6 @@ def princ_std_creation_courses(request):
         return redirect("matscholar_app:dashboard_page")
 def princ_std_creation_forms(request):
     from matscholar_app.models import courses
-    from django.db.utils import OperationalError, DatabaseError,ProgrammingError
-    from django.core.exceptions import PermissionDenied
 
     try:
         if(request.method=="POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
@@ -165,17 +163,21 @@ def princ_crs_creation_classes_operation(request):
     
         
 def princ_cls_creation_courses(request):
-    if(request.session.get("id") and "Princ" in request.session.get("permissions")): 
-        courses_query=python_functions.principal_cls_creation_courses(request)
-        if(courses_query):
-            context={
-                "courses_query":courses_query,
-            }
-            return render(request,"principal/cls_creation_courses.html",context)
+    try:
+        if(request.session.get("id") and "Princ" in request.session.get("permissions")): 
+            courses_query=python_functions.principal_cls_creation_courses(request)
+            if(courses_query):
+                context={
+                    "courses_query":courses_query,
+                }
+                return render(request,"principal/cls_creation_courses.html",context)
+            else:
+                return redirect("matscholar_app:dashboard_page")
         else:
             return redirect("matscholar_app:dashboard_page")
-    else:
-        return redirect("matscholar_app:dashboard_page")
+    except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
+            return redirect("matscholar_app:dashboard_page")
     
 def princ_cls_creation_abs_classes(request):
     try:
@@ -293,17 +295,23 @@ def princ_cls_creation_operation(request):
 Reaproveitamento do código de cls_creation_courses
 '''
 def princ_cls_edition_courses(request):
-    if(request.session.get("id") and "Princ" in request.session.get("permissions")): 
-        courses_query=python_functions.principal_cls_creation_courses(request)
-        if(courses_query):
-            context={
-                "courses_query":courses_query,
-            }
-            return render(request,"principal/cls_edition_courses.html",context)
+    try:
+        if(request.session.get("id") and "Princ" in request.session.get("permissions")): 
+            courses_query=python_functions.principal_cls_creation_courses(request)
+            if(courses_query):
+                context={
+                    "courses_query":courses_query,
+                }
+                return render(request,"principal/cls_edition_courses.html",context)
+            else:
+                return redirect("matscholar_app:dashboard_page")
         else:
             return redirect("matscholar_app:dashboard_page")
-    else:
-        return redirect("matscholar_app:dashboard_page")
+        
+    except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
+            return redirect("matscholar_app:dashboard_page")
+    
 
 def princ_cls_edition_classes(request):
     try:
@@ -600,3 +608,23 @@ def princ_std_edition_operation(request):
     except Exception as e:
             python_functions.receive_exceptions_and_deal(request,type(e).__name__)
             return redirect("matscholar_app:dashboard_page")
+    
+
+def princ_crs_edition_page(request):
+    try:
+        if(request.session.get("id") and "Princ" in request.session.get("permissions")): 
+            courses_query=python_functions.principal_cls_creation_courses(request)
+            if(courses_query):
+                context={
+                    "courses_query":courses_query,
+                }
+                return render(request,"principal/cls_edition_courses.html",context)
+            else:
+                return redirect("matscholar_app:dashboard_page")
+        else:
+            return redirect("matscholar_app:dashboard_page")
+        
+    except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
+            return redirect("matscholar_app:dashboard_page")
+    

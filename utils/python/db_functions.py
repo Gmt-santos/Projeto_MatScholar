@@ -31,21 +31,24 @@ Gera RAs e verifica se eles existem no banco de dados,caso não,retorna o RA
 def generate_RA(request)-> str:
     from matscholar_app.models import students
     import random
-    flag=1
-    list_chars_numbers=['1','2','3','4','5','6','7','8','9','0']
-    existent_ra=students.objects.filter(fk_institution=request.session.get("institution")).values_list("RA",flat=True)
-    set_existent_ra=set(existent_ra)
-    year=str(f.get_year()%2000)
-    ra=year
-    while flag == 1:
-        for i in range(0,9):
-            ra+=random.choice(list_chars_numbers)
-        if(ra in set_existent_ra):
-            flag=1
-            ra=year
-        else:
-            flag=0
-    return ra
+    try:
+        flag=1
+        list_chars_numbers=['1','2','3','4','5','6','7','8','9','0']
+        existent_ra=students.objects.filter(fk_institution=request.session.get("institution")).values_list("RA",flat=True)
+        set_existent_ra=set(existent_ra)
+        year=str(f.get_year()%2000)
+        ra=year
+        while flag == 1:
+            for i in range(0,9):
+                ra+=random.choice(list_chars_numbers)
+            if(ra in set_existent_ra):
+                flag=1
+                ra=year
+            else:
+                flag=0
+        return ra
+    except Exception as e:
+        raise e
 '''
 Validar o RA enviado na criação de estudantes------> Redundante
 '''
@@ -68,15 +71,9 @@ def validate_RA(request,ra:str)-> bool:
         else:
             return False
 
-    except ObjectDoesNotExist as e:
-
-        return False
-    except EmptyResultSet as e:
-
-        return False
-    except MultipleObjectsReturned as e:
-
-        return False
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
+            return False
 
 '''
 Valida o curso do estudante a ser criado --> redundante
@@ -94,19 +91,10 @@ def validate_course(request,id:str) ->bool:
                 return False
         else:
             return False
-    except ObjectDoesNotExist as e:
-
-        return False
-    except EmptyResultSet as e:
-
-        return False
-    except MultipleObjectsReturned as e:
-
-        return False
-    except ValueError:
-
-        return False
-
+        
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
+            return False
 
 '''
 Valida o academic_user_id enviado na criação de salas (redundante)
@@ -116,18 +104,10 @@ def validate_academic_user(request,academic_user_id)->bool:
     try:
        is_valid=academic_users.objects.filter(fk_institution=request.session.get("institution"),id=academic_user_id).exists()
        return is_valid
-    except ObjectDoesNotExist as e:
-
-        return False
-    except EmptyResultSet as e:
-
-        return False
-    except MultipleObjectsReturned as e:
-
-        return False
-    except ValueError:
-
-        return False
+    
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
+            return False
 
 
 

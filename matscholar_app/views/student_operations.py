@@ -5,11 +5,12 @@ from utils import python as python_functions
 def std_cls_view_page(request):
     if(request.method=="POST" and request.session.get("RA")):
         try:
-            class_query,assignments_query=python_functions.student_get_all_info_class(request)
+            class_query,assignments_query,gpa=python_functions.student_get_all_info_class(request)
             if class_query:
                 context={
                     'class_query':class_query,
                     'assignments_query':assignments_query,
+                    'gpa':gpa,
                 }
                 return render(request,'student/cls_view_page.html',context)
             else:

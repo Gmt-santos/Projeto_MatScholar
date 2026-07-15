@@ -370,29 +370,11 @@ def professor_add_assignment_operation(request):
 
 
 
-    except (errors.InvalidTextRepresentation,ValueError,errors.DeadlockDetected,errors.NotNullViolation,errors.NameTooLong,
-            DatabaseError,errors.ForeignKeyViolation,errors.DatatypeMismatch,errors.UniqueViolation,TypeError):
-        dbf.safe_rollback(conn)
-        messages.error(request,"Alteração indevida no formulário ou erro de envio! ")
-        return False
-    except errors.UndefinedColumn:
-        dbf.safe_rollback(conn)
-        messages.error(request,"Algum dado inválido foi enviado!")
-        return False
-    except IndexError:
-        dbf.safe_rollback(conn)
-        messages.error(request,"Alteração no formulário detectada! Operação abortada!")
-        return False
-    except OperationalError:
-        dbf.safe_rollback(conn)
-        messages.error(request,"Houve um erro com a conexão do banco de dados!")
-        return False
-    except Exception as e :
-        if conn:
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
             dbf.safe_rollback(conn)
-        messages.error(request,"Erro desconhecido!")
-        
-        return False
+            return False
+    
     finally:
         if cursor is not None:
             cursor.close()
