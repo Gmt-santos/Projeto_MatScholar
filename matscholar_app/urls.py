@@ -48,8 +48,10 @@ urlpatterns = [
     path('dashboard/std_edition_page/operation/',view=views.princ_std_edition_operation,name='std_edition_operation'),
    
     #       Course_edition      #
-    path('dashboard/principal/crs_edition_courses/',view=views.princ_crs_edition_page,name='crs_edition_page'),
-
+    path('dashboard/principal/crs_edition_courses/',view=views.princ_crs_edition_courses,name='crs_edition_courses'),
+    path('dashboard/principal/crs_edition_abs_classes/',view=views.princ_crs_edition_abs_classes,name='crs_edition_abs_classes'),
+    path('dashboard/principal/crs_edition/grade_finalization/',view=views.princ_crs_edition_grade_finalization_page,name='crs_edition_grade_finalization_page'),
+    path('dashboard/principal/crs_edition/grade_finalization/operation',view=views.princ_crs_edition_grade_finalization_operation,name='crs_edition_grade_finalization_operation'),
     #       Professor urls      #
     path('dashboard/professor/cls_edition_page/',view=views.prof_cls_edition_page,name='prof_cls_edition_page'),
     path('dashboard/professor/assignment_view/<str:assignment_id>/',view=views.prof_assignment_view,name='prof_assignment_view'),

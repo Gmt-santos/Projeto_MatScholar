@@ -586,7 +586,35 @@ def principal_cls_creation_get_abs_classes(request,valid_course_id)->list[tuple]
             cursor.close()
         if conn is not None:
             conn.close()
-
+'''
+Função para validar o nome da sala criada. Esse nome tem que ser o mesmo de sua sala abstrata no curso escolhido 
+'''
+def principal_cls_creation_validate_class(request,valid_class_name):
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            cursor.execute("select classes.name from classes join classes_courses on classes.id=classes_courses.id_class" \
+            " join courses on classes_courses.id_course=courses.id" \
+            " where classes.name=%s and courses.fk_institution=%s and abstract=1 and courses.id=%s",
+            [valid_class_name,request.session.get("institution"),request.session.get("actual_course")])
+            class_name=cursor.fetchone()
+            if class_name:
+                return class_name[0]
+            else:
+                False
+        else:
+            messages.error(request,'Houve um erro com a conexão ao banco de dados!')
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
+            return False
+    
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+    
 def search_professors_by_institution(request)->list[tuple]|bool:
     conn,cursor=None,None
     try:
@@ -1175,3 +1203,4 @@ def student_get_all_info_assignment(request,assignment_id)->dict|bool:
             cursor.close()
         if conn is not None:
             conn.close()
+

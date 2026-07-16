@@ -169,3 +169,44 @@ select{
     cursor:pointer;
     width: 300px;
 }
+.organizer_forms_horizontal_div{
+    display:flex;
+    flex-direction: row;
+    gap:50px;
+}
+
+.grades_organizer_div{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color:white;
+    border-radius: var(--border-radius);
+    width:fit-content;
+    height:fit-content;
+    margin:100px;
+    padding:20px;
+    box-shadow:2px 2px 2px 1px black;
+}
+.grade_info_td{
+    font-family:Chakra;
+    font-size:15px;
+    text-align: center;
+    border-style:none none none solid;
+    border-color:var(--color-gray);
+    text-overflow:ellipsis;
+    padding: 5px;
+    
+}
+.grade_p{
+    font-family: Chakra;
+    font-size: 22px;
+}
+table{
+    width: 100%;
+     border-style:solid solid solid none;
+    border-color:var(--color-gray);
+    border-spacing: 0px;
+}
+tr{
+    height: 30px;
+}

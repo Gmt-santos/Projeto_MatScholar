@@ -1,0 +1,26 @@
+{% extends "general/header_footer_dashboard.html" %}
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/specific/style_crs_creation.css'%}">
+    <div class="organizer_forms_horizontal_div">
+        <form method="POST" action="{% url 'matscholar_app:cls_creation_forms'%}">
+            {% csrf_token%}
+            <div class="courses_select_div">
+                <p class="courses_p">Salas disponíveis</p>
+                <select class="courses_select"name="class" id="class">
+                    {% for class in classes_query %}
+                        <option value="{{class.0}}">{{class.1}}</option>
+                    {% endfor %}
+                </select>
+                <input class="forms_submit_input"type="submit" value="Avançar">
+            </div>
+        </form>
+        <form method="POST" action="{% url 'matscholar_app:crs_edition_grade_finalization_page'%}">
+            {% csrf_token%}
+            <div class="courses_select_div">
+                <p class="courses_p">Fechamento de notas do curso</p>
+                <input class="forms_submit_input"type="submit" value="Avançar">
+            </div>
+        </form>
+    </div>
+{% endblock content %}

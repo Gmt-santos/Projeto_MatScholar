@@ -5,6 +5,7 @@ def princ_std_creation_courses(request):
     if(request.session.get("id") and "Princ" in request.session.get("permissions")): 
         courses_query=python_functions.principal_std_creation_courses(request)
         if(courses_query):
+        
             context={
                 "courses_query":courses_query,
             }
@@ -245,7 +246,7 @@ def princ_cls_creation_forms(request):
         return redirect("matscholar_app:dashboard_page")
     
 def princ_cls_creation_operation(request):
-    try:
+    # try:
         if(request.method=="POST" and request.session.get("id") and "Princ" in request.session.get("permissions") and
         request.session.get("actual_course")and request.session.get("actual_class")):
             
@@ -263,17 +264,21 @@ def princ_cls_creation_operation(request):
 
                 if(python_functions.validate_academic_user(request,valid_academic_user_id_before_db)):
 
-
+                    
                     class_name=request.session.get("actual_class")
                     class_initial=request.session.get("actual_class_initial")
                     valid_academic_user_id_after_db=valid_academic_user_id_before_db
-
-                    if(python_functions.principal_cls_creation_operation_create_class(request,valid_max_length,class_name,class_initial,
-                    valid_academic_user_id_after_db,valid_start_date,valid_end_date)):
-                        
-                        messages.success(request,f"A aula {class_name} foi inserida com sucesso!")
-                        return render(request,"principal/cls_creation_again.html")
+                    abs_class_name=python_functions.principal_cls_creation_validate_class(request,class_name)
+                    if abs_class_name and class_name and abs_class_name ==  class_name:
+                        if(python_functions.principal_cls_creation_operation_create_class(request,valid_max_length,class_name,class_initial,
+                        valid_academic_user_id_after_db,valid_start_date,valid_end_date)):
+                            
+                            messages.success(request,f"A aula {class_name} foi inserida com sucesso!")
+                            return render(request,"principal/cls_creation_again.html")
+                        else:
+                            return redirect("matscholar_app:dashboard_page")
                     else:
+                        messages.error(request,"Alteração indevida no formulário!")
                         return redirect("matscholar_app:dashboard_page")
                 else:
                      messages.error(request,"Alteração indevida no formulário!")
@@ -287,9 +292,9 @@ def princ_cls_creation_operation(request):
 
             return redirect("matscholar_app:dashboard_page")
         
-    except Exception as e:
-        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
-        return redirect("matscholar_app:dashboard_page")
+    # except Exception as e:
+    #     python_functions.receive_exceptions_and_deal(request,type(e).__name__)
+    #     return redirect("matscholar_app:dashboard_page")
     
 '''
 Reaproveitamento do código de cls_creation_courses
@@ -610,7 +615,7 @@ def princ_std_edition_operation(request):
             return redirect("matscholar_app:dashboard_page")
     
 
-def princ_crs_edition_page(request):
+def princ_crs_edition_courses(request):
     try:
         if(request.session.get("id") and "Princ" in request.session.get("permissions")): 
             courses_query=python_functions.principal_cls_creation_courses(request)
@@ -618,7 +623,7 @@ def princ_crs_edition_page(request):
                 context={
                     "courses_query":courses_query,
                 }
-                return render(request,"principal/cls_edition_courses.html",context)
+                return render(request,"principal/crs_edition_courses.html",context)
             else:
                 return redirect("matscholar_app:dashboard_page")
         else:
@@ -627,4 +632,59 @@ def princ_crs_edition_page(request):
     except Exception as e:
             python_functions.receive_exceptions_and_deal(request,type(e).__name__)
             return redirect("matscholar_app:dashboard_page")
+
+
+def princ_crs_edition_abs_classes(request):
+    try:
+            if(request.method == "POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
+                if(request.session.get("actual_course")):
+                    # Caso o usuário já tenha inserido alguma sala já anteriormente e quer inserir mais
+                    course_id=request.session.get("actual_course")
+                else:
+                    course_id=request.POST.get("course")
+
+                valid_course_id=python_functions.regex_list_to_string(
+                python_functions.validate_ids_entries(entry=course_id))
+                if (valid_course_id):
+                    classes_query=python_functions.principal_cls_creation_get_abs_classes(request,valid_course_id)
+                    if classes_query:
+                        request.session["actual_course"]=valid_course_id
+                        context={
+                            "classes_query":classes_query,
+                        }
+                        return render(request,"principal/crs_edition_abs_classes.html",context=context)
+                    else:
+                        return redirect("matscholar_app:dashboard_page")
+                else:
+                    messages.error(request,"Algum dado inválido foi enviado !")
+                    return redirect("matscholar_app:dashboard_page")
+                
+            else:
+                return redirect("matscholar_app:dashboard_page")
+            
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
+        return redirect("matscholar_app:dashboard_page")
     
+def princ_crs_edition_grade_finalization_page(request):
+    try:
+        if request.method == "POST" and request.session.get("id") and request.session.get("actual_course"):
+            open_classes_query=python_functions.get_all_classes_grade_finalization(request,course_id=request.session.get("actual_course"))
+            if open_classes_query:
+                context={
+                    'open_classes':open_classes_query,
+                }
+                return render(request,'principal/crs_edition_grade_finalization.html',context)
+            else:
+                return redirect("matscholar_app:dashboard_page")
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
+        return redirect("matscholar_app:dashboard_page")
+    
+def princ_crs_edition_grade_finalization_operation(request):
+    try:
+        if request.method == "POST" and request.session.get("id") and request.session.get("actual_course"):
+            pass    
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
+        return redirect("matscholar_app:dashboard_page")

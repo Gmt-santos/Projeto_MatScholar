@@ -1,0 +1,40 @@
+{% extends 'general/header_footer_dashboard.html'%}
+{% load static %}
+{% block content %}
+ <link rel="stylesheet" href="{% static 'css/specific/style_crs_creation.css'%}">
+    <div class="grades_organizer_div">
+         <p class="grade_p">Disciplinas abertas</p>
+                <table style="width:100%;">
+                    <tr>
+                        <th class="grade_info_td">Disciplina</th>
+                        <th class="grade_info_td">Docente</th>
+                        <th class="grade_info_td">Data de começo</th>
+                        <th class="grade_info_td">Data de fim </th>
+                    </tr>
+                
+                
+                    {% for class in open_classes %}
+                    
+                        <tr>
+                            <td class="grade_info_td">{{class.class_name}}</td>
+                            <td class="grade_info_td">{{class.prof_role}} {{class.prof_name}}</td>
+                            <td class="grade_info_td">{{class.class_start_date}}</td>
+                            <td class="grade_info_td">{{class.class_end_date}}</td>
+                        </tr>
+    
+
+
+                    {%  endfor  %}
+                </table>
+                <p class="forms_aux_input_p">Confirme a Senha</p>
+        <input class="forms_input"type="password" name="password" id="password" placeholder="Senha" autocomplete="new-password" required>
+        <div style="margin-top:20px">
+
+            <input type="checkbox" name="show_password" id="show_password" onclick="toggle_visibility()" >
+            <label class="forms_aux_input_p"for="show_password">Mostrar senha</label>
+            
+        </div>
+                <input class="forms_submit_input"type="submit" value="Fechar notas">
+                
+    </div>
+{% endblock content %}

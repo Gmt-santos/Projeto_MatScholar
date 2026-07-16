@@ -323,7 +323,7 @@ def validate_texts(entry:str)->list[str]:
     return regex_entry
 
 '''
-Recebe as listas vindas do regex e retorna a string encontrada ou o valor False
+Recebe as listas vindas do regex ou dos fetches(grade finalization) e retorna a string encontrada ou o valor False
 '''
 def regex_list_to_string(regex_list:list)->str|bool:
     if regex_list:

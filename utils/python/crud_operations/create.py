@@ -196,7 +196,8 @@ def principal_cls_creation_operation_create_class(request,max_length,class_name,
             cursor.execute("insert into classes_courses(id,id_class,id_course)values(%s,%s,%s)",
                            [f"{new_class_id}-{request.session.get("actual_course")}",new_class_id,request.session.get("actual_course")])
             conn.commit()
-
+            del request.session["actual_class"]
+            del request.session["actual_class_initial"]
             return True
         else:
             messages.error(request,"Houve um erro com a conexão ao banco de dados!")
