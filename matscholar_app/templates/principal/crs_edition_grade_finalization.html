@@ -2,6 +2,9 @@
 {% load static %}
 {% block content %}
  <link rel="stylesheet" href="{% static 'css/specific/style_crs_creation.css'%}">
+
+ <form method="POST" action="{% url 'matscholar_app:crs_edition_grade_finalization_operation'    %}" >
+     {% csrf_token %}
     <div class="grades_organizer_div">
          <p class="grade_p">Disciplinas abertas</p>
                 <table style="width:100%;">
@@ -37,4 +40,5 @@
                 <input class="forms_submit_input"type="submit" value="Fechar notas">
                 
     </div>
+</form>
 {% endblock content %}

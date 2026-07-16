@@ -191,7 +191,10 @@ def get_attendance_rate(attendance:int,absence:int,return_string:bool)-> str|flo
             return float( ( attendance/(attendance+absence) )  )
         
     except ZeroDivisionError:
-        return "0%"
+        if return_string:
+            return "0%"
+        else:
+            return 0
 
 
 '''
@@ -407,3 +410,14 @@ def calculate_gpa(listof_assignments_weight_grade:list[tuple],return_string:bool
             return sum_of_grades/weights
     except ZeroDivisionError:
         return False
+    
+
+def avaliate_class_result(grade,attendance,universal_absence_limit):
+    if grade >=5 and attendance >=universal_absence_limit:
+        return "Aprovado"
+    elif grade<5 and attendance < universal_absence_limit:
+        return "Reprovado por falta e nota"
+    elif grade<5 and attendance>universal_absence_limit:
+        return 'Reprovado por nota'
+    elif grade>=5 and attendance<universal_absence_limit:
+        return 'Reprovado por falta'

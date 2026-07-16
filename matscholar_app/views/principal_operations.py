@@ -669,7 +669,7 @@ def princ_crs_edition_abs_classes(request):
 def princ_crs_edition_grade_finalization_page(request):
     try:
         if request.method == "POST" and request.session.get("id") and request.session.get("actual_course"):
-            open_classes_query=python_functions.get_all_classes_grade_finalization(request,course_id=request.session.get("actual_course"))
+            open_classes_query=python_functions.get_all_open_classes_grade_finalization(request,course_id=request.session.get("actual_course"))
             if open_classes_query:
                 context={
                     'open_classes':open_classes_query,
@@ -682,9 +682,9 @@ def princ_crs_edition_grade_finalization_page(request):
         return redirect("matscholar_app:dashboard_page")
     
 def princ_crs_edition_grade_finalization_operation(request):
-    try:
+    # try:
         if request.method == "POST" and request.session.get("id") and request.session.get("actual_course"):
-            pass    
-    except Exception as e:
-        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
-        return redirect("matscholar_app:dashboard_page")
+            python_functions.finalize_grades(request)
+    # except Exception as e:
+    #     python_functions.receive_exceptions_and_deal(request,type(e).__name__)
+    #     return redirect("matscholar_app:dashboard_page")

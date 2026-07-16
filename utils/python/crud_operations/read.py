@@ -1203,4 +1203,23 @@ def student_get_all_info_assignment(request,assignment_id)->dict|bool:
             cursor.close()
         if conn is not None:
             conn.close()
-
+'''
+Busca o piso universal de frequência da instituição
+'''
+def get_universal_absence_limit(request,conn,cursor):
+    try:
+        if conn and cursor:
+            cursor.execute("select universal_absence_limit from institution where id=%s ",
+            [request.session.get("institution")])
+            universal_absence_limit=cursor.fetchone()
+            if universal_absence_limit:
+                return universal_absence_limit[0]
+            else:
+                messages.error(request,"Sua instituição não possui piso de frequência!")
+                return False
+        else:
+            messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
+            return False
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
+            return False
