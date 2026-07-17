@@ -67,4 +67,5 @@ urlpatterns = [
     #       Student urls        #
     path('dashboard/student/cls_view/',view=views.std_cls_view_page,name='std_cls_view_page'),
     path('dashboard/student/assignment_view/<str:assignment_id>/',view=views.std_assignment_view_page,name='std_assignment_view'),
+    path('dashboard/student/final_grade_view/',view=views.std_view_final_grades_page,name='std_view_final_grades_page'),
 ]

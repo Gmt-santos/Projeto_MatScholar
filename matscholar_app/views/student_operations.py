@@ -37,3 +37,17 @@ def std_assignment_view_page(request,assignment_id):
             return redirect("matscholar_app:dashboard_page")
      else:
          return redirect("matscholar_app:dashboard_page")
+     
+def std_view_final_grades_page(request):
+    if request.session.get("RA"):
+        try:
+           final_grades_query=python_functions.student_get_final_grades(request)
+           context={
+               'final_grades':final_grades_query
+           }
+           return render(request,'student/final_grades_view_page.html',context)
+        except Exception as e:
+            python_functions.receive_exceptions_and_deal(request,type(e).__name__)
+            return redirect("matscholar_app:dashboard_page")
+    else:
+         return redirect("matscholar_app:dashboard_page")

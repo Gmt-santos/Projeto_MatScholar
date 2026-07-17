@@ -5,7 +5,7 @@ from psycopg2 import OperationalError,errors,DatabaseError
 from django.contrib import messages
 from psycopg2.extras import execute_values
 def get_and_validate_academic_user_password_grade_finalization(request,conn,cursor):
-    # try:
+    try:
         cursor.execute("select a_users.password from academic_users as a_users where a_users.id=%s " \
         "and a_users.fk_institution=%s",[request.session.get("id"),request.session.get("institution")]) 
         password_db=f.regex_list_to_string(cursor.fetchone())
@@ -19,12 +19,12 @@ def get_and_validate_academic_user_password_grade_finalization(request,conn,curs
             messages.error(request,"O usuário não foi autorizado a fazer essa operação!")
             return False
       
-    # except Exception as e:
-    #     f.receive_exceptions_and_deal(request,type(e).__name__)
-    #     return False
+    except Exception as e:
+        f.receive_exceptions_and_deal(request,type(e).__name__)
+        return False
 
 def get_all_open_classes_grade_finalization(request,course_id,operation=None,conn=None,cursor=None):
-    # try:
+    try:
         if not(conn and cursor):
             conn,cursor=f.connection_cursor()
         if conn and cursor:
@@ -66,11 +66,11 @@ def get_all_open_classes_grade_finalization(request,course_id,operation=None,con
             messages.error(request,"Houve um erro com a conexão ao banco de dados!")
             return False
 
-    # except Exception as e:
-    #     f.receive_exceptions_and_deal(request,type(e).__name__)
-    #     return False
+    except Exception as e:
+        f.receive_exceptions_and_deal(request,type(e).__name__)
+        return False
 def get_attendance_students(request,conn,cursor,open_classes):
-    #try 
+    try: 
         if conn and cursor:
             listof_dict_attendance=[]
 
@@ -107,12 +107,12 @@ def get_attendance_students(request,conn,cursor,open_classes):
 
             return False
 
-    # except Exception as e:
-    #     f.receive_exceptions_and_deal(request,type(e).__name__)
-    #     return False
+    except Exception as e:
+        f.receive_exceptions_and_deal(request,type(e).__name__)
+        return False
 
 def get_all_assignments_students_and_set_grades(request,conn,cursor,open_classes):
-    # try:
+    try:
         if conn and cursor:
             listof_assignments_by_class=[]
             listof_assignments_weights=[]
@@ -142,10 +142,10 @@ def get_all_assignments_students_and_set_grades(request,conn,cursor,open_classes
 
                     else:
                          messages.error(request,"Não foi possível obter todos os dados das tarefas!")
-                         return False
+                         return False,False
                 else:
                     messages.error(request,"Não foi possível obter todos os dados das tarefas!")
-                    return False
+                    return False,False
                 
 
             # Depois de pesquisar todos os conjuntos de tarefas relacionadas a open_classes,
@@ -185,38 +185,116 @@ def get_all_assignments_students_and_set_grades(request,conn,cursor,open_classes
                 listof_deletions=[]
                 # Percorre os dicionarios criados na mesma ordem de open_classes pra criar uma tupla no
                 # formato de final_grades e uma tupla para deletar de students_classes_missing quem passou
-                print(listof_dict_grades_students)
+          
                 for i in range(0,len(listof_dict_grades_students)):
                     for RA in listof_RA:
                         attendance=listof_attendance[i].get(f"{RA}")
                         grade=listof_dict_grades_students[i].get(f"{RA}")
                         if grade and attendance:   
+                            grade=float(grade)
+                            final_grade=grade/listof_assignments_weights[i]
                             result=f.avaliate_class_result(
-                            grade/listof_assignments_weights[i],attendance,universal_absence_limit)
-                            # TODO --
+                            final_grade,attendance,universal_absence_limit)
+                            
                             if result == "Aprovado":
-
+                               
                                 listof_deletions.append((RA,open_classes[i][1],request.session.get("actual_course")))
 
                             listof_insertions.append(
-                            (RA,open_classes[i][0],attendance,grade,result)
+                            (f'{RA}-{open_classes[i][0]}',RA,open_classes[i][0],attendance,final_grade,result,f.date_to_string(f.get_today_date()))
                             )
                         else:
-                             pass
-                print(listof_insertions)
-            
+                            pass
+                    
+               
+                return listof_insertions,listof_deletions
 
         else:
             messages.error(request,"Houve um erro com a conexão ao banco de dados!")
-            return False
+            return False,False
 
-    # except Exception as e:
-    #     f.receive_exceptions_and_deal(request,type(e).__name__)
-    #     return False
+    except Exception as e:
+        f.receive_exceptions_and_deal(request,type(e).__name__)
+        return False,False
+def insert_into_final_grades(request,conn,cursor,listof_insertions):
+    try:
+        if conn and cursor:
+
+            execute_values(cursor,
+            'insert into final_grades(id,id_student,id_class,final_attendance,final_grade,result,operation_date) values %s',
+            listof_insertions)
+            return True
+        else:
+            messages.error(request,'Houve um erro com a conexão ao banco de dados!')
+            return False
+    except Exception as e:
+        f.receive_exceptions_and_deal(request,type(e).__name__)
+        dbf.safe_rollback(conn)
+        return False,False
+
+
+def delete_approved_students_classes_missing(request,conn,cursor,listof_deletions):
+     try:
+        if conn and cursor:
+            for tupla in listof_deletions:
+              
+                cursor.execute("delete from students_classes_missing where id= any(" \
+                "select std_cls_missing.id from students_classes_missing as std_cls_missing join classes as cls" \
+                " on std_cls_missing.id_class=cls.id join classes_courses as cls_crs on cls.id=cls_crs.id_class where" \
+                " cls.abstract=1 and open=0 and std_cls_missing.id_student=%s and cls.name=%s and cls_crs.id_course=%s)",
+                [tupla[0],tupla[1],tupla[2]])
+                  
+           
+            return True
+        else:
+            messages.error(request,'Houve um erro com a conexão ao banco de dados!')
+            return False
+     except Exception as e:
+        f.receive_exceptions_and_deal(request,type(e).__name__)
+        dbf.safe_rollback(conn)
+        return False,False
+
+def delete_students_classes_actual(request,conn,cursor,open_classes):
+    try:
+        if conn and cursor:
+            listof_ids=[]
+            for cls in open_classes:
+                 listof_ids.append(cls[0])
+            cursor.execute("delete from students_classes_actual where id_class = any(%s) returning id",[listof_ids,])
+           
+            return True
+        else:
+            messages.error(request,'Houve um erro com a conexão ao banco de dados!')
+            dbf.safe_rollback(conn)
+            return False
+    except Exception as e:
+        f.receive_exceptions_and_deal(request,type(e).__name__)
+        dbf.safe_rollback(conn)
+        return False
+
+def soft_delete_classes(request,conn,cursor,open_classes):
+    try:
+        if conn and cursor:
+            listof_ids=[]
+            for cls in open_classes:
+                listof_ids.append(cls[0])
+            cursor.execute("update classes set open=0 where id= any(%s) ",[listof_ids,])
+           
+            return True
+        else:
+            messages.error(request,'Houve um erro com a conexão ao banco de dados!')
+            dbf.safe_rollback(conn)
+            return False
+        
+    except Exception as e:
+        f.receive_exceptions_and_deal(request,type(e).__name__)
+        dbf.safe_rollback(conn)
+        return False,False   
+    
 
 def finalize_grades(request):
-        conn,cursor=None,None
-    # try:
+    conn,cursor=None,None
+    try:
         conn,cursor=f.connection_cursor()
         if conn and cursor:
             if  get_and_validate_academic_user_password_grade_finalization(request,conn,cursor):
@@ -224,21 +302,37 @@ def finalize_grades(request):
                 open_classes_query=get_all_open_classes_grade_finalization(
                      request,request.session.get("actual_course"),True,conn,cursor)
                 if open_classes_query:
-                    get_all_assignments_students_and_set_grades(request,conn,cursor,open_classes_query)
-                    
+                    listof_insertions,listof_deletions=get_all_assignments_students_and_set_grades(
+                    request,conn,cursor,open_classes_query)
+                    if listof_insertions:
+                        if (insert_into_final_grades(request,conn,cursor,listof_insertions) and
+                            delete_approved_students_classes_missing(request,conn,cursor,listof_deletions) and
+                            delete_students_classes_actual(request,conn,cursor,open_classes_query) and
+                            soft_delete_classes(request,conn,cursor,open_classes_query)):
+                             conn.commit()
+                             messages.success(request,"Notas fechadas!")
+                             return True
+                             
+                        else:
+                            dbf.safe_rollback(conn)
+                            return False
                 else:
+                    dbf.safe_rollback(conn)
                     return False
             else:
+                dbf.safe_rollback(conn)
                 return False
         else:
+            dbf.safe_rollback(conn)
             messages.error(request,"Houve um erro com a conexão ao banco de dados!")
             return False
-    # except Exception as e:
-    #     f.receive_exceptions_and_deal(request,type(e).__name__)
-    #     return False
-    # finally:
-    #     if cursor is not None:
-    #         cursor.close()
-    #     if conn is not None:
-    #         conn.close()
+    except Exception as e:
+        f.receive_exceptions_and_deal(request,type(e).__name__)
+        dbf.safe_rollback(conn)
+        return False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
     

@@ -1203,6 +1203,35 @@ def student_get_all_info_assignment(request,assignment_id)->dict|bool:
             cursor.close()
         if conn is not None:
             conn.close()
+def student_get_final_grades(request):
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            cursor.execute('select f_g.final_attendance,f_g.final_grade,f_g.result,f_g.operation_date,cls.name from ' \
+            'final_grades as f_g join classes as cls on f_g.id_class=cls.id where cls.open=0 and f_g.id_student=%s',
+            [request.session.get("RA")])
+            final_grades=cursor.fetchall()
+            if final_grades:
+                listof_final_grade_dict=[]
+                for final_grade in final_grades:
+                    listof_final_grade_dict.append({
+                        'attendance':final_grade[0],
+                        'grade':final_grade[1],
+                        'result':final_grade[2],
+                        'operation_date':f.date_to_string(final_grade[3]),
+                        'name':final_grade[4],
+                    })
+                return listof_final_grade_dict
+            else:
+                messages.error(request,'Você ainda não tem notas fechadas!')
+                return False
+        else:
+            messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
+            return False
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
+            return False
 '''
 Busca o piso universal de frequência da instituição
 '''
