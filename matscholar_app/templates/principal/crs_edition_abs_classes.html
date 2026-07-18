@@ -2,6 +2,7 @@
 {% load static %}
 {% block content %}
     <link rel="stylesheet" href="{% static 'css/specific/style_crs_creation.css'%}">
+   
     <div class="organizer_forms_horizontal_div">
         <form method="POST" action="{% url 'matscholar_app:cls_creation_forms'%}">
             {% csrf_token%}
@@ -22,5 +23,17 @@
                 <input class="forms_submit_input"type="submit" value="Avançar">
             </div>
         </form>
+        <form method="POST" action="{% url 'matscholar_app:princ_crs_edition_graduates_verification'%}">
+            {% csrf_token%}
+            <div class="courses_select_div">
+                <p class="courses_p">Verificar possíveis formados</p>
+                <input class="forms_submit_input"type="submit" value="Avançar">
+            </div>
+        </form>
     </div>
+     {% if messages %}
+                {% for message in messages %}
+                    {% include "specific/messages.html" %}
+                {% endfor %}
+    {% endif %}
 {% endblock content %}

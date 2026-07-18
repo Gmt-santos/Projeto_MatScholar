@@ -636,7 +636,7 @@ def princ_crs_edition_courses(request):
 
 def princ_crs_edition_abs_classes(request):
     try:
-            if(request.method == "POST" and request.session.get("id") and "Princ" in request.session.get("permissions")):
+            if(request.session.get("id") and "Princ" in request.session.get("permissions")):
                 if(request.session.get("actual_course")):
                     # Caso o usuário já tenha inserido alguma sala já anteriormente e quer inserir mais
                     course_id=request.session.get("actual_course")
@@ -682,10 +682,35 @@ def princ_crs_edition_grade_finalization_page(request):
         return redirect("matscholar_app:dashboard_page")
     
 def princ_crs_edition_grade_finalization_operation(request):
-    # try:
+    try:
         if request.method == "POST" and request.session.get("id") and request.session.get("actual_course"):
             python_functions.finalize_grades(request)
             return redirect("matscholar_app:dashboard_page")
-    # except Exception as e:
-    #     python_functions.receive_exceptions_and_deal(request,type(e).__name__)
-    #     return redirect("matscholar_app:dashboard_page")
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
+        return redirect("matscholar_app:dashboard_page")
+    
+def princ_crs_edition_graduates_verification(request):
+    try:
+        if request.method == "POST" and request.session.get("id") and request.session.get("actual_course"):
+            listof_graduates,listof_risk_of_expulsion=python_functions.principal_get_info_possible_graduates(request)
+            if listof_graduates or listof_risk_of_expulsion:
+                context={
+                    'graduates':listof_graduates,
+                    'risk_of_expulsion':listof_risk_of_expulsion,
+                }
+                return render(request,"principal/crs_edition_graduates_view.html",context)
+            else:
+                messages.error(request,"Não há alunos formandos ou que estão além do prazo máximo de formação!")
+                return redirect("matscholar_app:crs_edition_abs_classes")
+    except Exception as e:
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
+        return redirect("matscholar_app:dashboard_page")       
+    
+def princ_crs_edition_graduates_operation(request):
+    try:
+        if request.method == "POST" and request.session.get("id") and request.session.get("actual_course"):
+            python_functions.principal_update_graduates(request)
+    except Exception as e: 
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
+        return redirect("matscholar_app:dashboard_page") 

@@ -421,3 +421,4 @@ def avaliate_class_result(grade,attendance,universal_absence_limit):
         return 'Reprovado por nota'
     elif grade>=5 and attendance<universal_absence_limit:
         return 'Reprovado por falta'
+    

@@ -5,32 +5,36 @@
 
  <form method="POST" action="{% url 'matscholar_app:dashboard_page'    %}" >
      {% csrf_token %}
-     if
     <div class="grades_organizer_div">
-         <p class="grade_p">Disciplinas abertas</p>
+        {% if final_grades %}
+         <p class="grade_p">Histórico</p>
                 <table style="width:100%;">
                     <tr>
                         <th class="grade_info_td">Disciplina</th>
-                        <th class="grade_info_td">Docente</th>
-                        <th class="grade_info_td">Data de começo</th>
-                        <th class="grade_info_td">Data de fim </th>
+                        <th class="grade_info_td">Nota</th>
+                        <th class="grade_info_td">Frequência</th>
+                        <th class="grade_info_td">Fechamento</th>
+                        <th class="grade_info_td">Situação</th>
                     </tr>
                 
                 
-                    {% for class in open_classes %}
+                    {% for final_grade in final_grades %}
                     
                         <tr>
-                            <td class="grade_info_td">{{class.class_name}}</td>
-                            <td class="grade_info_td">{{class.prof_role}} {{class.prof_name}}</td>
-                            <td class="grade_info_td">{{class.class_start_date}}</td>
-                            <td class="grade_info_td">{{class.class_end_date}}</td>
+                            <td class="grade_info_td">{{final_grade.name}}</td>
+                            <td class="grade_info_td">{{final_grade.grade}}</td>
+                            <td class="grade_info_td">{{final_grade.attendance}}</td>
+                            <td class="grade_info_td">{{final_grade.operation_date}}</td>
+                            <td class="grade_info_td">{{final_grade.result}}</td>
                         </tr>
     
 
 
                     {%  endfor  %}
                 </table>
-               
+        {% else %}
+        <p class="grade_p">Não foram encontradas matérias!</p>
+        {% endif %}
        
         
                 <input class="forms_submit_input"type="submit" value="Voltar">

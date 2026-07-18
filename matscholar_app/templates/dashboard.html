@@ -191,6 +191,13 @@
 
         <p class="professor_classes_grid_p">Olá Aluno(a) {{request.session.name}}!</p>
 
+        <a href="{% url 'matscholar_app:std_view_final_grades_page' %}">
+            <div class="operations_simulate_buttons_div button_color_darkblue_div">
+                <img class="operations_button_icon_img"src="{% static 'icons/table_icon.svg'%}" alt="">
+                <p class="operations_buttons_p">Ver boletim</p>
+            </div>
+            
+        </a>
         <div class="principal_queries_organizer_div">
 
             <p class="p_toggle_forms_p" id="toggle_class_name" onclick="toggle_query_classname_visibility()">Pesquisar aula por nome</p>

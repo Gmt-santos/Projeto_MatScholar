@@ -1,0 +1,68 @@
+{% extends 'general/header_footer_dashboard.html'%}
+{% load static %}
+{% block content %}
+ <link rel="stylesheet" href="{% static 'css/specific/style_crs_creation.css'%}">
+
+ <form method="POST" action="{% url "matscholar_app:princ_crs_edition_graduates_operation" %}" >
+     {% csrf_token %}
+    <div class="grades_organizer_div">
+         <p class="grade_p">Formandos</p>
+                <table style="width:100%;">
+                    <tr>
+                        <th class="grade_info_td">RA</th>
+                        <th class="grade_info_td">Nome</th>
+                        <th class="grade_info_td">Prazo máximo</th>
+
+                    </tr>
+                
+                
+                    {% for graduate in graduates %}
+                    
+                        <tr>
+                            <td class="grade_info_td">{{graduate.RA}}</td>
+                            <td class="grade_info_td">{{graduate.name}}</td>
+                            <td class="grade_info_td">{{graduate.deadline}}</td>
+                            
+                        </tr>
+    
+
+
+                    {%  endfor  %}
+                </table>
+                <p class="grade_p">Pessoas fora do prazo</p>
+                <p class="forms_aux_input_p">Para essas pessoas, entre em contato para resolver a situação</p>
+                <table style="width:100%;">
+                    <tr>
+                        <th class="grade_info_td">RA</th>
+                        <th class="grade_info_td">Nome</th>
+                        <th class="grade_info_td">Prazo máximo</th>
+
+                    </tr>
+                
+                
+                    {% for risk in risk_of_expulsion %}
+                    
+                        <tr>
+                            <td class="grade_info_td">{{risk.RA}}</td>
+                            <td class="grade_info_td">{{risk.name}}</td>
+                            <td class="grade_info_td">{{risk.deadline}}</td>
+                            
+                        </tr>
+    
+
+
+                    {%  endfor  %}
+                </table>
+                <p class="forms_aux_input_p">Confirme a Senha</p>
+        <input class="forms_input"type="password" name="password" id="password" placeholder="Senha" autocomplete="new-password" required>
+        <div style="margin-top:20px">
+
+            <input type="checkbox" name="show_password" id="show_password" onclick="toggle_visibility()" >
+            <label class="forms_aux_input_p"for="show_password">Mostrar senha</label>
+            
+        </div>
+                <input class="forms_submit_input"type="submit" value="Atualizar ">
+                
+    </div>
+</form>
+{% endblock content %}

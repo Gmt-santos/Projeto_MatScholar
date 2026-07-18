@@ -1203,6 +1203,11 @@ def student_get_all_info_assignment(request,assignment_id)->dict|bool:
             cursor.close()
         if conn is not None:
             conn.close()
+
+'''
+Puxa as informações das salas já fechadas dos alunos
+Serve como um boletim
+'''
 def student_get_final_grades(request):
     conn,cursor=None,None
     try:
@@ -1216,7 +1221,7 @@ def student_get_final_grades(request):
                 listof_final_grade_dict=[]
                 for final_grade in final_grades:
                     listof_final_grade_dict.append({
-                        'attendance':final_grade[0],
+                        'attendance':str(final_grade[0]*100)+"%",
                         'grade':final_grade[1],
                         'result':final_grade[2],
                         'operation_date':f.date_to_string(final_grade[3]),
@@ -1224,7 +1229,7 @@ def student_get_final_grades(request):
                     })
                 return listof_final_grade_dict
             else:
-                messages.error(request,'Você ainda não tem notas fechadas!')
+
                 return False
         else:
             messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
@@ -1232,6 +1237,11 @@ def student_get_final_grades(request):
     except Exception as e:
             f.receive_exceptions_and_deal(request,type(e).__name__)
             return False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
 '''
 Busca o piso universal de frequência da instituição
 '''
@@ -1246,6 +1256,108 @@ def get_universal_absence_limit(request,conn,cursor):
             else:
                 messages.error(request,"Sua instituição não possui piso de frequência!")
                 return False
+        else:
+            messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
+            return False
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
+            return False
+    
+'''
+Pega as informações dos possíveis formandos daquele ano, assim como dos alunos que estão estourando o prazo
+Os formandos são aqueles dentro do prazo de conclusão e sem registros na students_classes_missing
+Já os alunos além do prazo são aqueles fora do prazo de conclusão e que têm registros na students_classes_missing
+'''
+def principal_get_info_possible_graduates(request):
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            cursor.execute("select max_length from courses where id=%s and fk_institution=%s",
+            [request.session.get("actual_course"),request.session.get("institution")])
+            max_length=f.regex_list_to_string(cursor.fetchone())
+           
+            if max_length:
+                max_length=int(max_length)
+                cursor.execute('select std."RA",std.name,std.year_of_entry from students as std where std.fk_course=%s and '
+                'std.fk_institution=%s ' \
+                f'and {f.get_year()}<std.year_of_entry+{max_length} and std."RA"'\
+                  '!= all(select std_cls_missing.id_student from students_classes_missing as std_cls_missing join' \
+                  ' students as std on std_cls_missing.id_student=std."RA" where std.fk_course=%s and std.fk_institution=%s'
+                  ' and graduated=0)',
+                  [request.session.get("actual_course"),request.session.get("institution"),
+                   request.session.get("actual_course"),request.session.get("institution")])
+                graduates_query=cursor.fetchall()
+                listof_graduates_dict=[]
+                for tupla in graduates_query:
+                    listof_graduates_dict.append({
+                        'RA':tupla[0],
+                        'name':tupla[1],
+                        'deadline':tupla[2]+max_length-1,
+                    })
+                cursor.execute('select std."RA",std.name,std.year_of_entry from students as std where std.fk_course=%s and' \
+                ' std.fk_institution=%s' \
+                f' and {f.get_year()}>=std.year_of_entry+{max_length} and std."RA"= ' \
+                'any(select std_cls_missing.id_student from students_classes_missing as std_cls_missing join students as std' \
+                ' on std_cls_missing.id_student=std."RA" where std.fk_course=%s and std.fk_institution=%s and graduated=0)',
+                [request.session.get("actual_course"),request.session.get("institution"),
+                   request.session.get("actual_course"),request.session.get("institution")])
+                risk_of_expulsion_query=cursor.fetchall()
+                listof_risk_of_expulsion_dict=[]
+                for tupla in risk_of_expulsion_query:
+                    listof_risk_of_expulsion_dict.append({
+                        'RA':tupla[0],
+                        'name':tupla[1],
+                        'deadline':tupla[2]+max_length-1,
+                    })
+                return listof_graduates_dict,listof_risk_of_expulsion_dict   
+            else:
+                messages.error(request,"Não foi possível obter informações sobre o prazo máximo de término!")
+                return False,False
+            
+        else:
+            messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
+            return False,False
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
+            return False,False
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+    
+'''
+É semelhante a função acima,mas apenas busca os RAs dos alunos formandos
+É utilizada na operação de "formar" o aluno
+'''
+def principal_get_info_graduates(request,conn,cursor):
+    try:
+        if conn and cursor:
+            cursor.execute("select max_length from courses where id=%s and fk_institution=%s",
+            [request.session.get("actual_course"),request.session.get("institution")])
+            max_length=f.regex_list_to_string(cursor.fetchone())
+            if max_length:
+                max_length=int(max_length)
+                cursor.execute('select std."RA" from students as std where std.fk_course=%s and '
+                'std.fk_institution=%s ' \
+                f'and {f.get_year()}<std.year_of_entry+{max_length} and std."RA"'\
+                  '!= all(select std_cls_missing.id_student from students_classes_missing as std_cls_missing join' \
+                  ' students as std on std_cls_missing.id_student=std."RA" where std.fk_course=%s and std.fk_institution=%s'
+                  ' and graduated=0)',
+                  [request.session.get("actual_course"),request.session.get("institution"),
+                   request.session.get("actual_course"),request.session.get("institution")])
+                graduates_query=cursor.fetchall()
+                unpacked_query=[]
+                for RA in graduates_query:
+                    unpacked_query.append(RA)
+                return unpacked_query
+            else:
+            
+                messages.error(request,"Não foi possível obter informações sobre o prazo máximo de término!")
+                return False
+      
+      
         else:
             messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
             return False

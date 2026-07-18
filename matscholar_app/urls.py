@@ -52,6 +52,8 @@ urlpatterns = [
     path('dashboard/principal/crs_edition_abs_classes/',view=views.princ_crs_edition_abs_classes,name='crs_edition_abs_classes'),
     path('dashboard/principal/crs_edition/grade_finalization/',view=views.princ_crs_edition_grade_finalization_page,name='crs_edition_grade_finalization_page'),
     path('dashboard/principal/crs_edition/grade_finalization/operation',view=views.princ_crs_edition_grade_finalization_operation,name='crs_edition_grade_finalization_operation'),
+    path('dashboard/principal/crs_edition/graduates_verfication/',view=views.princ_crs_edition_graduates_verification,name='princ_crs_edition_graduates_verification'),
+    path('dashboard/principal/crs_edition/graduates_verfication/operation',view=views.princ_crs_edition_graduates_operation,name='princ_crs_edition_graduates_operation'),
     #       Professor urls      #
     path('dashboard/professor/cls_edition_page/',view=views.prof_cls_edition_page,name='prof_cls_edition_page'),
     path('dashboard/professor/assignment_view/<str:assignment_id>/',view=views.prof_assignment_view,name='prof_assignment_view'),

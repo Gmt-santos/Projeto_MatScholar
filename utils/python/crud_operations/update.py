@@ -272,4 +272,33 @@ def professor_attendance_update(request):
             cursor.close()
         if conn is not None:
             conn.close()
+'''
+Recebe a lista de RAs de alunos formandos daquele curso e atualiza seus status
+'''
+def principal_update_graduates(request):
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            graduates_RA=read.principal_get_info_graduates(request,conn,cursor)
+            if graduates_RA:
+                cursor.execute('update students set graduated=1 where "RA" = any(%s)',graduates_RA)
+                conn.commit()
+                return True
+            else:
+                messages.error(request,'Houve algum erro na consulta dos formandos')
+                return False
+        else:
+            messages.error(request,"Houve um erro com a conexão ao banco de dados!")
+            return False
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
+            dbf.safe_rollback(conn)
+            return False
+    
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
 
