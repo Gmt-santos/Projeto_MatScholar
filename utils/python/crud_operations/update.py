@@ -1,6 +1,6 @@
 from .. import functions as f
 from .. import db_functions as dbf
-from . import read 
+from . import read,grade_finalization
 from psycopg2 import OperationalError,errors,DatabaseError
 from django.contrib import messages
 from psycopg2.extras import execute_values
@@ -276,14 +276,19 @@ def professor_attendance_update(request):
 Recebe a lista de RAs de alunos formandos daquele curso e atualiza seus status
 '''
 def principal_update_graduates(request):
-    conn,cursor=None,None
-    try:
+        conn,cursor=None,None
+    # try:
         conn,cursor=f.connection_cursor()
         if conn and cursor:
+          
             graduates_RA=read.principal_get_info_graduates(request,conn,cursor)
-            if graduates_RA:
-                cursor.execute('update students set graduated=1 where "RA" = any(%s)',graduates_RA)
-                conn.commit()
+            is_auth=grade_finalization.get_and_validate_academic_user_password_grade_finalization(request,conn,cursor)
+            if graduates_RA and is_auth:
+                
+                cursor.execute('update students set graduated=1 where "RA" = any(%s)',(graduates_RA,))
+              
+                messages.success(request,'Operação bem-sucedida!')
+                # conn.commit()
                 return True
             else:
                 messages.error(request,'Houve algum erro na consulta dos formandos')
@@ -291,14 +296,14 @@ def principal_update_graduates(request):
         else:
             messages.error(request,"Houve um erro com a conexão ao banco de dados!")
             return False
-    except Exception as e:
-            f.receive_exceptions_and_deal(request,type(e).__name__)
-            dbf.safe_rollback(conn)
-            return False
+    # except Exception as e:
+    #         f.receive_exceptions_and_deal(request,type(e).__name__)
+    #         dbf.safe_rollback(conn)
+    #         return False
     
-    finally:
-        if cursor is not None:
-            cursor.close()
-        if conn is not None:
-            conn.close()
+    # finally:
+    #     if cursor is not None:
+    #         cursor.close()
+    #     if conn is not None:
+    #         conn.close()
 

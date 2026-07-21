@@ -709,8 +709,12 @@ def princ_crs_edition_graduates_verification(request):
     
 def princ_crs_edition_graduates_operation(request):
     try:
+       
         if request.method == "POST" and request.session.get("id") and request.session.get("actual_course"):
+           
             python_functions.principal_update_graduates(request)
+            return redirect("matscholar_app:dashboard_page")
+            
     except Exception as e: 
         python_functions.receive_exceptions_and_deal(request,type(e).__name__)
         return redirect("matscholar_app:dashboard_page") 

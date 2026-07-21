@@ -140,7 +140,7 @@ def search_students_by_course(request,actual_class_id=None,adding_to_cls:bool=Fa
                 cursor.execute('select students."RA",students.name from students where students.fk_course = ' \
                 'any(select courses.id from courses join classes_courses on courses.id=classes_courses.id_course where ' \
                 'classes_courses.id_class = %s) and students."RA"!= all(select id_student from students_classes_actual ' \
-                'where students_classes_actual.id_class=%s) and students.fk_institution=%s' \
+                'where students_classes_actual.id_class=%s) and students.fk_institution=%s and students.graduated=0' \
                 ,(actual_class_id,actual_class_id,request.session.get("institution")))
                 
             else:
@@ -180,7 +180,8 @@ def search_students_by_assignment(request,conn,cursor)->list[str]|bool:
         if conn and cursor:
             cursor.execute('select std."RA" from students as std join students_classes_actual as std_cls_act on' \
             ' std."RA" = std_cls_act.id_student join classes as cls on std_cls_act.id_class=cls.id join assignments as ass ' \
-            'on cls.id = ass.fk_class where ass.id= %s and cls.fk_professor=%s and cls.id=%s and std.fk_institution=%s'
+            'on cls.id = ass.fk_class where ass.id= %s and cls.fk_professor=%s and cls.id=%s and std.fk_institution=%s' \
+            ' and std.graduated=0'
             ,[request.session.get("actual_assignment_id"),request.session.get("id"),request.session.get("actual_class_id"),
               request.session.get("institution")])
             
@@ -819,7 +820,8 @@ def principal_cls_edition_get_all_students_by_class(request)->list[tuple]|bool:
         if conn and cursor:
             cursor.execute('select students."RA",students.name from students join students_classes_actual on ' \
             'students."RA" = students_classes_actual.id_student where students_classes_actual.id_class = %s and ' \
-            'students.fk_institution = %s',[request.session.get("actual_class_id"),request.session.get("institution")])
+            'students.fk_institution = %s and students.graduated=0',
+            [request.session.get("actual_class_id"),request.session.get("institution")])
             students_query:list[tuple]=cursor.fetchall()
             return students_query
         else:
@@ -957,7 +959,8 @@ def professor_get_all_info_assignment(request,assignment_id:str)->tuple:
                 ' join assignments as ass on ass_std.fk_assignment=ass.id join classes as cls on ass.fk_class=' \
                 ' cls.id join students_classes_actual as std_cls_actual on cls.id=std_cls_actual.id_class join ' \
                 ' students as std on std_cls_actual.id_student=std."RA"' \
-                ' where cls.fk_professor=%s and cls.id=%s and ass.id= %s and std."RA" = ass_std.fk_student',
+                ' where cls.fk_professor=%s and cls.id=%s and ass.id= %s and std."RA" = ass_std.fk_student ' \
+                'and std.graduated=0',
                 [request.session.get("id"),
                 request.session.get("actual_class_id"),assignment_id])
                 assignments_students_query=cursor.fetchall()
@@ -1000,7 +1003,7 @@ def professor_add_assignment_get_all_students_by_class(request,conn,cursor)->lis
         if conn and cursor:
             cursor.execute('select students."RA" from students join students_classes_actual on ' \
             'students."RA" = students_classes_actual.id_student where students_classes_actual.id_class = %s and ' \
-            'students.fk_institution = %s',[request.session.get("actual_class_id"),request.session.get("institution")])
+            'students.fk_institution = %s and students.graduated=0',[request.session.get("actual_class_id"),request.session.get("institution")])
             students_query:list[tuple]=cursor.fetchall()
             return students_query
         else:
@@ -1027,7 +1030,7 @@ def professor_attendance_get_all_students_by_class(request,conn=None,cursor=None
             cursor.execute('select students."RA",students.name from students join students_classes_actual on ' \
             'students."RA" = students_classes_actual.id_student join classes on students_classes_actual.id_class=classes.id' \
             ' where students_classes_actual.id_class = %s and ' \
-            'students.fk_institution = %s and classes.fk_professor= %s'
+            'students.fk_institution = %s and classes.fk_professor= %s and students.graduated=0'
             ,[request.session.get("actual_class_id"),request.session.get("institution"),request.session.get("id")])
             students_query:list[tuple]=cursor.fetchall()
             return students_query
@@ -1332,7 +1335,7 @@ def principal_get_info_possible_graduates(request):
 É utilizada na operação de "formar" o aluno
 '''
 def principal_get_info_graduates(request,conn,cursor):
-    try:
+    # try:
         if conn and cursor:
             cursor.execute("select max_length from courses where id=%s and fk_institution=%s",
             [request.session.get("actual_course"),request.session.get("institution")])
@@ -1350,7 +1353,7 @@ def principal_get_info_graduates(request,conn,cursor):
                 graduates_query=cursor.fetchall()
                 unpacked_query=[]
                 for RA in graduates_query:
-                    unpacked_query.append(RA)
+                    unpacked_query.append(RA[0])
                 return unpacked_query
             else:
             
@@ -1361,6 +1364,6 @@ def principal_get_info_graduates(request,conn,cursor):
         else:
             messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
             return False
-    except Exception as e:
-            f.receive_exceptions_and_deal(request,type(e).__name__)
-            return False
+    # except Exception as e:
+    #         f.receive_exceptions_and_deal(request,type(e).__name__)
+    #         return False

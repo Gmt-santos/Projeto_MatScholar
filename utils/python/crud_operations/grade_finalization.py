@@ -5,7 +5,7 @@ from psycopg2 import OperationalError,errors,DatabaseError
 from django.contrib import messages
 from psycopg2.extras import execute_values
 def get_and_validate_academic_user_password_grade_finalization(request,conn,cursor):
-    try:
+    # try:
         cursor.execute("select a_users.password from academic_users as a_users where a_users.id=%s " \
         "and a_users.fk_institution=%s",[request.session.get("id"),request.session.get("institution")]) 
         password_db=f.regex_list_to_string(cursor.fetchone())
@@ -19,9 +19,9 @@ def get_and_validate_academic_user_password_grade_finalization(request,conn,curs
             messages.error(request,"O usuário não foi autorizado a fazer essa operação!")
             return False
       
-    except Exception as e:
-        f.receive_exceptions_and_deal(request,type(e).__name__)
-        return False
+    # except Exception as e:
+    #     f.receive_exceptions_and_deal(request,type(e).__name__)
+    #     return False
 
 def get_all_open_classes_grade_finalization(request,course_id,operation=None,conn=None,cursor=None):
     try:
