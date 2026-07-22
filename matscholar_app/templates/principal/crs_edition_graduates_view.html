@@ -54,14 +54,15 @@
                     {%  endfor  %}
                 </table>
                 <p class="forms_aux_input_p">Confirme a Senha</p>
-        <input class="forms_input"type="password" name="password" id="password" placeholder="Senha" autocomplete="new-password" required>
+        <input class="forms_input"type="password" name="password" id="password" placeholder="Senha" autocomplete="new-password" >
         <div style="margin-top:20px">
 
             <input type="checkbox" name="show_password" id="show_password" onclick="toggle_visibility()" >
             <label class="forms_aux_input_p"for="show_password">Mostrar senha</label>
             
         </div>
-                <input class="forms_submit_input"type="submit" value="Atualizar ">
+                <input class="forms_submit_input"type="submit" value="Atualizar" formaction="{% url "matscholar_app:princ_crs_edition_graduates_operation" %}" >
+                <input class="forms_submit_input"type="submit" value="Voltar" formaction="{% url 'matscholar_app:crs_edition_abs_classes' %}" >
                 
     </div>
 </form>

@@ -1335,7 +1335,7 @@ def principal_get_info_possible_graduates(request):
 É utilizada na operação de "formar" o aluno
 '''
 def principal_get_info_graduates(request,conn,cursor):
-    # try:
+    try:
         if conn and cursor:
             cursor.execute("select max_length from courses where id=%s and fk_institution=%s",
             [request.session.get("actual_course"),request.session.get("institution")])
@@ -1364,6 +1364,92 @@ def principal_get_info_graduates(request,conn,cursor):
         else:
             messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
             return False
-    # except Exception as e:
-    #         f.receive_exceptions_and_deal(request,type(e).__name__)
-    #         return False
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
+            return False
+
+'''
+Recebe um nome de uma sala abstrata de determinado curso e busca o id dela na tabela classes
+Usada na parte de alteração de nome ou estado inicial de uma sala
+'''
+def principal_get_abs_class_by_name(request,conn,cursor,abs_class_name):
+    try:
+        if conn and cursor:
+
+            cursor.execute('select cls.id from classes as cls join classes_courses as cls_crs on cls.id=cls_crs.id_class join' \
+            ' courses as crs on cls_crs.id_course=crs.id where crs.id=%s and cls.name=%s and crs.fk_institution=%s and' \
+            ' cls.abstract=1 and cls.open=0',(request.session.get("actual_course"),
+            abs_class_name,request.session.get("institution")))
+            
+            abs_class_id=cursor.fetchone()
+            if abs_class_id:
+                return int(abs_class_id[0])
+            else:
+                return False
+
+        else:
+            messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
+            return False
+    except Exception as e:
+        f.receive_exceptions_and_deal(request,type(e).__name__)
+        return False
+'''
+Recebe um nome de uma sala "concreta" de determinado curso e busca o id dela na tabela classes
+Usada na parte de alteração de nome ou estado inicial de uma sala
+'''
+def principal_get_open_class_by_name(request,conn,cursor,abs_class_name):
+    try:
+        if conn and cursor:
+
+            cursor.execute('select cls.id from classes as cls join classes_courses as cls_crs on cls.id=cls_crs.id_class join' \
+            ' courses as crs on cls_crs.id_course=crs.id where crs.id=%s and cls.name=%s and crs.fk_institution=%s and' \
+            ' cls.abstract=0',(request.session.get("actual_course"),
+            abs_class_name,request.session.get("institution")))
+            
+            open_class_id=cursor.fetchall()
+            if open_class_id:
+                listof_ids=[]
+                for id in open_class_id:
+                    listof_ids.append(id)
+                return listof_ids
+            else:
+                return False
+
+        else:
+            messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
+            return False
+    except Exception as e:
+        f.receive_exceptions_and_deal(request,type(e).__name__)
+        return False
+'''
+Recebe um nome de uma sala abstrata de determinado curso e busca o estado inicial dela na tabela classes
+Usada na parte de alteração de nome ou estado inicial de uma sala
+'''
+def principal_get_initial_state_abs_class(request,abs_class_name):
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            cursor.execute('select initial from classes as cls join classes_courses as cls_crs on cls.id=cls_crs.id_class join' \
+            ' courses as crs on cls_crs.id_course=crs.id where crs.id=%s and cls.name=%s and crs.fk_institution=%s and' \
+            ' cls.abstract=1',(request.session.get("actual_course"),
+            abs_class_name,request.session.get("institution")))
+            initial_state=cursor.fetchone()
+            if initial_state:
+              
+                return str(initial_state[0])
+            else:
+                return False
+        else:
+            messages.error(request,"Houve algum erro com a conexão ao banco de dados!")
+            return False
+        
+    except Exception as e:
+        f.receive_exceptions_and_deal(request,type(e).__name__)
+        return False  
+
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()

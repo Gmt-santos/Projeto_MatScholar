@@ -4,6 +4,10 @@
     width: 99vw;
     height:650px;
 }
+.minor_index_image{
+    width: 75%;
+    height:200px;
+}
 .index_login_button_a{
     width:200px;
     height:30px;
@@ -80,6 +84,10 @@
     padding:10px;
     box-shadow:2px 2px 2px 1px black;
     justify-content: flex-start;
+}
+.text1_p{
+    font-family: Chakra;
+    font-size: 15px;
 }
 .title1_p{
     font-family: Chakra;

@@ -1,0 +1,30 @@
+{% extends "general/header_footer.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/specific/style_about.css'%}">
+    <div>
+
+        <img class="index_image"src="{% static 'images/programming_team.webp' %}" alt="Time de programação">
+        
+    </div>
+
+    <div class="column_text1_div centralizar margin_att">
+            <p class="title1_p">Quem sou eu?</p>
+            <img class='minor_index_image'src="{% static 'images/unesp_logo.webp' %}" alt="">
+            <p class="text1_p">Sou um estudante de Ciência da Computação na Universidade Estadual Paulista "
+                Júlio de Mesquita Filho" e comecei esse projeto no primeiro semestre da faculdade a fim de desenvolver 
+                minhas habilidades adquiridas ao longo do meu ensino médio integrado ao técnico em informática.
+                 </p>
+    </div>
+    <div class="column_text1_div centralizar margin_att">
+            <p class="title1_p">Framework</p>
+            <img class='minor_index_image'src="{% static 'images/django_logo.webp' %}" alt="">
+            <p class="text1_p">O framework pra web Django foi utilizado pelo meu desejo em desenvolver minhas
+                habilidades em Python por meio de algum projeto. Além disso, foram usados o PostgreSQL como SGBD, 
+                Docker para hospedagem do cache e do sistema no geral, e o Redis para o gerenciamento da memória em cache.
+                 </p>
+    </div>
+    
+
+{% endblock content %}

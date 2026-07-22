@@ -713,8 +713,53 @@ def princ_crs_edition_graduates_operation(request):
         if request.method == "POST" and request.session.get("id") and request.session.get("actual_course"):
            
             python_functions.principal_update_graduates(request)
-            return redirect("matscholar_app:dashboard_page")
+            
+        return redirect("matscholar_app:dashboard_page")
             
     except Exception as e: 
         python_functions.receive_exceptions_and_deal(request,type(e).__name__)
         return redirect("matscholar_app:dashboard_page") 
+
+def princ_crs_edition_abs_class_name_initial_page(request):
+    try:
+
+        if request.method == "POST" and request.session.get("id") and request.session.get("actual_course"):
+            abs_class_name=request.POST.get("class")
+            initial_state=python_functions.principal_get_initial_state_abs_class(request,abs_class_name)
+            if python_functions.validate_query_entries(abs_class_name) and initial_state:
+                context={
+                    'actual_abs_class_name':abs_class_name,
+                    'actual_initial_state':initial_state
+                }
+                return render(request,'principal/crs_edition_abs_classes_forms.html',context)
+            else:
+                messages.error(request,'Informação inválida enviada!')
+                return redirect('matscholar_app:dashboard_page')
+        else:
+            return redirect('matscholar_app:dashboard_page')
+    except Exception as e: 
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
+        return redirect("matscholar_app:dashboard_page")   
+
+def princ_crs_edition_abs_class_name_initial_operation(request):
+    try:
+        if request.method == "POST" and request.session.get("id") and request.session.get("actual_course"):
+            abs_class_name=request.POST.get("actual_class_name")
+            new_class_name=request.POST.get("new_class_name")
+            new_class_initial=request.POST.get("new_class_initial")
+
+            if python_functions.validate_query_entries(abs_class_name) and \
+            python_functions.validate_query_entries(new_class_name) and \
+            python_functions.validate_ids_entries(new_class_initial):
+                
+                python_functions. principal_update_abs_class_name_initial(
+                    request,abs_class_name,new_class_name,new_class_initial)
+                return redirect("matscholar_app:dashboard_page")
+            else:
+                messages.error(request,'Informação inválida enviada!')
+                return redirect('matscholar_app:dashboard_page')
+        else:
+            return redirect('matscholar_app:dashboard_page')
+    except Exception as e: 
+        python_functions.receive_exceptions_and_deal(request,type(e).__name__)
+        return redirect("matscholar_app:dashboard_page")   

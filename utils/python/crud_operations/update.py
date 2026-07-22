@@ -276,8 +276,8 @@ def professor_attendance_update(request):
 Recebe a lista de RAs de alunos formandos daquele curso e atualiza seus status
 '''
 def principal_update_graduates(request):
-        conn,cursor=None,None
-    # try:
+    conn,cursor=None,None
+    try:
         conn,cursor=f.connection_cursor()
         if conn and cursor:
           
@@ -288,7 +288,7 @@ def principal_update_graduates(request):
                 cursor.execute('update students set graduated=1 where "RA" = any(%s)',(graduates_RA,))
               
                 messages.success(request,'Operação bem-sucedida!')
-                # conn.commit()
+                conn.commit()
                 return True
             else:
                 messages.error(request,'Houve algum erro na consulta dos formandos')
@@ -296,14 +296,57 @@ def principal_update_graduates(request):
         else:
             messages.error(request,"Houve um erro com a conexão ao banco de dados!")
             return False
-    # except Exception as e:
-    #         f.receive_exceptions_and_deal(request,type(e).__name__)
-    #         dbf.safe_rollback(conn)
-    #         return False
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
+            dbf.safe_rollback(conn)
+            return False
     
-    # finally:
-    #     if cursor is not None:
-    #         cursor.close()
-    #     if conn is not None:
-    #         conn.close()
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+'''
 
+É a operação realizada para alterar o nome de uma sala abstrata e de todas as suas salas relacionadas dentro de um curso
+Além disso, também altera o estado inicial da sala.
+Funciona mesmo que a sala abstrata não tenha salas "concretas" vinculadas a ela
+'''
+def principal_update_abs_class_name_initial(request,abs_class_name,new_class_name,new_class_initial):
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        if conn and cursor:
+            abs_class_id=read.principal_get_abs_class_by_name(request,conn,cursor,abs_class_name)
+            open_class_id=read.principal_get_open_class_by_name(request,conn,cursor,abs_class_name)
+            if abs_class_id :
+                if new_class_initial == '0' or new_class_initial == '1':
+                    cursor.execute("update classes set name=%s,initial=%s where id =%s",[new_class_name,new_class_initial,
+                        abs_class_id])
+                    if open_class_id:
+                        cursor.execute("update classes set name=%s,initial=%s where id =any(%s)",[new_class_name,new_class_initial,
+                        open_class_id])
+                    conn.commit()
+                    messages.success(request,"Operação realizada com sucesso!")
+                    return True
+                   
+                else:
+                    messages.error(request,"Dado inválido enviado!")
+                    
+                    return False
+            else:
+                messages.error(request,"A aula com o nome escolhido não existe nesse curso!")
+                return False
+        else:
+            messages.error(request,"Houve um erro com a conexão ao banco de dados!")
+            return False
+    except Exception as e:
+            f.receive_exceptions_and_deal(request,type(e).__name__)
+            dbf.safe_rollback(conn)
+            return False
+    
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()

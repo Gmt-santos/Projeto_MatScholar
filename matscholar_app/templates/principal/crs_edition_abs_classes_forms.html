@@ -1,0 +1,49 @@
+{% extends 'general/header_footer_dashboard.html'%}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/specific/style_crs_creation.css' %}">
+<form method="POST" action="{% url 'matscholar_app:crs_edition_abs_classes_operation'%}" class="minor_forms_being_processed_form">
+     {% csrf_token %}
+    <div class="minor_forms_being_processed_div">
+        <div class="forms_title_div">
+            <img class="logo_forms_title_img" src="{% static 'images/logo.png' %}" alt="">
+            <p class="logo_forms_title_p">MatScholar</p>
+        </div>
+ 
+            <p class="forms_aux_input_p">Nome atual: {{actual_abs_class_name}}</p>
+            
+       
+            {% if actual_initial_state == '1' %}
+                <p class="forms_aux_input_p">Inicial: Sim</p>
+            {% else %}
+                <p class="forms_aux_input_p">Inicial: Não</p>
+            {% endif %}
+        <input type="hidden" value="{{actual_abs_class_name}}" name='actual_class_name'>
+        <div class="minor_forms_info_being_processed_div">
+            <p class="forms_aux_input_p">Novo nome</p>
+            <input class="forms_input_being_processed_input" type="text" name="new_class_name" id="new_class_name"  required >
+        </div>
+        <div class="minor_forms_info_being_processed_div">
+           
+            <label class="forms_aux_input_p"for="select">Inicial</label>
+                <select name="new_class_initial" id="select">
+                    {% if actual_initial_state == '1' %}
+                        <option value="1" selected>Sim</option>
+                        <option value="0"  >Não</option>
+                    {% else %}
+                        <option value="1" >Sim</option>
+                        <option value="0" selected >Não</option>
+                    {% endif %}
+                </select>
+        </div>
+       
+   
+       
+        <div style="margin-top:20px;display:flex;justify-content:center;align-items:center;flex-direction:column">
+            
+           <input type="submit" class="forms_submit_input" value="Avançar"> 
+        </div>
+    </div>
+</form>
+
+{% endblock content%}

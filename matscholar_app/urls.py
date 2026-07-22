@@ -3,8 +3,10 @@ from django.urls import path,include
 from . import views
 app_name="matscholar_app"
 urlpatterns = [
-    #       Login       #
+   
     path('',views.index,name="index"),
+    path('about/',view=views.about,name="about_page"),
+     #       Login       #
     path('login/',view=views.login_page,name="login_page"),
     path('login/login_operation_academic_user/',view=views.login_operation_academic_user,name='login_operation_academic_user'),
     path('login/login_operation_student/',view=views.login_operation_student,name='login_operation_student'),
@@ -50,6 +52,8 @@ urlpatterns = [
     #       Course_edition      #
     path('dashboard/principal/crs_edition_courses/',view=views.princ_crs_edition_courses,name='crs_edition_courses'),
     path('dashboard/principal/crs_edition_abs_classes/',view=views.princ_crs_edition_abs_classes,name='crs_edition_abs_classes'),
+    path('dashboard/principal/crs_edition_abs_classes/edition_page',view=views.princ_crs_edition_abs_class_name_initial_page,name='crs_edition_abs_classes_info_page'),
+    path('dashboard/principal/crs_edition_abs_classes/edition_page/operation/',view=views.princ_crs_edition_abs_class_name_initial_operation,name='crs_edition_abs_classes_operation'),
     path('dashboard/principal/crs_edition/grade_finalization/',view=views.princ_crs_edition_grade_finalization_page,name='crs_edition_grade_finalization_page'),
     path('dashboard/principal/crs_edition/grade_finalization/operation',view=views.princ_crs_edition_grade_finalization_operation,name='crs_edition_grade_finalization_operation'),
     path('dashboard/principal/crs_edition/graduates_verfication/',view=views.princ_crs_edition_graduates_verification,name='princ_crs_edition_graduates_verification'),
