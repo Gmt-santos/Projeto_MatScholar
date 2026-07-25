@@ -7,6 +7,9 @@
     --color-lightgray:#E8E8E8;
     --border-radius:20px;
     --screen-size-standard:800px;
+    --screen-size-minor:500px;
+    --screen-size-cellphone:400px;
+    --screen-size-minor-cellphone:300px;
 }
 
 @font-face {
@@ -31,6 +34,10 @@
     align-items: center;
     justify-content: center;
 }
+footer{
+    overflow: hidden;
+}
+
 body{
     background-color:var(--color-gray);
     min-height: 100vh;
@@ -52,6 +59,7 @@ a{
     flex-direction: column;
     align-items:center;
     align-content: center;
+   
 }
 .header_div{
     width:var(--screen-size-standard);
@@ -102,6 +110,7 @@ a{
     flex-direction: column;
     gap:30px;
     background-color:black;
+    overflow: hidden;
     height: 300px;
     width:100%;
     margin-top:100px;
@@ -146,4 +155,392 @@ a{
 .success{
     border-color:var(--color-lightgreen);
     color:var(--color-lightgreen)
+}
+
+
+
+@media(max-width:1500px){
+    .header_div{
+        width:var(--screen-size-standard);
+        height: 60px;
+        background-color: rgb(5,44,101,0.8);
+        position: fixed;
+        display: flex;
+        flex-direction: row;
+        border-radius:0 0 var(--border-radius) var(--border-radius);
+        justify-content: space-evenly;
+        align-items:center;
+        transition-duration:  0.5s;
+        transition-property:background-color;
+    }
+    .header_div:hover{
+        background-color: rgb(5,44,101,1);
+        transition-duration:  0.5s;
+        transition-property:background-color;
+    }
+    .logo_p{
+        font-weight: bold;
+        color: white;
+        font-size:22px;
+        opacity: 1;
+        font-family: Chakra;
+        transition-duration: 1s;
+    }
+    .logo_p:hover{
+        color:var(--color-gray);
+        cursor:pointer;
+        transform:scale(1.2);
+        transition-duration: 1s;
+    }
+    .logo_bigger_p{
+        font-weight: bold;
+        color: white;
+        font-size:30px;
+        opacity: 1;
+        font-family: Chakra;
+    }
+    .logo_img{
+        width:80px;
+        height: 80px;
+    
+    }
+    .footer_organizer_div{
+        display:flex;
+        padding:20px;
+        flex-direction: column;
+        gap:20px;
+        background-color:black;
+        height: fit-content;
+        width:100%;
+        margin-top:80px;
+        align-items: center;
+        overflow: hidden;
+    }
+    .links_p{
+        font-family: Chakra;
+        font-size:18px;
+        text-decoration: none;
+        color:white;
+        text-decoration:underline;
+        transition-property: color;
+        transition-duration:0.2s;
+        
+    }
+    .links_p:hover{
+        color:var(--color-gray);
+        transition-property: color;
+        transition-duration:0.2s;
+    }
+
+}
+
+
+@media(max-width:900px){
+    .header_div{
+        width:var( --screen-size-minor);
+        height: 50px;
+        background-color: rgb(5,44,101,0.8);
+        position: fixed;
+        display: flex;
+        flex-direction: row;
+        border-radius:0 0 var(--border-radius) var(--border-radius);
+        gap:10px;
+        align-items:center;
+        transition-duration:  0.5s;
+        transition-property:background-color;
+    }
+    .header_div:hover{
+        background-color: rgb(5,44,101,1);
+        transition-duration:  0.5s;
+        transition-property:background-color;
+    }
+    .logo_p{
+        font-weight: bold;
+        color: white;
+        font-size:18px;
+        opacity: 1;
+        font-family: Chakra;
+        transition-duration: 1s;
+    }
+    .logo_p:hover{
+        color:var(--color-gray);
+        cursor:pointer;
+        transform:scale(1.2);
+        transition-duration: 1s;
+    }
+    .logo_bigger_p{
+        font-weight: bold;
+        color: white;
+        font-size:25px;
+        opacity: 1;
+        font-family: Chakra;
+    }
+    .logo_img{
+        width:70px;
+        height: 70px;
+    
+    }
+    .footer_organizer_div{
+        display:flex;
+        padding:20px;
+        flex-direction: column;
+        gap:15px;
+        background-color:black;
+        height: fit-content;
+        width:100%;
+        margin-top:70px;
+        align-items: center;
+        overflow: hidden;
+    }
+    .links_p{
+        font-family: Chakra;
+        font-size:15px;
+        text-decoration: none;
+        color:white;
+        text-decoration:underline;
+        transition-property: color;
+        transition-duration:0.2s;
+        
+    }
+    .links_p:hover{
+        color:var(--color-gray);
+        transition-property: color;
+        transition-duration:0.2s;
+    }
+
+}
+
+@media(max-width:600px){
+    .header_div{
+        width:var( --screen-size-minor);
+        height: 40px;
+        padding:7px;
+        background-color: rgb(5,44,101,0.8);
+        position: fixed;
+        display: flex;
+        flex-direction: row;
+        border-radius:0 0 var(--border-radius) var(--border-radius);
+        gap:10px;
+        align-items:center;
+        transition-duration:  0.5s;
+        transition-property:background-color;
+    }
+    .header_div:hover{
+        background-color: rgb(5,44,101,1);
+        transition-duration:  0.5s;
+        transition-property:background-color;
+    }
+    .logo_p{
+        font-weight: bold;
+        color: white;
+        font-size:15px;
+        opacity: 1;
+        font-family: Chakra;
+        transition-duration: 1s;
+    }
+    .logo_p:hover{
+        color:var(--color-gray);
+        cursor:pointer;
+        transform:scale(1.2);
+        transition-duration: 1s;
+    }
+    .logo_bigger_p{
+        font-weight: bold;
+        color: white;
+        font-size:22px;
+        opacity: 1;
+        font-family: Chakra;
+    }
+    .logo_img{
+        width:50px;
+        height: 50px;
+    
+    }
+    .footer_organizer_div{
+        display:flex;
+        padding:20px;
+        flex-direction: column;
+        gap:8px;
+        background-color:black;
+        height: fit-content;
+        width:100%;
+        margin-top:50px;
+        align-items: center;
+        overflow: hidden;
+    }
+    .links_p{
+        font-family: Chakra;
+        font-size:12px;
+        text-decoration: none;
+        color:white;
+        text-decoration:underline;
+        transition-property: color;
+        transition-duration:0.2s;
+        
+    }
+    .links_p:hover{
+        color:var(--color-gray);
+        transition-property: color;
+        transition-duration:0.2s;
+    }
+
+}
+@media(max-width:500px){
+
+    .header_div{
+        width:var( --screen-size-cellphone);
+        height: 30px;
+        padding:5px;
+        background-color: rgb(5,44,101,0.8);
+        position: fixed;
+        display: flex;
+        flex-direction: row;
+        border-radius:0 0 var(--border-radius) var(--border-radius);
+        
+        align-items:center;
+        transition-duration:  0.5s;
+        transition-property:background-color;
+    }
+    .header_div:hover{
+        background-color: rgb(5,44,101,1);
+        transition-duration:  0.5s;
+        transition-property:background-color;
+    }
+    .logo_p{
+        font-weight: bold;
+        color: white;
+        font-size:13px;
+        opacity: 1;
+        font-family: Chakra;
+        transition-duration: 1s;
+    }
+    .logo_p:hover{
+        color:var(--color-gray);
+        cursor:pointer;
+        transform:scale(1.2);
+        transition-duration: 1s;
+    }
+    .logo_bigger_p{
+        font-weight: bold;
+        color: white;
+        font-size:15px;
+        opacity: 1;
+        font-family: Chakra;
+    }
+    .logo_img{
+        width:35px;
+        height: 35px;
+    
+    }
+    .footer_organizer_div{
+        display:flex;
+        padding:12px;
+        flex-direction: column;
+        gap:8px;
+        background-color:black;
+        height: fit-content;
+        
+        overflow: hidden;
+        margin-top:35px;
+        align-items: center;
+    }
+    .links_p{
+        font-family: Chakra;
+        font-size:11px;
+        text-decoration: none;
+        color:white;
+        text-decoration:underline;
+        transition-property: color;
+        transition-duration:0.2s;
+        
+    }
+    .links_p:hover{
+        color:var(--color-gray);
+        transition-property: color;
+        transition-duration:0.2s;
+    }
+
+
+
+}
+
+
+
+@media(max-width:400px){
+
+    .header_div{
+        width:var(--screen-size-minor-cellphone);
+        height: 30px;
+        padding:5px;
+        background-color: rgb(5,44,101,0.8);
+        position: fixed;
+        display: flex;
+        flex-direction: row;
+        border-radius:0 0 var(--border-radius) var(--border-radius);
+        
+        align-items:center;
+        transition-duration:  0.5s;
+        transition-property:background-color;
+    }
+    .header_div:hover{
+        background-color: rgb(5,44,101,1);
+        transition-duration:  0.5s;
+        transition-property:background-color;
+    }
+    .logo_p{
+        font-weight: bold;
+        color: white;
+        font-size:11px;
+        opacity: 1;
+        font-family: Chakra;
+        transition-duration: 1s;
+    }
+    .logo_p:hover{
+        color:var(--color-gray);
+        cursor:pointer;
+        transform:scale(1.2);
+        transition-duration: 1s;
+    }
+    .logo_bigger_p{
+        font-weight: bold;
+        color: white;
+        font-size:13px;
+        opacity: 1;
+        font-family: Chakra;
+    }
+    .logo_img{
+        width:35px;
+        height: 35px;
+    
+    }
+    .footer_organizer_div{
+        display:flex;
+        padding:12px;
+        flex-direction: column;
+        gap:8px;
+        background-color:black;
+        height: fit-content;
+       
+        overflow: hidden;
+        margin-top:35px;
+        align-items: center;
+    }
+    .links_p{
+        font-family: Chakra;
+        font-size:11px;
+        text-decoration: none;
+        color:white;
+        text-decoration:underline;
+        transition-property: color;
+        transition-duration:0.2s;
+        
+    }
+    .links_p:hover{
+        color:var(--color-gray);
+        transition-property: color;
+        transition-duration:0.2s;
+    }
+
+
+
 }

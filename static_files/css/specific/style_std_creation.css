@@ -89,4 +89,29 @@
     background-color: var(--color-gray);
 }
 
-/* std_edition */
+@media (max-width:1500px){
+
+    
+
+}
+@media (max-width:1200px){
+   
+}
+@media (max-width:900px){
+
+    
+}
+@media(max-width:750px){
+  
+
+}
+@media (max-width:600px){
+    
+}
+@media (max-width:500px){
+
+   
+
+}
+@media (max-width:400px){
+}

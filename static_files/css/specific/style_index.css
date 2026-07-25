@@ -1,13 +1,11 @@
 @import url('../style_master.css');
 
 .index_image{
-    width: 99vw;
+    width: 95vw;
     height:650px;
+    overflow: hidden;
 }
-.minor_index_image{
-    width: 75%;
-    height:200px;
-}
+
 .index_login_button_a{
     width:200px;
     height:30px;
@@ -94,3 +92,580 @@
     font-size: 30px;
     font-weight: bold;
 }
+
+
+@media (max-width:1500px){
+    .index_image{
+    width: 95vw;
+    height:500px;
+    overflow: hidden;
+    }
+    .index_login_button_a{
+        width:150px;
+        height:25px;
+        border-radius: var(--border-radius);
+        background-color:rgba(15, 75, 168,0.0);
+        display:flex;
+        text-decoration: None;
+        color: white;
+        font-size:13px ;
+        transition-duration:0.5s;
+        transition-property: background-color;
+    }
+    .index_login_button_a:hover{
+        transition-property: background-color;
+        background-color:rgba(15, 75, 168,1);
+        transition-duration:0.5s;
+    }
+    .text1_div{
+        display:flex;
+        flex-direction: row;
+        width: 100%;
+        height:fit-content;
+        justify-content: space-evenly;
+        margin-top:20px;
+    
+    }
+    .grid_text1_div{
+        display: grid;
+        width:40%;
+        gap:10px;
+
+    }
+    .subgrid_text1_div{
+        display: flex;
+        flex-direction: column;
+        border-radius: var(--border-radius);
+        background-color: white;
+        padding:15px;
+        box-shadow:2px 2px 2px 1px black;
+        align-items: center;
+    }
+    .subgrid_icon_img{
+        
+        width:40px;
+        height:40px;
+        border-radius:22px;
+        padding:5px;
+    }
+    .subgrid_icon_aux_p{
+        font-family: Chakra;
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .subgrid_header_div{
+        width:100%;
+        display:flex;
+        flex-direction:row;
+        gap:10px;
+        align-items:center;
+    }
+    .subgrid_topics_li{
+        margin-bottom:30px;
+        font-family: Chakra;
+        font-size:15px;
+    }
+
+
+    .column_text1_div{
+        display:flex;
+        flex-direction: column;
+        width:40%;
+        border-radius: var(--border-radius);
+        background-color: white;
+        padding:10px;
+        box-shadow:2px 2px 2px 1px black;
+        justify-content: flex-start;
+    }
+    .text1_p{
+        font-family: Chakra;
+        font-size: 14px;
+    }
+    .title1_p{
+        font-family: Chakra;
+        font-size: 25px;
+        font-weight: bold;
+    }
+}
+
+@media (max-width:1200px){
+    .index_image{
+    width: 95vw;
+    height:500px;
+    overflow: hidden;
+    }
+    .index_login_button_a{
+        width:80px;
+        height:25px;
+        border-radius: var(--border-radius);
+        background-color:rgba(15, 75, 168,0.0);
+        display:flex;
+        text-decoration: None;
+        color: white;
+        font-size:13px ;
+        transition-duration:0.5s;
+        transition-property: background-color;
+    }
+    .index_login_button_a:hover{
+        transition-property: background-color;
+        background-color:rgba(15, 75, 168,1);
+        transition-duration:0.5s;
+    }
+    .text1_div{
+        display:flex;
+        flex-direction: row;
+        width: 100%;
+        height:fit-content;
+        justify-content: space-evenly;
+        margin-top:20px;
+    
+    }
+    .grid_text1_div{
+        display: grid;
+        width:40%;
+        gap:10px;
+
+    }
+    .subgrid_text1_div{
+        display: flex;
+        flex-direction: column;
+        border-radius: var(--border-radius);
+        background-color: white;
+        padding:15px;
+        box-shadow:2px 2px 2px 1px black;
+        align-items: center;
+    }
+    .subgrid_icon_img{
+        
+        width:40px;
+        height:40px;
+        border-radius:22px;
+        padding:5px;
+    }
+    .subgrid_icon_aux_p{
+        font-family: Chakra;
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .subgrid_header_div{
+        width:100%;
+        display:flex;
+        flex-direction:row;
+        gap:10px;
+        align-items:center;
+    }
+    .subgrid_topics_li{
+        margin-bottom:30px;
+        font-family: Chakra;
+        font-size:15px;
+    }
+
+
+    .column_text1_div{
+        display:flex;
+        flex-direction: column;
+        width:40%;
+        border-radius: var(--border-radius);
+        background-color: white;
+        padding:10px;
+        box-shadow:2px 2px 2px 1px black;
+        justify-content: flex-start;
+    }
+    .text1_p{
+        font-family: Chakra;
+        font-size: 14px;
+    }
+    .title1_p{
+        font-family: Chakra;
+        font-size: 25px;
+        font-weight: bold;
+    }
+}
+@media (max-width:900px){
+    .index_image{
+    width: 95vw;
+    height:400px;
+    overflow: hidden;
+    }
+    .index_login_button_a{
+        width:70px;
+        height:30px;
+        border-radius: var(--border-radius);
+        background-color:rgba(15, 75, 168,0.0);
+        display:flex;
+        text-decoration: None;
+        color: white;
+        font-size:13px;
+        transition-duration:0.5s;
+        transition-property: background-color;
+    }
+    .index_login_button_a:hover{
+        transition-property: background-color;
+        background-color:rgba(15, 75, 168,1);
+        transition-duration:0.5s;
+    }
+    .text1_div{
+        display:flex;
+        flex-direction: row;
+        width: 100%;
+        height:fit-content;
+        justify-content: space-evenly;
+        margin-top:20px;
+    
+    }
+    .grid_text1_div{
+        display: grid;
+        width:45%;
+        gap:10px;
+
+    }
+    .subgrid_text1_div{
+        display: flex;
+        flex-direction: column;
+        border-radius: var(--border-radius);
+        background-color: white;
+        padding:15px;
+        box-shadow:2px 2px 2px 1px black;
+        align-items: center;
+    }
+    .subgrid_icon_img{
+        
+        width:30px;
+        height:30px;
+        border-radius:18px;
+        padding:5px;
+    }
+    .subgrid_icon_aux_p{
+        font-family: Chakra;
+        font-size: 13px;
+        font-weight: bold;
+    }
+    .subgrid_header_div{
+        width:100%;
+        display:flex;
+        flex-direction:row;
+        gap:10px;
+        align-items:center;
+    }
+    .subgrid_topics_li{
+        margin-bottom:28px;
+        font-family: Chakra;
+        font-size:12px;
+    }
+
+
+    .column_text1_div{
+        display:flex;
+        flex-direction: column;
+        width:40%;
+        border-radius: var(--border-radius);
+        background-color: white;
+        padding:10px;
+        box-shadow:2px 2px 2px 1px black;
+        justify-content: flex-start;
+    }
+    .text1_p{
+        font-family: Chakra;
+        font-size: 12px;
+    }
+    .title1_p{
+        font-family: Chakra;
+        font-size: 20px;
+        font-weight: bold;
+    }
+}
+
+@media (max-width:600px){
+    .index_image{
+    width: 95vw;
+    height:250px;
+    overflow: hidden;
+    }
+    .index_login_button_a{
+        width:100px;
+        height:30px;
+        border-radius: var(--border-radius);
+        background-color:rgba(15, 75, 168,0.0);
+        display:flex;
+        text-decoration: None;
+        color: white;
+        font-size:13px;
+        transition-duration:0.5s;
+        transition-property: background-color;
+    }
+    .index_login_button_a:hover{
+        transition-property: background-color;
+        background-color:rgba(15, 75, 168,1);
+        transition-duration:0.5s;
+    }
+    .text1_div{
+        display:flex;
+        flex-direction: row;
+        width: 100%;
+        height:fit-content;
+       
+        margin-top:20px;
+    
+    }
+    .grid_text1_div{
+        display: grid;
+        width:40%;
+        gap:10px;
+
+    }
+    .subgrid_text1_div{
+        display: flex;
+        flex-direction: column;
+        border-radius: var(--border-radius);
+        background-color: white;
+        padding:12px;
+        box-shadow:2px 2px 2px 1px black;
+        align-items: center;
+    }
+    .subgrid_icon_img{
+        
+        width: 25px;
+        height:25px;
+        border-radius:18px;
+        padding:5px;
+    }
+    .subgrid_icon_aux_p{
+        font-family: Chakra;
+        font-size: 13px;
+        font-weight: bold;
+    }
+    .subgrid_header_div{
+        width:100%;
+        display:flex;
+        flex-direction:row;
+        gap:10px;
+        align-items:center;
+    }
+    .subgrid_topics_li{
+        margin-bottom:28px;
+        font-family: Chakra;
+        font-size:9px;
+    }
+
+
+    .column_text1_div{
+        display:flex;
+        flex-direction: column;
+        width:30%;
+        border-radius: var(--border-radius);
+        background-color: white;
+        padding:10px;
+        box-shadow:2px 2px 2px 1px black;
+        justify-content: flex-start;
+    }
+    .text1_p{
+        font-family: Chakra;
+        font-size: 10px;
+    }
+    .title1_p{
+        font-family: Chakra;
+        font-size: 15px;
+        font-weight: bold;
+    }
+}
+
+
+@media (max-width:500px){
+    .index_image{
+    width: 95vw;
+    height:250px;
+    overflow: hidden;
+    }
+    .index_login_button_a{
+        width:80px;
+        height:25px;
+        border-radius: var(--border-radius);
+        background-color:rgba(15, 75, 168,0.0);
+        display:flex;
+        text-decoration: None;
+        color: white;
+        font-size:11px;
+        transition-duration:0.5s;
+        transition-property: background-color;
+    }
+    .index_login_button_a:hover{
+        transition-property: background-color;
+        background-color:rgba(15, 75, 168,1);
+        transition-duration:0.5s;
+    }
+    .text1_div{
+        display:flex;
+        flex-direction: row;
+        width: 80%;
+        height:fit-content;
+       
+        margin-top:20px;
+    
+    }
+    .grid_text1_div{
+        display: grid;
+        width:30%;
+        gap:10px;
+
+    }
+    .subgrid_text1_div{
+        display: flex;
+        flex-direction: column; 
+        border-radius: var(--border-radius);
+        background-color: white;
+   
+        box-shadow:2px 2px 2px 1px black;
+        align-items: center;
+    }
+    .subgrid_icon_img{
+        
+        width: 15px;
+        height:15px;
+        border-radius:18px;
+        padding:5px;
+    }
+    .subgrid_icon_aux_p{
+        font-family: Chakra;
+        font-size: 10px;
+        font-weight: bold;
+    }
+    .subgrid_header_div{
+        width:100%;
+        display:flex;
+        flex-direction:row;
+        gap:10px;
+        align-items:center;
+    }
+    .subgrid_topics_li{
+        margin-bottom:10px;
+        font-family: Chakra;
+        font-size:8px;
+    }
+
+
+    .column_text1_div{
+        display:flex;
+        flex-direction: column;
+        width:30%;
+        border-radius: var(--border-radius);
+        background-color: white;
+        padding:10px;
+        box-shadow:2px 2px 2px 1px black;
+        justify-content: flex-start;
+    }
+    .text1_p{
+        font-family: Chakra;
+        font-size: 9px;
+    }
+    .title1_p{
+        font-family: Chakra;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    ul{
+        display: flex;
+        flex-direction: column;
+        
+    }
+}
+
+
+@media (max-width:400px){
+    .index_image{
+    width: 95vw;
+    height:180px;
+    overflow: hidden;
+    }
+    .index_login_button_a{
+        width:80px;
+        height:25px;
+        border-radius: var(--border-radius);
+        background-color:rgba(15, 75, 168,0.0);
+        display:flex;
+        text-decoration: None;
+        color: white;
+        font-size:11px;
+        transition-duration:0.5s;
+        transition-property: background-color;
+    }
+    .index_login_button_a:hover{
+        transition-property: background-color;
+        background-color:rgba(15, 75, 168,1);
+        transition-duration:0.5s;
+    }
+    .text1_div{
+        display:flex;
+        flex-direction: row;
+        width: 90%;
+        height:fit-content;
+        gap:10px;
+        margin-top:20px;
+    
+    }
+    .grid_text1_div{
+        display: grid;
+        width:48%;
+        gap:10px;
+
+    }
+    .subgrid_text1_div{
+        display: flex;
+        flex-direction: column; 
+        border-radius: var(--border-radius);
+        background-color: white;
+        padding:12px;
+        box-shadow:2px 2px 2px 1px black;
+        align-items: center;
+    }
+    .subgrid_icon_img{
+        
+        width: 15px;
+        height:15px;
+        border-radius:5px;
+        padding:5px;
+    }
+    .subgrid_icon_aux_p{
+        font-family: Chakra;
+        font-size: 10px;
+        font-weight: bold;
+    }
+    .subgrid_header_div{
+        width:100%;
+        display:flex;
+        flex-direction:row;
+        gap:10px;
+        align-items:center;
+    }
+    .subgrid_topics_li{
+        margin-bottom:10px;
+        font-family: Chakra;
+        font-size:7px;
+    }
+
+
+    .column_text1_div{
+        display:flex;
+        flex-direction: column;
+        width:48%;
+        border-radius: var(--border-radius);
+        background-color: white;
+        padding:8px;
+        box-shadow:2px 2px 2px 1px black;
+        justify-content: flex-start;
+    }
+    .text1_p{
+        font-family: Chakra;
+        font-size: 7px;
+    }
+    .title1_p{
+        font-family: Chakra;
+        font-size: 10px;
+        font-weight: bold;
+    }
+    ul{
+        display: flex;
+        flex-direction: column;
+        
+    }
+}
+

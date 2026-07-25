@@ -23,7 +23,7 @@ window.addEventListener('scroll',()=>{
     
 })
 
-// Função para mostrar a senha do usuário --> LOGIN
+// Função para mostrar a senha do usuário --> LOGIN e outras autenticações
 function toggle_visibility(){
     const checkbox_password=window.document.getElementById("show_password");
     const password_field=window.document.getElementById("password");

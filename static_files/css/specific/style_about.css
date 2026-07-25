@@ -2,3 +2,80 @@
 .margin_att{
     margin-top: 50px ;
 }
+.minor_index_image{
+    width: 75%;
+    height:200px;
+}
+@media (max-width:1500px){
+
+    .margin_att{
+    margin-top: 50px ;
+    }
+    .minor_index_image{
+        width: 75%;
+        height:200px;
+    }
+
+}
+@media (max-width:1200px){
+    .margin_att{
+    margin-top: 40px ;
+    }
+    .minor_index_image{
+        width: 75%;
+        height:175px;
+    }
+}
+@media (max-width:900px){
+
+    .margin_att{
+    margin-top: 50px ;
+    }
+    .minor_index_image{
+        width: 75%;
+        height:130px;
+    }
+
+}
+@media(max-width:750px){
+    .margin_att{
+    margin-top: 50px ;
+    }
+    .minor_index_image{
+        width: 75%;
+        height:100px;
+    }
+
+}
+@media (max-width:600px){
+    .margin_att{
+    margin-top: 50px ;
+    }
+    .minor_index_image{
+        width: 75%;
+        height:80px;
+    }
+}
+@media (max-width:500px){
+
+    .margin_att{
+    margin-top: 50px ;
+    }
+    .minor_index_image{
+        width: 75%;
+        height:60px;
+    }
+
+
+}
+@media (max-width:400px){
+
+    .margin_att{
+    margin-top: 50px ;
+    }
+    .minor_index_image{
+        width: 75%;
+        height:40px;
+    }
+
+}
