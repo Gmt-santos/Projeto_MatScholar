@@ -5,7 +5,10 @@
     height:650px;
     overflow: hidden;
 }
-
+.minor_index_image{
+    width:50%;
+    height:200px;
+}
 .index_login_button_a{
     width:200px;
     height:30px;
@@ -82,6 +85,7 @@
     padding:10px;
     box-shadow:2px 2px 2px 1px black;
     justify-content: flex-start;
+    height: fit-content;
 }
 .text1_p{
     font-family: Chakra;
@@ -99,6 +103,10 @@
     width: 95vw;
     height:500px;
     overflow: hidden;
+    }
+     .minor_index_image{
+        width:50%;
+        height:200px;
     }
     .index_login_button_a{
         width:150px;
@@ -168,6 +176,8 @@
 
 
     .column_text1_div{
+        height: fit-content;
+
         display:flex;
         flex-direction: column;
         width:40%;
@@ -193,6 +203,10 @@
     width: 95vw;
     height:500px;
     overflow: hidden;
+    }
+     .minor_index_image{
+        width:50%;
+        height:175px;
     }
     .index_login_button_a{
         width:80px;
@@ -262,6 +276,7 @@
 
 
     .column_text1_div{
+        height: fit-content;
         display:flex;
         flex-direction: column;
         width:40%;
@@ -286,6 +301,10 @@
     width: 95vw;
     height:400px;
     overflow: hidden;
+    }
+    .minor_index_image{
+        width:50%;
+        height:130px;
     }
     .index_login_button_a{
         width:70px;
@@ -355,6 +374,7 @@
 
 
     .column_text1_div{
+        height: fit-content;
         display:flex;
         flex-direction: column;
         width:40%;
@@ -380,6 +400,10 @@
     width: 95vw;
     height:250px;
     overflow: hidden;
+    }
+    .minor_index_image{
+        width:50%;
+        height:80px;
     }
     .index_login_button_a{
         width:100px;
@@ -449,6 +473,7 @@
 
 
     .column_text1_div{
+        height: fit-content;
         display:flex;
         flex-direction: column;
         width:30%;
@@ -475,6 +500,10 @@
     width: 95vw;
     height:250px;
     overflow: hidden;
+    }
+    .minor_index_image{
+        width:50%;
+        height:60px;
     }
     .index_login_button_a{
         width:80px;
@@ -544,6 +573,7 @@
 
 
     .column_text1_div{
+        height: fit-content;
         display:flex;
         flex-direction: column;
         width:30%;
@@ -576,6 +606,10 @@
     height:180px;
     overflow: hidden;
     }
+    .minor_index_image{
+        width: 50%;
+        height:40px;
+    }
     .index_login_button_a{
         width:80px;
         height:25px;
@@ -595,16 +629,18 @@
     }
     .text1_div{
         display:flex;
-        flex-direction: row;
-        width: 90%;
+        flex-direction: column;
+        justify-content: center;
+        width: 80%;
         height:fit-content;
         gap:10px;
         margin-top:20px;
-    
+        align-items: center;
     }
     .grid_text1_div{
-        display: grid;
-        width:48%;
+        display: flex;
+        flex-direction: column;
+        width:80%;
         gap:10px;
 
     }
@@ -613,6 +649,7 @@
         flex-direction: column; 
         border-radius: var(--border-radius);
         background-color: white;
+        width: 100%;
         padding:12px;
         box-shadow:2px 2px 2px 1px black;
         align-items: center;
@@ -644,6 +681,7 @@
 
 
     .column_text1_div{
+        height: fit-content;
         display:flex;
         flex-direction: column;
         width:48%;

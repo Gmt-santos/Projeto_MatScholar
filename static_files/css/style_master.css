@@ -133,7 +133,7 @@ a{
 }
 
 .messages_div{
-    width: 80%;
+    width:70%;
     height:fit-content;
     padding:10px;
     border-radius: var(--border-radius);
@@ -239,6 +239,7 @@ a{
     .header_div{
         width:var( --screen-size-minor);
         height: 50px;
+        
         background-color: rgb(5,44,101,0.8);
         position: fixed;
         display: flex;
@@ -307,6 +308,22 @@ a{
         transition-property: color;
         transition-duration:0.2s;
     }
+    .messages_div{
+    width:70%;
+    height:fit-content;
+    padding:10px;
+    border-radius: var(--border-radius);
+    
+    border-style: solid;
+    border-width: 1px;
+    background-color:white;
+   
+    }
+    .messages_p{
+    font-family: Chakra;
+    font-size:12px;
+    text-align: center;
+    }
 
 }
 
@@ -314,7 +331,7 @@ a{
     .header_div{
         width:var( --screen-size-minor);
         height: 40px;
-        padding:7px;
+     
         background-color: rgb(5,44,101,0.8);
         position: fixed;
         display: flex;
@@ -382,6 +399,22 @@ a{
         color:var(--color-gray);
         transition-property: color;
         transition-duration:0.2s;
+    }
+    .messages_div{
+    width:70%;
+    height:fit-content;
+    padding:10px;
+    border-radius: var(--border-radius);
+    
+    border-style: solid;
+    border-width: 1px;
+    background-color:white;
+   
+    }
+    .messages_p{
+    font-family: Chakra;
+    font-size:10px;
+    text-align: center;
     }
 
 }
@@ -459,7 +492,22 @@ a{
         transition-property: color;
         transition-duration:0.2s;
     }
-
+    .messages_div{
+    width:70%;
+    height:fit-content;
+    padding:10px;
+    border-radius: var(--border-radius);
+    
+    border-style: solid;
+    border-width: 1px;
+    background-color:white;
+   
+    }
+    .messages_p{
+    font-family: Chakra;
+    font-size:9px;
+    text-align: center;
+    }
 
 
 }
@@ -540,7 +588,22 @@ a{
         transition-property: color;
         transition-duration:0.2s;
     }
-
+    .messages_div{
+    width:70%;
+    height:fit-content;
+    padding:10px;
+    border-radius: var(--border-radius);
+    
+    border-style: solid;
+    border-width: 1px;
+    background-color:white;
+   
+    }
+    .messages_p{
+    font-family: Chakra;
+    font-size:8px;
+    text-align: center;
+    }
 
 
 }

@@ -139,7 +139,7 @@
             {% csrf_token %}
             <p class="forms_aux_input_p">Pesquise o nome da aula que deseja</p>
             <input class="forms_input"type="text" placeholder="Pesquisar" id="name_query" name="name_query">
-            <input class="forms_submit_input"type="submit" value="Pesquisar">
+            <input class="forms_submit_input "type="submit" value="Pesquisar">
         </form>
 
         <p class="p_toggle_forms_p" id="toggle_professor_name" onclick="toggle_query_professorname_visibility()">Pesquisar aula por professor</p>
@@ -173,7 +173,7 @@
 
         
         {% else %}
-            <div class="professor_class_div" style="justify-content:center">
+            <div class="principal_class_div" style="justify-content:center">
                     <div class="professor_class_identify_name">
                         <p  class="professor_class_title_p">Não foi possível encontrar suas aulas!</p>
                     </div>
@@ -270,7 +270,7 @@
                     
                     <form action="{% url 'matscholar_app:std_cls_view_page'  %}" method="POST">
                         {% csrf_token %}
-                        <div class="student_class_div">
+                        <div class="principal_class_div">
                             <div class="professor_class_identify_name">
                                 <input type="hidden" name="id" value="{{class.class_id}}">
                                 <p  class="professor_class_title_p">{{class.class_name}}</p>
@@ -290,7 +290,7 @@
             
             {% else %}
 
-                <div class="professor_class_div" style="justify-content:center">
+                <div class="principal_class_div" style="justify-content:center">
                         <div class="professor_class_identify_name">
                             <p  class="professor_class_title_p">Não foi possível encontrar suas aulas!</p>
                         </div>
