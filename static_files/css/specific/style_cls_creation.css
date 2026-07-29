@@ -28,23 +28,7 @@
     font-family: Chakra;
     font-size:20px;
 }
-.forms_submit_input{
-    height:30px;
-    width:420px;
-    padding:5px;
-    margin-top: 20px;
-    font-family: Chakra;
-    font-size: 15px;
-    border-style: none;
-    border-radius: 10px;
-    transition-duration: 1s;
-    cursor:pointer;
-    background-color: var(--color-gray);
-}
-.forms_submit_input:hover{
-    background-color: rgb(247, 247, 247);
-    transition-duration: 1s;
-}
+
 
 
 
@@ -442,19 +426,7 @@ select{
         font-family: Chakra;
         font-size:16px;
     }
-    .forms_submit_input{
-        height:30px;
-        width:350px;
-        padding:5px;
-        margin-top: 20px;
-        font-family: Chakra;
-        font-size: 15px;
-        border-style: none;
-        border-radius: 10px;
-        transition-duration: 1s;
-        cursor:pointer;
-        background-color: var(--color-gray);
-    }
+    
     /* Forms genérico */
     .form_form{
         display: flex;
@@ -572,10 +544,7 @@ select{
     text-align: center;
     transition-duration: 1s ;
 }
-.p_toggle_forms_p:hover{
-    transform: scale(1.05);
-    transition-duration:1s ;
-}
+
 .forms_edit_attribute_form{
     display:flex;
     flex-direction: column;
@@ -696,10 +665,7 @@ select{
     color: black;
     transition-duration: 0.2s;
 }
-.assignments_link_a:hover{
-    background-color:var(--color-gray);
-    transition-duration: 0.2s;
-}
+
 .organizer_horizontal_p_div{
     display: flex;
     flex-direction: row;
@@ -767,10 +733,7 @@ select{
     transition-duration: 0.2s;
     background-color: var(--color-darkgreen);
 }
-.add_assignments_link_a:hover{
-    background-color:var(--color-lightgreen);
-    transition-duration: 0.2s;
-}
+
 .del_assignment_div{
     margin-top: 150px;
     display: flex;
@@ -853,19 +816,7 @@ select{
         font-family: Chakra;
         font-size:15px;
     }
-    .forms_submit_input{
-        height:27px;
-        width:300px;
-        padding:5px;
-        margin-top: 20px;
-        font-family: Chakra;
-        font-size: 13px;
-        border-style: none;
-        border-radius: 10px;
-        transition-duration: 1s;
-        cursor:pointer;
-        background-color: var(--color-gray);
-    }
+    
       .form_form{
         display: flex;
         flex-direction: column;
@@ -992,10 +943,7 @@ select{
     text-align: center;
     transition-duration: 1s ;
 }
-.p_toggle_forms_p:hover{
-    transform: scale(1.05);
-    transition-duration:1s ;
-}
+
 .forms_edit_attribute_form{
     display:flex;
     flex-direction: column;
@@ -1118,10 +1066,7 @@ select{
     color: black;
     transition-duration: 0.2s;
 }
-.assignments_link_a:hover{
-    background-color:var(--color-gray);
-    transition-duration: 0.2s;
-}
+
 .organizer_horizontal_p_div{
     display: flex;
     flex-direction: row;
@@ -1189,10 +1134,7 @@ select{
     transition-duration: 0.2s;
     background-color: var(--color-darkgreen);
 }
-.add_assignments_link_a:hover{
-    background-color:var(--color-lightgreen);
-    transition-duration: 0.2s;
-}
+
 .del_assignment_div{
     margin-top: 130px;
     display: flex;
@@ -1283,20 +1225,7 @@ select{
         font-family: Chakra;
         font-size:14px;
     }
-    .forms_submit_input{
-        height: 24px;
-        width:260px;
-        padding:5px;
-        margin-top: 18px;
-        font-family: Chakra;
-        font-size: 13px;
-        border-style: none;
-        border-radius: 10px;
-        transition-duration: 1s;
-        cursor:pointer;
-        background-color: var(--color-gray);
-    }
-
+    
      .form_form{
         display: flex;
         flex-direction: column;
@@ -1378,7 +1307,7 @@ select{
 
 .cls_edition_div_organizer_div{
     display:flex;
-    flex-direction: row;
+    flex-direction: column;
     gap:10px;
     
 }
@@ -1412,10 +1341,7 @@ select{
     text-align: center;
     transition-duration: 1s ;
 }
-.p_toggle_forms_p:hover{
-    transform: scale(1.05);
-    transition-duration:1s ;
-}
+
 .forms_edit_attribute_form{
     display:flex;
     flex-direction: column;
@@ -1467,10 +1393,7 @@ select{
     color: black;
     transition-duration: 0.2s;
 }
-.assignments_link_a:hover{
-    background-color:var(--color-gray);
-    transition-duration: 0.2s;
-}
+
 .organizer_horizontal_p_div{
     display: flex;
     flex-direction: row;
@@ -1538,10 +1461,7 @@ select{
     transition-duration: 0.2s;
     background-color: var(--color-darkgreen);
 }
-.add_assignments_link_a:hover{
-    background-color:var(--color-lightgreen);
-    transition-duration: 0.2s;
-}
+
 .del_assignment_div{
     margin-top: 130px;
     display: flex;
@@ -1625,19 +1545,7 @@ select{
         font-family: Chakra;
         font-size:13px;
     }
-    .forms_submit_input{
-        height: 22px;
-        width:220px;
-        padding:5px;
-        margin-top: 18px;
-        font-family: Chakra;
-        font-size: 12px;
-        border-style: none;
-        border-radius: 10px;
-        transition-duration: 1s;
-        cursor:pointer;
-        background-color: var(--color-gray);
-    }
+    
    
      .form_form{
         display: flex;
@@ -1717,13 +1625,7 @@ select{
 
 /* cls_edition */
 
-.cls_edition_div_organizer_div{
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    gap:10px;
-    
-}
+
 .form_edition_compact_form{
     display: flex;
     flex-direction: column;
@@ -1754,10 +1656,7 @@ select{
     text-align: center;
     transition-duration: 1s ;
 }
-.p_toggle_forms_p:hover{
-    transform: scale(1.05);
-    transition-duration:1s ;
-}
+
 .forms_edit_attribute_form{
     display:flex;
     flex-direction: column;
@@ -1909,19 +1808,7 @@ select{
         font-family: Chakra;
         font-size:11px;
     }
-    .forms_submit_input{
-        height:20px;
-        width:180px;
-        padding:5px;
-        margin-top: 18px;
-        font-family: Chakra;
-        font-size: 11px;
-        border-style: none;
-        border-radius: 10px;
-        transition-duration: 1s;
-        cursor:pointer;
-        background-color: var(--color-gray);
-    }
+   
 
      .form_form{
         display: flex;
@@ -1954,7 +1841,7 @@ select{
     }
     .forms_aux_input_p{
         font-family: Chakra;
-        font-size: 10px;
+        /* font-size: 10px; */
     }
     .forms_input{
         font-family: Chakra;

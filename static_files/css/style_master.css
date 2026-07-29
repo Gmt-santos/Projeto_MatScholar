@@ -183,6 +183,23 @@ a{
     font-family: Chakra;
     font-size: 15px;
 }
+.forms_submit_input{
+    height:30px;
+    width:420px;
+    padding:5px;
+    margin-top: 20px;
+    font-family: Chakra;
+    font-size: 15px;
+    border-style: none;
+    border-radius: 10px;
+    transition-duration: 1s;
+    cursor:pointer;
+    background-color: var(--color-gray);
+}
+.forms_submit_input:hover{
+    background-color: rgb(247, 247, 247);
+    transition-duration: 1s;
+}
 @media(max-width:1500px){
     .header_div{
         width:var(--screen-size-standard);
@@ -283,6 +300,19 @@ a{
      .forms_aux_input_p{
         font-family: Chakra;
         font-size: 14px;
+    }
+    .forms_submit_input{
+        height:30px;
+        width:350px;
+        padding:5px;
+        margin-top: 20px;
+        font-family: Chakra;
+        font-size: 15px;
+        border-style: none;
+        border-radius: 10px;
+        transition-duration: 1s;
+        cursor:pointer;
+        background-color: var(--color-gray);
     }
 }
 
@@ -400,6 +430,19 @@ a{
         font-family: Chakra;
         font-size: 13px;
     }
+    .forms_submit_input{
+        height:27px;
+        width:300px;
+        padding:5px;
+        margin-top: 20px;
+        font-family: Chakra;
+        font-size: 13px;
+        border-style: none;
+        border-radius: 10px;
+        transition-duration: 1s;
+        cursor:pointer;
+        background-color: var(--color-gray);
+    }
 }
 
 @media(max-width:600px){
@@ -516,7 +559,45 @@ a{
         font-family: Chakra;
         font-size: 12px;
     }
-
+    .forms_submit_input{
+        height: 24px;
+        width:260px;
+        padding:5px;
+        margin-top: 18px;
+        font-family: Chakra;
+        font-size: 13px;
+        border-style: none;
+        border-radius: 10px;
+        transition-duration: 1s;
+        cursor:pointer;
+        background-color: var(--color-gray);
+    }
+    .forms_submit_input{
+        height: 22px;
+        width:220px;
+        padding:5px;
+        margin-top: 18px;
+        font-family: Chakra;
+        font-size: 12px;
+        border-style: none;
+        border-radius: 10px;
+        transition-duration: 1s;
+        cursor:pointer;
+        background-color: var(--color-gray);
+    }
+     .forms_submit_input{
+        height:20px;
+        width:180px;
+        padding:5px;
+        margin-top: 18px;
+        font-family: Chakra;
+        font-size: 11px;
+        border-style: none;
+        border-radius: 10px;
+        transition-duration: 1s;
+        cursor:pointer;
+        background-color: var(--color-gray);
+    }
 }
 @media(max-width:500px){
 

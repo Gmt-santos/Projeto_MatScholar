@@ -35,23 +35,7 @@
     background-color: var(--color-gray);
     width: 200px;;
 }
-.forms_submit_input{
-    height:30px;
-    width:420px;
-    padding:5px;
-    margin-top: 20px;
-    font-family: Chakra;
-    font-size: 15px;
-    border-style: none;
-    border-radius: 10px;
-    transition-duration: 1s;
-    cursor:pointer;
-    background-color: var(--color-gray);
-}
-.forms_submit_input:hover{
-    background-color: rgb(247, 247, 247);
-    transition-duration: 1s;
-}
+
 
 /*   Formulário de criação de aluno        */
 .form_form{
@@ -119,8 +103,9 @@ select{
 }
 
 /* crs_edition */
+
 .courses_select_div{
-    margin-top: 200px;
+    margin-top: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -150,7 +135,7 @@ select{
 .organizer_forms_horizontal_div{
     display:flex;
     flex-direction: row;
-    gap:50px;
+    margin-top: 100px;
 }
 
 .grades_organizer_div{
@@ -218,7 +203,11 @@ tr{
 
 @media (max-width:1500px){
 
-    /* Sem necessidade */
+    .organizer_forms_horizontal_div{
+        display:flex;
+        flex-direction: column;
+      
+    }
 
 }
 
@@ -230,7 +219,7 @@ tr{
     display: flex;
     flex-direction: column;
     border-radius: var(--border-radius);
-    width:700px;
+    width:650px;
     height:fit-content;
     margin-top: 100px;
     padding:20px;
@@ -240,7 +229,7 @@ tr{
         flex-direction: column;
         background-color: white;
         border-radius: var(--border-radius);
-        width:700px;
+        width:650px;
         height:fit-content;
         padding:20px;
     }
@@ -248,7 +237,7 @@ tr{
         display:flex;
         flex-direction: row;
         justify-content: space-between;
-        width: 700px;
+        width: 650px;
         align-items: center;
         margin-top: 10px;
     }
@@ -262,33 +251,16 @@ tr{
         background-color: var(--color-gray);
         width: 200px;;
     }
-    .forms_submit_input{
-        height:30px;
-        width:420px;
-        padding:5px;
-        margin-top: 20px;
-        font-family: Chakra;
-        font-size: 15px;
-        border-style: none;
-        border-radius: 10px;
-        transition-duration: 1s;
-        cursor:pointer;
-        background-color: var(--color-gray);
-    }
-    .forms_submit_input:hover{
-        background-color: rgb(247, 247, 247);
-        transition-duration: 1s;
-    }
-
+   
     /*   Formulário de criação de aluno        */
     .form_form{
         display: flex;
         flex-direction: column;
         background-color: white;
         border-radius: var(--border-radius);
-        width:500px;
+        width:400px;
         height:fit-content;
-        margin-top: 100px;
+        margin-top: 80px;
         padding:20px;
     }
     .forms_title_div{
@@ -302,19 +274,19 @@ tr{
   
     .forms_aux_minor_input_p{
         font-family: Chakra;
-        font-size: 13px;
+        font-size: 12px;
     }
   
     /*  Formulário de criação de salas abstratas           */
     .forms_abs_class_creation_div{
         display: flex;
         flex-direction: row;
-        width:700px;
+        width:650px;
         height:fit-content;
         padding:20px;   
         justify-content: flex-start;
         align-items: center;
-        gap:100px;
+        gap:80px;
     }
 
     .counter_iterations_classes_p{
@@ -324,97 +296,59 @@ tr{
 
     }   
     .forms_abs_class_creation_input{
-        width:400px;
+        width:350px;
         font-family: Chakra;
-        font-size:13px;
+        font-size:12px;
         border-radius: 10px;
         border-style:none;
         padding:5px;
-        height: 30px;
+        height: 28px;
         background-color: var(--color-gray);
     }
     select{
         font-family: Chakra;
-        font-size:14px;
-        border-radius: 10px;
+        font-size:12px;
+        border-radius: 9px;
         border-style:none;
     
-        height: 30px;
+        height: 28px;
         background-color: var(--color-gray);
         cursor:pointer;
-        width: 50px;
+        width: 45px;
     }
 
     /* crs_edition */
     .courses_select_div{
-        margin-top: 200px;
+        margin-top: 90px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: column;
         background-color:white;
         border-radius: var(--border-radius);
-        width:400px;
-        height:200px;
-        padding:20px;
+        width:350px;
+        height:180px;
+        padding:18px;
         box-shadow:2px 2px 2px 1px black;
     }
     .courses_p{
         font-family: Chakra;
-        font-size:20px;
+        font-size:18px;
     }
     .courses_select{
         font-family: Chakra;
-        font-size:16px;
+        font-size:14px;
         border-radius: 10px;
         border-style:none;
         padding:10px;
-        height: 50px;
+        height: 45px;
         background-color: var(--color-gray);
         cursor:pointer;
-        width: 300px;
-    }
-    .organizer_forms_horizontal_div{
-        display:flex;
-        flex-direction: row;
-        gap:50px;
+        width: 250px;
     }
 
-    .grades_organizer_div{
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        background-color:white;
-        border-radius: var(--border-radius);
-        width:fit-content;
-        height:fit-content;
-        margin:100px;
-        padding:20px;
-        box-shadow:2px 2px 2px 1px black;
-    }
-    .grade_info_td{
-        font-family:Chakra;
-        font-size:15px;
-        text-align: center;
-        border-style:none none none solid;
-        border-color:var(--color-gray);
-        text-overflow:ellipsis;
-        padding: 5px;
-        
-    }
-    .grade_p{
-        font-family: Chakra;
-        font-size: 22px;
-    }
-    table{
-        width: 100%;
-        border-style:solid solid solid none;
-        border-color:var(--color-gray);
-        border-spacing: 0px;
-    }
-    tr{
-        height: 30px;
-    }
+
+   
     .minor_forms_being_processed_form{
         display: flex;
         flex-direction: column;
@@ -422,7 +356,7 @@ tr{
         width:400px;
         height:fit-content;
         margin-top: 100px;
-        padding:20px;
+      
     }
     .minor_forms_being_processed_div{
         display: flex;
@@ -453,7 +387,7 @@ tr{
     display: flex;
     flex-direction: column;
     border-radius: var(--border-radius);
-    width:700px;
+    width:500px;
     height:fit-content;
     margin-top: 100px;
     padding:20px;
@@ -463,7 +397,7 @@ tr{
         flex-direction: column;
         background-color: white;
         border-radius: var(--border-radius);
-        width:700px;
+        width:500px;
         height:fit-content;
         padding:20px;
     }
@@ -471,7 +405,7 @@ tr{
         display:flex;
         flex-direction: row;
         justify-content: space-between;
-        width: 700px;
+        width: 500px;
         align-items: center;
         margin-top: 10px;
     }
@@ -485,23 +419,7 @@ tr{
         background-color: var(--color-gray);
         width: 200px;;
     }
-    .forms_submit_input{
-        height:30px;
-        width:420px;
-        padding:5px;
-        margin-top: 20px;
-        font-family: Chakra;
-        font-size: 15px;
-        border-style: none;
-        border-radius: 10px;
-        transition-duration: 1s;
-        cursor:pointer;
-        background-color: var(--color-gray);
-    }
-    .forms_submit_input:hover{
-        background-color: rgb(247, 247, 247);
-        transition-duration: 1s;
-    }
+
 
     /*   Formulário de criação de aluno        */
     .form_form{
@@ -509,9 +427,9 @@ tr{
         flex-direction: column;
         background-color: white;
         border-radius: var(--border-radius);
-        width:500px;
+        width:400px;
         height:fit-content;
-        margin-top: 100px;
+        margin-top: 80px;
         padding:20px;
     }
     .forms_title_div{
@@ -525,19 +443,19 @@ tr{
    
     .forms_aux_minor_input_p{
         font-family: Chakra;
-        font-size: 13px;
+        font-size: 11px;
     }
   
     /*  Formulário de criação de salas abstratas           */
     .forms_abs_class_creation_div{
         display: flex;
         flex-direction: row;
-        width:700px;
+        width:500px;
         height:fit-content;
         padding:20px;   
         justify-content: flex-start;
         align-items: center;
-        gap:100px;
+        gap:70px;
     }
 
     .counter_iterations_classes_p{
@@ -547,61 +465,57 @@ tr{
 
     }   
     .forms_abs_class_creation_input{
-        width:400px;
+        width:300px;
         font-family: Chakra;
-        font-size:13px;
+        font-size:11px;
         border-radius: 10px;
         border-style:none;
         padding:5px;
-        height: 30px;
+        height: 26px;
         background-color: var(--color-gray);
     }
     select{
         font-family: Chakra;
-        font-size:14px;
-        border-radius: 10px;
+        font-size:11px;
+        border-radius: 9px;
         border-style:none;
     
-        height: 30px;
+        height: 25px;
         background-color: var(--color-gray);
         cursor:pointer;
-        width: 50px;
+        width: 40px;
     }
 
     /* crs_edition */
     .courses_select_div{
-        margin-top: 200px;
+        margin-top: 90px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: column;
         background-color:white;
         border-radius: var(--border-radius);
-        width:400px;
-        height:200px;
-        padding:20px;
+        width:300px;
+        height:170px;
+        padding:18px;
         box-shadow:2px 2px 2px 1px black;
     }
     .courses_p{
         font-family: Chakra;
-        font-size:20px;
+        font-size:16px;
     }
     .courses_select{
         font-family: Chakra;
-        font-size:16px;
+        font-size:12px;
         border-radius: 10px;
         border-style:none;
         padding:10px;
-        height: 50px;
+        height: 45px;
         background-color: var(--color-gray);
         cursor:pointer;
-        width: 300px;
+        width: 200px;
     }
-    .organizer_forms_horizontal_div{
-        display:flex;
-        flex-direction: row;
-        gap:50px;
-    }
+   
 
     .grades_organizer_div{
         display: flex;
@@ -611,13 +525,13 @@ tr{
         border-radius: var(--border-radius);
         width:fit-content;
         height:fit-content;
-        margin:100px;
-        padding:20px;
+        margin:80px;
+        padding:18px;
         box-shadow:2px 2px 2px 1px black;
     }
     .grade_info_td{
         font-family:Chakra;
-        font-size:15px;
+        font-size:10px;
         text-align: center;
         border-style:none none none solid;
         border-color:var(--color-gray);
@@ -627,7 +541,7 @@ tr{
     }
     .grade_p{
         font-family: Chakra;
-        font-size: 22px;
+        font-size: 20px;
     }
     table{
         width: 100%;
@@ -636,7 +550,7 @@ tr{
         border-spacing: 0px;
     }
     tr{
-        height: 30px;
+        height: 27px;
     }
     .minor_forms_being_processed_form{
         display: flex;
@@ -645,7 +559,7 @@ tr{
         width:400px;
         height:fit-content;
         margin-top: 100px;
-        padding:20px;
+        
     }
     .minor_forms_being_processed_div{
         display: flex;
@@ -670,14 +584,585 @@ tr{
 @media(max-width:750px){
   
 
+    
 }
 @media (max-width:600px){
     
+    .forms_being_processed_form{
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--border-radius);
+    width:450px;
+    height:fit-content;
+    margin-top: 100px;
+    padding:20px;
+}
+    .forms_being_processed_div{
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: var(--border-radius);
+        width:450px;
+        height:fit-content;
+        padding:20px;
+    }
+    .forms_info_being_processed_div{
+        display:flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 450px;
+        align-items: center;
+        margin-top: 10px;
+    }
+    .forms_input_being_processed_input{
+        font-family: Chakra;
+        font-size:13px;
+        border-radius: 8px;
+        border-style:none;
+        padding:5px;
+        height: 20px;
+        background-color: var(--color-gray);
+        width: 200px;;
+    }
+   
+
+    /*   Formulário de criação de aluno        */
+    .form_form{
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: var(--border-radius);
+        width:300px;
+        height:fit-content;
+        margin-top: 80px;
+        padding:20px;
+    }
+    .forms_title_div{
+        display:flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap:10px;
+    }
+ 
+   
+    .forms_aux_minor_input_p{
+        font-family: Chakra;
+        font-size: 10px;
+    }
+  
+    /*  Formulário de criação de salas abstratas           */
+    .forms_abs_class_creation_div{
+        display: flex;
+        flex-direction: row;
+        width:450px;
+        height:fit-content;
+        padding:20px;   
+        justify-content: flex-start;
+        align-items: center;
+        gap:60px;
+    }
+
+    .counter_iterations_classes_p{
+        font-family: Chakra;
+        font-size: 16px;
+        font-weight: bold;
+
+    }   
+    .forms_abs_class_creation_input{
+        width:250px;
+        font-family: Chakra;
+        font-size:10px;
+        border-radius: 10px;
+        border-style:none;
+        padding:5px;
+        height: 24px;
+        background-color: var(--color-gray);
+    }
+    select{
+        font-family: Chakra;
+        font-size:10px;
+        border-radius: 9px;
+        border-style:none;
+    
+        height: 25px;
+        background-color: var(--color-gray);
+        cursor:pointer;
+        width: 35px;
+    }
+
+    /* crs_edition */
+    .courses_select_div{
+        margin-top: 90px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        background-color:white;
+        border-radius: var(--border-radius);
+        width:270px;
+        height:160px;
+        padding:16px;
+        box-shadow:2px 2px 2px 1px black;
+    }
+    .courses_p{
+        font-family: Chakra;
+        font-size:15px;
+    }
+    .courses_select{
+        font-family: Chakra;
+        font-size:11px;
+        border-radius: 9px;
+        border-style:none;
+        padding:10px;
+        height: 40px;
+        background-color: var(--color-gray);
+        cursor:pointer;
+        width: 180px;
+    }
+    
+    .grades_organizer_div{
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        background-color:white;
+        border-radius: var(--border-radius);
+        width:fit-content;
+        height:fit-content;
+        margin:80px;
+        padding:15px;
+        box-shadow:2px 2px 2px 1px black;
+    }
+    .grade_info_td{
+        font-family:Chakra;
+        font-size:8px;
+        text-align: center;
+        border-style:none none none solid;
+        border-color:var(--color-gray);
+        text-overflow:ellipsis;
+        padding: 2px;
+        
+    }
+    .grade_p{
+        font-family: Chakra;
+        font-size: 15px;
+    }
+    table{
+        width: 100%;
+        border-style:solid solid solid none;
+        border-color:var(--color-gray);
+        border-spacing: 0px;
+    }
+    tr{
+        height: 20px;
+    }
+    .minor_forms_being_processed_form{
+        display: flex;
+        flex-direction: column;
+        border-radius: var(--border-radius);
+        width:350px;
+        height:fit-content;
+        margin-top: 100px;
+       align-items: center;
+    }
+    .minor_forms_being_processed_div{
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: var(--border-radius);
+        width:350px;
+        height:fit-content;
+        padding:10px;
+    }
+    .minor_forms_info_being_processed_div{
+        display:flex;
+        flex-direction: row;
+        gap:30px;
+        width: 400px;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+
+
 }
 @media (max-width:500px){
 
+      .forms_being_processed_form{
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--border-radius);
+    width:350px;
+    height:fit-content;
+    margin-top: 100px;
+    padding:20px;
+}
+    .forms_being_processed_div{
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: var(--border-radius);
+        width:350px;
+        height:fit-content;
+        padding:20px;
+    }
+    .forms_info_being_processed_div{
+        display:flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 350px;
+        align-items: center;
+        margin-top: 10px;
+    }
+    .forms_input_being_processed_input{
+        font-family: Chakra;
+        font-size:13px;
+        border-radius: 8px;
+        border-style:none;
+        padding:5px;
+        height: 20px;
+        background-color: var(--color-gray);
+        width: 200px;;
+    }
+    
+
+    /*   Formulário de criação de aluno        */
+    .form_form{
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: var(--border-radius);
+        width:300px;
+        height:fit-content;
+        margin-top: 80px;
+        padding:20px;
+    }
+    .forms_title_div{
+        display:flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap:10px;
+    }
+ 
    
+    .forms_aux_minor_input_p{
+        font-family: Chakra;
+        font-size: 9px;
+    }
+  
+    /*  Formulário de criação de salas abstratas           */
+    .forms_abs_class_creation_div{
+        display: flex;
+        flex-direction: row;
+        width:350px;
+        height:fit-content;
+        padding:20px;   
+        justify-content: flex-start;
+        align-items: center;
+        gap:20px;
+    }
+
+    .counter_iterations_classes_p{
+        font-family: Chakra;
+        font-size: 16px;
+        font-weight: bold;
+
+    }   
+    .forms_abs_class_creation_input{
+        width:220px;
+        font-family: Chakra;
+        font-size:9px;
+        border-radius: 10px;
+        border-style:none;
+        padding:5px;
+        height: 22px;
+        background-color: var(--color-gray);
+    }
+    select{
+        font-family: Chakra;
+        font-size:9px;
+        border-radius: 9px;
+        border-style:none;
+    
+        height: 25px;
+        background-color: var(--color-gray);
+        cursor:pointer;
+        width: 35px;
+    }
+
+    /* crs_edition */
+    #minor_input_specific{
+    width:50%;
+    }
+   
+  
+
+     .grades_organizer_div{
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        background-color:white;
+        border-radius: var(--border-radius);
+        width:fit-content;
+        height:fit-content;
+        margin:60px;
+        padding:5px;
+        box-shadow:2px 2px 2px 1px black;
+    }
+    .grade_info_td{
+        font-family:Chakra;
+        font-size:8px;
+        text-align: center;
+        border-style:none none none solid;
+        border-color:var(--color-gray);
+        text-overflow:ellipsis;
+        padding: 2px;
+        
+    }
+    .grade_p{
+        font-family: Chakra;
+        font-size: 12px;
+    }
+    table{
+        width: 100%;
+        border-style:solid solid solid none;
+        border-color:var(--color-gray);
+        border-spacing: 0px;
+    }
+    tr{
+        height: 20px;
+    }
+    .minor_forms_being_processed_form{
+        display: flex;
+        flex-direction: column;
+        border-radius: var(--border-radius);
+        width:300px;
+        height:fit-content;
+        margin-top: 100px;
+        align-items: center;
+      
+    }
+    .minor_forms_being_processed_div{
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: var(--border-radius);
+        width:300px;
+        height:fit-content;
+        padding:15px;
+    }
+    .minor_forms_info_being_processed_div{
+        display:flex;
+        flex-direction: row;
+        gap:30px;
+        width: 300px;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+
 
 }
 @media (max-width:400px){
+
+       .forms_being_processed_form{
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--border-radius);
+    width:350px;
+    height:fit-content;
+    margin-top: 100px;
+    padding:20px;
+}
+    .forms_being_processed_div{
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: var(--border-radius);
+        width:300px;
+        height:fit-content;
+        padding:20px;
+    }
+    .forms_info_being_processed_div{
+        display:flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 300px;
+        align-items: center;
+        margin-top: 10px;
+    }
+    .forms_input_being_processed_input{
+        font-family: Chakra;
+        font-size:13px;
+        border-radius: 8px;
+        border-style:none;
+        padding:5px;
+        height: 20px;
+        background-color: var(--color-gray);
+        width: 200px;;
+    }
+   
+
+    /*   Formulário de criação de aluno        */
+    .form_form{
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: var(--border-radius);
+        width:300px;
+        height:fit-content;
+        margin-top: 80px;
+        padding:20px;
+    }
+    .forms_title_div{
+        display:flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap:10px;
+    }
+ 
+   
+    .forms_aux_minor_input_p{
+        font-family: Chakra;
+        font-size: 8px;
+    }
+  
+    /*  Formulário de criação de salas abstratas           */
+    .forms_abs_class_creation_div{
+        display: flex;
+        flex-direction: row;
+        width:300px;
+        height:fit-content;
+        padding:20px;   
+        justify-content: flex-start;
+        align-items: center;
+        gap:20px;
+    }
+
+    .counter_iterations_classes_p{
+        font-family: Chakra;
+        font-size: 16px;
+        font-weight: bold;
+
+    }   
+    .forms_abs_class_creation_input{
+        width:150px;
+        font-family: Chakra;
+        font-size:9px;
+        border-radius: 10px;
+        border-style:none;
+        padding:3px;
+        height: 20px;
+        background-color: var(--color-gray);
+    }
+    select{
+        font-family: Chakra;
+        font-size:9px;
+        border-radius: 9px;
+        border-style:none;
+    
+        height: 20px;
+        background-color: var(--color-gray);
+        cursor:pointer;
+        width: 30px;
+    }
+
+    /* crs_edition */
+    
+    .courses_select_div{
+        margin-top: 90px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        background-color:white;
+        border-radius: var(--border-radius);
+        width:250px;
+        height:140px;
+        padding:14px;
+        box-shadow:2px 2px 2px 1px black;
+    }
+    .courses_p{
+        font-family: Chakra;
+        font-size:13px;
+    }
+    .courses_select{
+        font-family: Chakra;
+        font-size:11px;
+        border-radius: 9px;
+        border-style:none;
+        padding:10px;
+        height: 35px;
+        background-color: var(--color-gray);
+        cursor:pointer;
+        width: 160px;
+    }
+ 
+     .grades_organizer_div{
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        background-color:white;
+        border-radius: var(--border-radius);
+        width:fit-content;
+        height:fit-content;
+        margin:60px;
+        padding:5px;
+        box-shadow:2px 2px 2px 1px black;
+    }
+    .grade_info_td{
+        font-family:Chakra;
+        font-size:8px;
+        text-align: center;
+        border-style:none none none solid;
+        border-color:var(--color-gray);
+        text-overflow:ellipsis;
+        padding: 2px;
+        
+    }
+    .grade_p{
+        font-family: Chakra;
+        font-size: 12px;
+    }
+    table{
+        width: 100%;
+        border-style:solid solid solid none;
+        border-color:var(--color-gray);
+        border-spacing: 0px;
+    }
+    tr{
+        height: 20px;
+    }
+    .minor_forms_being_processed_form{
+        display: flex;
+        flex-direction: column;
+        border-radius: var(--border-radius);
+        width:300px;
+        height:fit-content;
+        margin-top: 100px;
+        align-items: center;
+    }
+    .minor_forms_being_processed_div{
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: var(--border-radius);
+        width:300px;
+        height:fit-content;
+        padding:15px;
+    }
+    .minor_forms_info_being_processed_div{
+        display:flex;
+        flex-direction: row;
+        gap:30px;
+        width: 300px;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+
+
+
 }
