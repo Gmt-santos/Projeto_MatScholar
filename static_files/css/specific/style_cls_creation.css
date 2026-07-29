@@ -117,15 +117,7 @@
     font-family: Chakra;
     font-size: 13px;
 }
-.forms_input{
-    font-family: Chakra;
-    font-size:13px;
-    border-radius: 10px;
-    border-style:none;
-    padding:5px;
-    height: 30px;
-    background-color: var(--color-gray);
-}
+
 
 /* cls_edition */
 
@@ -379,7 +371,10 @@ select{
 .attendance_organizer_form{
     display: flex;
     flex-direction: column;
+    align-items: center;
+    width: 700px;
     gap:30px;
+
     margin-top: 100px;
     border-radius: var(--border-radius);
     background-color: white;
@@ -520,7 +515,20 @@ select{
     width: 300px;
 }
 
-
+.again_button_input{
+    height:28px;
+    width:280px;
+    padding:5px;
+    margin-top: 20px;
+    font-family: Chakra;
+    font-size: 13px;
+    border-style: none;
+    border-radius: 10px;
+    transition-duration: 1s;
+    cursor:pointer;
+    background-color: var(--color-darkblue);
+    color:white;
+}
 
 
 
@@ -599,6 +607,216 @@ select{
     cursor:pointer;
     background-color: var(--color-gray);
 }
+
+
+
+
+/* cls_edition_view_std */
+
+.forms_std_deletion_div{
+    display: flex;
+    flex-direction: row;
+    width:600px;
+    height:fit-content;
+    padding:18px;   
+    justify-content:space-around;
+    align-items: center;
+    gap:80px;
+}
+
+.RA_and_name_p{
+    font-family: Chakra;
+    font-size: 12px;
+    font-weight: bold;
+
+}   
+
+select{
+     font-family: Chakra;
+    font-size:12px;
+    border-radius: 10px;
+    border-style:none;
+   
+    height: 25px;
+    background-color: var(--color-gray);
+    cursor:pointer;
+    width: 45px;
+}
+.forms_being_processed_div{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: var(--border-radius);
+    width:600px;
+    height:fit-content;
+    justify-content: center;
+    align-items: center;
+    padding:16px;
+    margin-top: 80px;
+}
+
+
+/* cls_edition_view_std_course */
+.forms_std_add_div{
+    display: flex;
+    flex-direction: row;
+    width:600px;
+    height:fit-content;
+    padding:16px;   
+    justify-content:space-around;
+    align-items: center;
+    gap:80px;
+}
+.select_add_students{
+    font-family: Chakra;
+    font-size:12px;
+    border-radius: 10px;
+    border-style:none;
+    padding:5px;
+    height: 30px;
+    background-color: var(--color-gray);
+    cursor:pointer;
+    width: 300px;
+}
+
+
+/* cls_edition->professor e student*/
+.assignments_card_div{
+    width:400px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.assignments_link_a{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 400px;
+    text-decoration: none;
+    color: black;
+    transition-duration: 0.2s;
+}
+.assignments_link_a:hover{
+    background-color:var(--color-gray);
+    transition-duration: 0.2s;
+}
+.organizer_horizontal_p_div{
+    display: flex;
+    flex-direction: row;
+    width:100%;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.forms_input_minor{
+    font-family: Chakra;
+    font-size:13px;
+    border-radius: 10px;
+    border-style:none;
+    width:100px;
+    padding:5px;
+    height: 20px;
+    background-color: var(--color-gray);
+}
+.input_feedback_textarea{
+    width:300px;
+    font-family: Chakra;
+    font-size:11px;
+    border-radius: 10px;
+    border-style:none;
+    padding:5px;
+   
+    background-color: var(--color-gray);
+
+}
+.assignments_grade_card_div{
+    display: flex;
+    flex-direction:column;
+    width:500px;
+    padding:10px;
+    height: fit-content;
+    background-color: white;
+    border-radius: var(--border-radius);
+}
+.assignments_organizer_form{
+    display: flex;
+    flex-direction: column;
+    gap:30px;
+    margin-top: 10px;
+}
+.select_update_assignments{
+    font-family: Chakra;
+    font-size:14px;
+    border-radius: 10px;
+    border-style:none;
+    height: 30px;
+    background-color: var(--color-gray);
+    cursor:pointer;
+    width: 80px;   
+}
+.add_assignment_link_p{
+    font-family: Chakra;
+    font-size: 15px;
+}
+.add_assignments_link_a{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 400px;
+    text-decoration: none;
+    color: white;
+    transition-duration: 0.2s;
+    background-color: var(--color-darkgreen);
+}
+.add_assignments_link_a:hover{
+    background-color:var(--color-lightgreen);
+    transition-duration: 0.2s;
+}
+.del_assignment_div{
+    margin-top: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color:white;
+    border-radius: var(--border-radius);
+    width:350px;
+    height:250px;
+    padding:20px;
+    box-shadow:2px 2px 2px 1px black;
+}
+.attendance_organizer_form{
+    display: flex;
+    flex-direction: column;
+    gap:30px;
+    align-items: center;
+    width: 700px;
+    margin-top: 100px;
+    border-radius: var(--border-radius);
+    background-color: white;
+}
+.organizer_vertical_p_div{
+    display: flex;
+    flex-direction: row;
+    width:100%;
+    justify-content: space-evenly;
+   
+}
+.a_back_a{
+    height:30px;
+    width:350px;
+    padding:5px;
+    margin-top: 20px;
+    font-family: Chakra;
+    color:black;
+    font-size: 15px;
+    text-align: center;
+    border-style: none;
+    border-radius: 10px;
+    transition-duration: 1s;
+    cursor:pointer;
+    background-color: var(--color-gray);
+}
+
 
 
 
@@ -706,6 +924,22 @@ select{
     cursor:pointer;
     width: 250px;
 }
+.again_button_input{
+    height:25px;
+    width:250px;
+    padding:5px;
+    margin-top: 20px;
+    font-family: Chakra;
+    font-size: 12px;
+    border-style: none;
+    border-radius: 10px;
+    transition-duration: 1s;
+    cursor:pointer;
+    background-color: var(--color-darkblue);
+    color:white;
+}
+
+
 
 
 
@@ -725,6 +959,9 @@ select{
     gap:40px;
     
 }
+#vertical_option{
+    flex-direction: column;
+}
 .form_edition_compact_form{
     display: flex;
     flex-direction: column;
@@ -733,7 +970,7 @@ select{
     width:300px;
     height:fit-content;
     gap:0px;
-    margin-top: 100px;
+    margin-top: 50px;
     padding:20px;
 }
 .div_organizer_edition_buttons_div{
@@ -794,7 +1031,213 @@ select{
 
 
 
+/* cls_edition_view_std */
 
+.forms_std_deletion_div{
+    display: flex;
+    flex-direction: row;
+    width:400px;
+    height:fit-content;
+    padding:15px;   
+    justify-content:space-around;
+    align-items: center;
+    gap:60px;
+}
+
+.RA_and_name_p{
+    font-family: Chakra;
+    font-size: 12px;
+    font-weight: bold;
+
+}   
+
+select{
+     font-family: Chakra;
+    font-size:12px;
+    border-radius: 10px;
+    border-style:none;
+   
+    height: 22px;
+    background-color: var(--color-gray);
+    cursor:pointer;
+    width: 40px;
+}
+.forms_being_processed_div{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: var(--border-radius);
+    width:400px;
+    height:fit-content;
+    justify-content: center;
+    align-items: center;
+    padding:14px;
+    margin-top: 70px;
+}
+
+
+
+/* cls_edition_view_std_course */
+.forms_std_add_div{
+    display: flex;
+    flex-direction: row;
+    width:400px;
+    height:fit-content;
+    padding:16px;   
+    justify-content:space-around;
+    align-items: center;
+    gap:60px;
+}
+.select_add_students{
+    font-family: Chakra;
+    font-size:11px;
+    border-radius: 10px;
+    border-style:none;
+    padding:5px;
+    height: 27px;
+    background-color: var(--color-gray);
+    cursor:pointer;
+    width: 200px;
+}
+
+
+
+/* cls_edition->professor e student*/
+.assignments_card_div{
+    width:300px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.assignments_link_a{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 300px;
+    text-decoration: none;
+    color: black;
+    transition-duration: 0.2s;
+}
+.assignments_link_a:hover{
+    background-color:var(--color-gray);
+    transition-duration: 0.2s;
+}
+.organizer_horizontal_p_div{
+    display: flex;
+    flex-direction: row;
+    width:100%;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.forms_input_minor{
+    font-family: Chakra;
+    font-size:10px;
+    border-radius: 7px;
+    border-style:none;
+    width:30px;
+    padding:5px;
+    height: 18px;
+    background-color: var(--color-gray);
+}
+.input_feedback_textarea{
+    width:200px;
+    font-family: Chakra;
+    font-size:10px;
+    border-radius: 10px;
+    border-style:none;
+    padding:5px;
+   
+    background-color: var(--color-gray);
+
+}
+.assignments_grade_card_div{
+    display: flex;
+    flex-direction:column;
+    width:350px;
+    padding:10px;
+    height: fit-content;
+    background-color: white;
+    border-radius: var(--border-radius);
+}
+.assignments_organizer_form{
+    display: flex;
+    flex-direction: column;
+    gap:30px;
+    margin-top: 10px;
+}
+.select_update_assignments{
+    font-family: Chakra;
+    font-size:12px;
+    border-radius: 10px;
+    border-style:none;
+    height: 25px;
+    background-color: var(--color-gray);
+    cursor:pointer;
+    width: 70px;   
+}
+.add_assignment_link_p{
+    font-family: Chakra;
+    font-size: 13px;
+}
+.add_assignments_link_a{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 300px;
+    text-decoration: none;
+    color: white;
+    transition-duration: 0.2s;
+    background-color: var(--color-darkgreen);
+}
+.add_assignments_link_a:hover{
+    background-color:var(--color-lightgreen);
+    transition-duration: 0.2s;
+}
+.del_assignment_div{
+    margin-top: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color:white;
+    border-radius: var(--border-radius);
+    width:300px;
+    height:250px;
+    padding:20px;
+    box-shadow:2px 2px 2px 1px black;
+}
+.attendance_organizer_form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
+    gap:30px;
+    margin-top: 100px;
+    border-radius: var(--border-radius);
+    background-color: white;
+}
+.organizer_vertical_p_div{
+    display: flex;
+    flex-direction: row;
+    width:100%;
+    justify-content: space-evenly;
+   
+}
+.a_back_a{
+    height:27px;
+    width:300px;
+    padding:5px;
+    margin-top: 20px;
+    font-family: Chakra;
+    color:black;
+    font-size: 13px;
+    text-align: center;
+    border-style: none;
+    border-radius: 10px;
+    transition-duration: 1s;
+    cursor:pointer;
+    background-color: var(--color-gray);
+}
 
 
 
@@ -912,7 +1355,20 @@ select{
     width: 220px;
 }
 
-
+.again_button_input{
+    height:23px;
+    width:230px;
+    padding:5px;
+    margin-top: 20px;
+    font-family: Chakra;
+    font-size: 11px;
+    border-style: none;
+    border-radius: 10px;
+    transition-duration: 1s;
+    cursor:pointer;
+    background-color: var(--color-darkblue);
+    color:white;
+}
 
 
 
@@ -934,7 +1390,7 @@ select{
     width:250px;
     height:fit-content;
     gap:0px;
-    margin-top: 100px;
+    margin-top: 50px;
     padding:20px;
 }
 .div_organizer_edition_buttons_div{
@@ -992,6 +1448,145 @@ select{
     background-color: var(--color-gray);
 }
 
+
+
+
+/* cls_edition->professor e student*/
+.assignments_card_div{
+    width:250px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.assignments_link_a{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 250px;
+    text-decoration: none;
+    color: black;
+    transition-duration: 0.2s;
+}
+.assignments_link_a:hover{
+    background-color:var(--color-gray);
+    transition-duration: 0.2s;
+}
+.organizer_horizontal_p_div{
+    display: flex;
+    flex-direction: row;
+    width:100%;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.forms_input_minor{
+    font-family: Chakra;
+    font-size:9px;
+    border-radius: 5px;
+    border-style:none;
+    width:25px;
+    padding:5px;
+    height: 15px;
+    background-color: var(--color-gray);
+}
+.input_feedback_textarea{
+    width:180px;
+    font-family: Chakra;
+    font-size:9px;
+    border-radius: 10px;
+    border-style:none;
+    padding:5px;
+   
+    background-color: var(--color-gray);
+
+}
+.assignments_grade_card_div{
+    display: flex;
+    flex-direction:column;
+    width:280px;
+    padding:10px;
+    height: fit-content;
+    background-color: white;
+    border-radius: var(--border-radius);
+}
+.assignments_organizer_form{
+    display: flex;
+    flex-direction: column;
+    gap:30px;
+    margin-top: 10px;
+}
+.select_update_assignments{
+    font-family: Chakra;
+    font-size:10px;
+    border-radius: 10px;
+    border-style:none;
+    height: 20px;
+    background-color: var(--color-gray);
+    cursor:pointer;
+    width: 60px;   
+}
+.add_assignment_link_p{
+    font-family: Chakra;
+    font-size: 12px;
+}
+.add_assignments_link_a{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 250px;
+    text-decoration: none;
+    color: white;
+    transition-duration: 0.2s;
+    background-color: var(--color-darkgreen);
+}
+.add_assignments_link_a:hover{
+    background-color:var(--color-lightgreen);
+    transition-duration: 0.2s;
+}
+.del_assignment_div{
+    margin-top: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color:white;
+    border-radius: var(--border-radius);
+    width:280px;
+    height:230px;
+    padding:20px;
+    box-shadow:2px 2px 2px 1px black;
+}
+.attendance_organizer_form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 300px;
+    gap:30px;
+    margin-top: 100px;
+    border-radius: var(--border-radius);
+    background-color: white;
+}
+.organizer_vertical_p_div{
+    display: flex;
+    flex-direction: row;
+    width:100%;
+    justify-content: space-evenly;
+   
+}
+.a_back_a{
+    height:24px;
+    width:260px;
+    padding:5px;
+    margin-top: 18px;
+    font-family: Chakra;
+    color:black;
+    font-size: 13px;
+    text-align: center;
+    border-style: none;
+    border-radius: 10px;
+    transition-duration: 1s;
+    cursor:pointer;
+    background-color: var(--color-gray);
+}
 
 
 
@@ -1103,6 +1698,20 @@ select{
 }
 
 
+.again_button_input{
+    height:22px;
+    width:220px;
+    padding:5px;
+    margin-top: 20px;
+    font-family: Chakra;
+    font-size: 10px;
+    border-style: none;
+    border-radius: 10px;
+    transition-duration: 1s;
+    cursor:pointer;
+    background-color: var(--color-darkblue);
+    color:white;
+}
 
 
 
@@ -1123,7 +1732,7 @@ select{
     width:250px;
     height:fit-content;
     gap:0px;
-    margin-top: 100px;
+    margin-top: 50px;
     padding:20px;
 }
 .div_organizer_edition_buttons_div{
@@ -1183,8 +1792,89 @@ select{
 
 
 
+/* cls_edition_view_std */
+
+.forms_std_deletion_div{
+    display: flex;
+    flex-direction: row;
+    width:300px;
+    height:fit-content;
+    padding:12px;   
+    justify-content:space-around;
+    align-items: center;
+    gap:50px;
+}
+
+.RA_and_name_p{
+    font-family: Chakra;
+    font-size: 10px;
+    font-weight: bold;
+
+}   
+
+select{
+     font-family: Chakra;
+    font-size:10px;
+    border-radius: 10px;
+    border-style:none;
+   
+    height: 20px;
+    background-color: var(--color-gray);
+    cursor:pointer;
+    width: 35px;
+}
+.forms_being_processed_div{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: var(--border-radius);
+    width:300px;
+    height:fit-content;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+    margin-top: 60px;
+}
 
 
+/* cls_edition_view_std_course */
+.forms_std_add_div{
+    display: flex;
+    flex-direction: row;
+    width:300px;
+    height:fit-content;
+    padding:16px;   
+    justify-content:space-around;
+    align-items: center;
+    gap:50px;
+}
+.select_add_students{
+    font-family: Chakra;
+    font-size:10px;
+    border-radius: 10px;
+    border-style:none;
+    padding:5px;
+    height: 24px;
+    background-color: var(--color-gray);
+    cursor:pointer;
+    width: 150px;
+}
+
+.a_back_a{
+    height:22px;
+    width:220px;
+    padding:5px;
+    margin-top: 18px;
+    font-family: Chakra;
+    color:black;
+    font-size: 12px;
+    text-align: center;
+    border-style: none;
+    border-radius: 10px;
+    transition-duration: 1s;
+    cursor:pointer;
+    background-color: var(--color-gray);
+}
 
 
 }
@@ -1292,5 +1982,75 @@ select{
         cursor:pointer;
         width: 250px;
     }
+.again_button_input{
+    height:20px;
+    width:200px;
+    padding:5px;
+    margin-top: 20px;
+    font-family: Chakra;
+    font-size: 10px;
+    border-style: none;
+    border-radius: 10px;
+    transition-duration: 1s;
+    cursor:pointer;
+    background-color: var(--color-darkblue);
+    color:white;
+}
+
+    /* cls_edition_view_std_course */
+.forms_std_add_div{
+    display: flex;
+    flex-direction: row;
+    width:280px;
+    height:fit-content;
+    padding:15px;   
+    justify-content:space-around;
+    align-items: center;
+    gap:40px;
+}
+.select_add_students{
+    font-family: Chakra;
+    font-size:9px;
+    border-radius: 10px;
+    border-style:none;
+    padding:5px;
+    height: 22px;
+    background-color: var(--color-gray);
+    cursor:pointer;
+    width: 130px;
+}
+
+
+.a_back_a{
+    height:20px;
+    width:180px;
+    padding:5px;
+    margin-top: 18px;
+    font-family: Chakra;
+    color:black;
+    font-size: 11px;
+    text-align: center;
+    border-style: none;
+    border-radius: 10px;
+    transition-duration: 1s;
+    cursor:pointer;
+    background-color: var(--color-gray);
+}
+
+
+.del_assignment_div{
+    margin-top: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color:white;
+    border-radius: var(--border-radius);
+    width:250px;
+    height:200px;
+    padding:15px;
+    box-shadow:2px 2px 2px 1px black;
+}
+
 
 }
