@@ -3,7 +3,7 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/specific/style_dashboard.css'%}">
 
-{% if "Prof" in  request.session.permissions or "SUPER" in request.session.permissions%}
+{% if "Prof" in  request.session.permissions %}
 
 <div class="professor_organizer_div">  
 
@@ -63,7 +63,7 @@
     </div>
 </div>
 {% endif %}
-{% if 'Princ' in  request.session.permissions or 'SUPER' in request.session.permissions%}
+{% if 'Princ' in  request.session.permissions %}
 
 
 
@@ -301,5 +301,35 @@
 
         </div>
     </div>
+{% endif %}
+{% if "SUPER" in request.session.permissions %}
+
+    <div class="professor_organizer_div">  
+        <div class="principal_operations_buttons_div">
+                
+                <a href="{% url 'matscholar_app:princ_creation_page' %}">
+                    <div class="operations_simulate_buttons_div button_color_darkblue_div">
+                        <img class="operations_button_icon_img"src="{% static 'icons/school_icon.svg'%}" alt="">
+                        <p class="operations_buttons_p">Criar diretor</p>
+                    </div>
+                    
+                </a>
+            <a href="{% url 'matscholar_app:prof_creation_page' %}">
+                    <div class="operations_simulate_buttons_div button_color_darkgreen_div">
+                    <img class="operations_button_icon_img"src="{% static 'icons/new_book_icon.png'%}" alt="">
+                        <p class="operations_buttons_p">Criar professor</p>
+                    </div>
+                    
+                </a>
+            
+
+        </div>
+    </div>
+    {% if messages %}
+            {% for message in messages %}
+                 {% include "specific/messages.html" %}
+            {% endfor %}
+    {% endif %}
+
 {% endif %}
 {% endblock content %}

@@ -1,0 +1,37 @@
+{% extends 'general/header_footer_dashboard.html'%}
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/specific/style_std_creation.css' %}">
+    <form method="POST" action="{% url 'matscholar_app:princ_creation_operation'%}" class="form_form">
+     {% csrf_token %}
+        <div class="forms_title_div">
+            <img class="logo_forms_title_img" src="{% static 'images/logo.png' %}" alt="">
+            <p class="logo_forms_title_p">MatScholar</p>
+        </div>
+        <p class="logo_forms_title_p">Criar diretor</p>
+        <p class="forms_aux_input_p"></p>
+        <p class="forms_aux_input_p">Nome</p>
+        <input class="forms_input" type="text" name="name" id="name" placeholder="Nome"  required >
+        <p class="forms_aux_input_p">Título/cargo</p>
+        <input class="forms_input" type="text" name="role" placeholder="Título/cargo"  required >
+
+        <p class="forms_aux_input_p">Email</p>
+        <input class="forms_input" type="email" name="email" placeholder="Email"  required >
+        
+        <p class="forms_aux_input_p">Senha recomendada:</p>
+        <input class="forms_input"type="text" name="password" id="password" placeholder="Senha" autocomplete="new-password" 
+        value="{{safe_password}}" required >
+        
+        <div style="margin-top:20px;display:flex;justify-content:center;align-items:center;flex-direction:column">
+            <p class="forms_aux_input_p">A senha deverá ter no mínimo 10 caracteres</p>
+            <p class="forms_aux_input_p"> Confira os dados antes de enviar</p>
+           <input type="submit" class="forms_submit_input" value="Cadastrar"> 
+        </div>
+    </form>
+
+
+
+
+
+
+{% endblock content %}

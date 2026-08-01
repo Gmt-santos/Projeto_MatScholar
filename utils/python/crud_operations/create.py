@@ -381,3 +381,59 @@ def professor_add_assignment_operation(request):
             cursor.close()
         if conn is not None:
             conn.close()
+
+
+
+def super_add_principal(request,name,role,password,email):
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        password= f.generate_hash(password)
+        
+        if conn and cursor and password:
+            cursor.execute('insert into academic_users(name,role,password,email,fk_institution)values' \
+            '(%s,%s,%s,%s,%s) returning id',[name,role,password,email,request.session.get("institution")])
+            id=f.regex_list_to_string(cursor.fetchone())
+            if id:
+                cursor.execute("insert into academic_users_permissions(id,id_user,id_nickname)values(" \
+                f"{f'{id}-2'},{id},2)")
+                conn.commit()
+                messages.success(request,"Diretor inserido com sucesso!")
+                return True
+    except Exception as e:
+                f.receive_exceptions_and_deal(request,type(e).__name__)
+                dbf.safe_rollback(conn)
+                return False
+        
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+def super_add_professor(request,name,role,password,email):
+    conn,cursor=None,None
+    try:
+        conn,cursor=f.connection_cursor()
+        password= f.generate_hash(password)
+        
+        if conn and cursor and password:
+            cursor.execute('insert into academic_users(name,role,password,email,fk_institution)values' \
+            '(%s,%s,%s,%s,%s) returning id',[name,role,password,email,request.session.get("institution")])
+            id=f.regex_list_to_string(cursor.fetchone())
+            if id:
+                cursor.execute("insert into academic_users_permissions(id,id_user,id_nickname)values(" \
+                f"{f'{id}-3'},{id},3)")
+                conn.commit()
+                messages.success(request,"Professor inserido com sucesso!")
+                return True
+    except Exception as e:
+                f.receive_exceptions_and_deal(request,type(e).__name__)
+                dbf.safe_rollback(conn)
+                return False
+        
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()

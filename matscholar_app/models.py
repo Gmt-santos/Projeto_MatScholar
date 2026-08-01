@@ -33,7 +33,7 @@ class academic_users(models.Model):
     name=models.CharField(max_length=255)
     role=models.CharField(max_length=255)
     fk_institution=models.ForeignKey(institution,on_delete=models.CASCADE,db_column="fk_institution")
-    email=models.CharField(max_length=255,null=True)
+    email=models.CharField(max_length=255,null=True,unique=True)
     password=models.CharField(max_length=255,null=True)
     class Meta:
         db_table='academic_users'
